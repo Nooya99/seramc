@@ -103,9 +103,9 @@ export default function ShopModal({ isOpen, onClose, onBuyRank }) {
           
           <div className="flex-1 flex justify-center px-2">
             <img 
-              src="/LOGO.png" 
+              src="/serashop.png" 
               alt="Sera Shop Logo" 
-              className="h-12 md:h-16 object-contain drop-shadow-xl scale-[1.7] md:scale-[2]"
+              className="h-12 md:h-16 object-contain drop-shadow-xl"
             />
           </div>
 
