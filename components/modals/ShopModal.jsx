@@ -93,14 +93,16 @@ export default function ShopModal({ isOpen, onClose, onBuyRank }) {
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div 
-        className="modal-content relative w-full max-w-5xl max-h-[85vh] overflow-y-auto rounded-3xl bg-[#0b1120] border border-white/20 p-6 md:p-8 shadow-2xl hide-scrollbar"
+        className="modal-content relative w-full max-w-5xl rounded-3xl bg-[#0b1120] border border-white/20 shadow-2xl overflow-hidden"
       >
         <button 
           onClick={onClose} 
-          className="absolute top-4 md:top-5 right-4 md:right-5 text-gray-400 hover:text-white glass-pill w-12 h-12 flex items-center justify-center text-xl cursor-pointer transition-all duration-300 ease-in-out active:scale-95 z-10"
+          className="absolute top-4 md:top-5 right-4 md:right-5 text-gray-400 hover:text-white glass-pill w-12 h-12 flex items-center justify-center text-xl cursor-pointer transition-all duration-300 ease-in-out active:scale-95 z-20"
         >
           <X className="w-5 h-5" />
         </button>
+
+        <div className="w-full max-h-[85vh] overflow-y-auto custom-scrollbar p-6 md:p-8">
 
         {/* Header */}
         <div className="flex flex-col items-center mb-8">
@@ -159,15 +161,24 @@ export default function ShopModal({ isOpen, onClose, onBuyRank }) {
           })}
         </div>
 
+        </div>
       </div>
 
       <style jsx>{`
-        .hide-scrollbar::-webkit-scrollbar {
-          display: none;
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
         }
-        .hide-scrollbar {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+          margin-top: 16px;
+          margin-bottom: 16px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: rgba(255, 255, 255, 0.2);
         }
       `}</style>
     </div>
