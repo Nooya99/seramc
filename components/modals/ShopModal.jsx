@@ -114,12 +114,12 @@ export default function ShopModal({ isOpen, onClose, onBuyRank }) {
         </div>
 
         {/* Grid Area */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
-          {ranks.map((item) => {
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full">
+          {ranks.flatMap((item) => {
             const Icon = item.icon;
-            return (
+            return item.prices.map((p) => (
               <div 
-                key={item.name} 
+                key={`${item.name}-${p.duration}`} 
                 className="bg-[#0f1422] rounded-[1.5rem] p-6 md:p-8 flex flex-col relative overflow-hidden border border-white/5 shadow-xl transition-transform hover:-translate-y-1"
               >
                 {/* Icon */}
@@ -127,38 +127,35 @@ export default function ShopModal({ isOpen, onClose, onBuyRank }) {
                   <Icon className="w-6 h-6" />
                 </div>
                 
-                {/* Rank Name */}
-                <h3 className="font-black text-3xl md:text-4xl text-white font-poppins tracking-wide mb-6">
-                  {item.badge}
-                </h3>
+                {/* Rank Name & Duration */}
+                <div className="mb-6">
+                  <h3 className="font-black text-3xl md:text-4xl text-white font-poppins tracking-wide">
+                    {item.badge}
+                  </h3>
+                  <p className="text-gray-400 font-medium mt-1">{p.duration}</p>
+                </div>
 
-                {/* Pricing Rows */}
-                <div className="flex flex-col gap-4 mb-8">
-                  {item.prices.map((p, idx) => (
-                    <div 
-                      key={idx}
-                      className="flex justify-between items-center border-b border-white/5 pb-4 last:border-0 last:pb-0 cursor-pointer group"
-                      onClick={() => onBuyRank(item.name, p.duration, p.price)}
-                    >
-                      <span className="text-gray-300 text-[14px] md:text-[15px] font-medium group-hover:text-white transition-colors">
-                        {p.duration}
-                      </span>
-                      <span className="text-[#f2e28a] font-bold text-lg md:text-xl group-hover:scale-105 transition-transform">
-                        {p.price}
-                      </span>
-                    </div>
-                  ))}
+                {/* Price */}
+                <div className="flex flex-col gap-4 mb-8 mt-auto">
+                  <div className="flex justify-between items-end border-b border-white/5 pb-4">
+                    <span className="text-gray-300 text-[14px] md:text-[15px] font-medium">
+                      Harga
+                    </span>
+                    <span className="text-[#f2e28a] font-bold text-3xl">
+                      {p.price}
+                    </span>
+                  </div>
                 </div>
 
                 {/* Purchase Button */}
                 <button 
-                  onClick={() => onBuyRank(item.name, '1 Bulan / Permanen', item.buyAll)}
-                  className={`mt-auto w-full font-bold py-3.5 rounded-2xl transition-all duration-300 ease-in-out text-[14px] md:text-[15px] active:scale-95 ${item.btnClass}`}
+                  onClick={() => onBuyRank(item.name, p.duration, p.price)}
+                  className={`w-full font-bold py-3.5 rounded-2xl transition-all duration-300 ease-in-out text-[14px] md:text-[15px] active:scale-95 ${item.btnClass}`}
                 >
                   Purchase Now
                 </button>
               </div>
-            );
+            ));
           })}
         </div>
 
