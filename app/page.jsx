@@ -32,6 +32,16 @@ export default function Home() {
   };
 
   const handleAddToCart = (item) => {
+    if (item.duration && item.duration.includes('Permanen')) {
+      // Check if this specific permanent item is already in the cart
+      const alreadyInCart = cart.some(
+        (cartItem) => cartItem.name === item.name && cartItem.duration === item.duration
+      );
+      if (alreadyInCart) {
+        alert(`Anda sudah menambahkan ${item.name} (${item.duration}) ke keranjang! Maksimal 1.`);
+        return;
+      }
+    }
     setCart((prev) => [...prev, item]);
   };
 
