@@ -177,7 +177,7 @@ const othersData = [
   }
 ];
 
-export default function ShopModal({ isOpen, onClose, onBuyRank }) {
+export default function ShopModal({ isOpen, onClose, cart = [], onAddToCart }) {
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -201,8 +201,13 @@ export default function ShopModal({ isOpen, onClose, onBuyRank }) {
       >
         {/* Navbar inside Modal */}
         <div className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4 border-b border-white/10 bg-[#0b1120] z-20 shrink-0 rounded-t-3xl">
-          <div className="w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-full glass-pill text-blue-400 shrink-0">
+          <div className="relative w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-full glass-pill text-blue-400 shrink-0 cursor-pointer hover:bg-white/10 transition-colors">
             <ShoppingCart className="w-5 h-5 md:w-6 md:h-6" />
+            {cart.length > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] md:text-xs font-bold w-5 h-5 md:w-6 md:h-6 flex items-center justify-center rounded-full shadow-lg">
+                {cart.length}
+              </span>
+            )}
           </div>
           
           <div className="flex-1 flex justify-center px-2">
@@ -266,7 +271,7 @@ export default function ShopModal({ isOpen, onClose, onBuyRank }) {
 
                 {/* Purchase Button */}
                 <button 
-                  onClick={() => onBuyRank(item.name, p.duration, p.price)}
+                  onClick={() => onAddToCart({ name: item.name, duration: p.duration, price: p.price })}
                   className={`w-full font-bold py-3.5 rounded-2xl transition-all duration-300 ease-in-out text-[14px] md:text-[15px] active:scale-95 ${item.btnClass}`}
                 >
                   TAMBAH KE KERANJANG
@@ -308,7 +313,7 @@ export default function ShopModal({ isOpen, onClose, onBuyRank }) {
                   </div>
                 </div>
                 <button 
-                  onClick={() => onBuyRank(item.name, item.benefit, item.price)}
+                  onClick={() => onAddToCart({ name: item.name, duration: item.benefit, price: item.price })}
                   className={`w-full font-bold py-3 rounded-xl transition-all duration-300 ease-in-out text-sm active:scale-95 ${item.btnClass}`}
                 >
                   TAMBAH KE KERANJANG
@@ -350,7 +355,7 @@ export default function ShopModal({ isOpen, onClose, onBuyRank }) {
                   </div>
                 </div>
                 <button 
-                  onClick={() => onBuyRank(item.name, item.duration || item.benefit, item.price)}
+                  onClick={() => onAddToCart({ name: item.name, duration: item.duration || item.benefit, price: item.price })}
                   className={`w-full font-bold py-3 rounded-xl transition-all duration-300 ease-in-out text-sm active:scale-95 ${item.btnClass}`}
                 >
                   TAMBAH KE KERANJANG

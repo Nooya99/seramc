@@ -21,12 +21,9 @@ import ShopModal from '@/components/modals/ShopModal';
 
 export default function Home() {
   const [activeModal, setActiveModal] = useState(null);
-  const [pendingPurchase, setPendingPurchase] = useState(null);
+  const [cart, setCart] = useState([]);
 
   const handleOpenModal = (modalName) => {
-    if (modalName !== 'contact') {
-      setPendingPurchase(null);
-    }
     setActiveModal(modalName);
   };
 
@@ -34,9 +31,8 @@ export default function Home() {
     setActiveModal(null);
   };
 
-  const handleBuyRank = (rankName, duration, price) => {
-    setPendingPurchase({ rank: rankName, duration, price });
-    setActiveModal('contact');
+  const handleAddToCart = (item) => {
+    setCart((prev) => [...prev, item]);
   };
 
   return (
@@ -71,7 +67,7 @@ export default function Home() {
       <ContactModal 
         isOpen={activeModal === 'contact'} 
         onClose={handleCloseModal} 
-        pendingPurchase={pendingPurchase} 
+        cart={cart} 
       />
       <RacesModal 
         isOpen={activeModal === 'races'} 
@@ -80,7 +76,8 @@ export default function Home() {
       <ShopModal
         isOpen={activeModal === 'shop'}
         onClose={handleCloseModal}
-        onBuyRank={handleBuyRank}
+        cart={cart}
+        onAddToCart={handleAddToCart}
       />
     </main>
   );
