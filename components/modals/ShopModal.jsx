@@ -208,7 +208,7 @@ export default function ShopModal({ isOpen, onClose, cart = [], onAddToCart, onV
             <ShoppingCart className="w-5 h-5 md:w-6 md:h-6" />
             {cart.length > 0 && (
               <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] md:text-xs font-bold w-5 h-5 md:w-6 md:h-6 flex items-center justify-center rounded-full shadow-lg">
-                {cart.length}
+                {cart.reduce((total, item) => total + (item.quantity || 1), 0)}
               </span>
             )}
           </div>

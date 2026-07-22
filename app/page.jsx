@@ -33,17 +33,50 @@ export default function Home() {
   };
 
   const handleAddToCart = (item) => {
-    if (item.duration && item.duration.includes('Permanen')) {
-      // Check if this specific permanent item is already in the cart
-      const alreadyInCart = cart.some(
+    setCart((prev) => {
+      const existingItemIndex = prev.findIndex(
         (cartItem) => cartItem.name === item.name && cartItem.duration === item.duration
       );
-      if (alreadyInCart) {
-        alert(`Anda sudah menambahkan ${item.name} (${item.duration}) ke keranjang! Maksimal 1.`);
-        return;
+
+      if (existingItemIndex !== -1) {
+        // Item already in cart
+        if (item.duration && item.duration.includes('Permanen')) {
+          alert(`Anda sudah menambahkan ${item.name} (${item.duration}) ke keranjang! Maksimal 1.`);
+          return prev;
+        }
+        
+        // Increment quantity
+        const newCart = [...prev];
+        newCart[existingItemIndex] = {
+          ...newCart[existingItemIndex],
+          quantity: (newCart[existingItemIndex].quantity || 1) + 1
+        };
+        return newCart;
       }
-    }
-    setCart((prev) => [...prev, item]);
+
+      // Add new item with quantity 1
+      return [...prev, { ...item, quantity: 1 }];
+    });
+  };
+
+  const handleUpdateQuantity = (indexToUpdate, delta) => {
+    setCart((prev) => {
+      const newCart = [...prev];
+      const item = newCart[indexToUpdate];
+      const newQuantity = (item.quantity || 1) + delta;
+      
+      if (newQuantity < 1) {
+        return prev; // Or we could remove the item, but let's keep min 1
+      }
+
+      if (item.duration && item.duration.includes('Permanen') && newQuantity > 1) {
+        alert(`Maksimal 1 untuk item Permanen.`);
+        return prev;
+      }
+
+      newCart[indexToUpdate] = { ...item, quantity: newQuantity };
+      return newCart;
+    });
   };
 
   const handleRemoveFromCart = (indexToRemove) => {
@@ -100,6 +133,7 @@ export default function Home() {
         onClose={() => setActiveModal('shop')}
         cart={cart}
         onRemoveItem={handleRemoveFromCart}
+        onUpdateQuantity={handleUpdateQuantity}
         onCheckout={() => setActiveModal('contact')}
       />
     </main>

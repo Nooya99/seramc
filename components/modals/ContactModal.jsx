@@ -17,7 +17,7 @@ export default function ContactModal({ isOpen, onClose, cart = [] }) {
   // Format cart items for WhatsApp message
   let purchaseMsg = defaultMsg;
   if (cart.length > 0) {
-    let itemsList = cart.map((item, i) => `${i + 1}. ${item.name} (${item.duration}) - ${item.price}`).join('\n');
+    let itemsList = cart.map((item, i) => `${i + 1}. ${item.quantity || 1}x ${item.name} (${item.duration}) - ${item.price}`).join('\n');
     purchaseMsg = `Halo Admin, saya tertarik untuk membeli item berikut dari Shop:\n\n${itemsList}\n\nMohon info untuk proses pembayarannya. Terima kasih!`;
   }
 

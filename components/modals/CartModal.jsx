@@ -1,8 +1,8 @@
 'use client';
 
-import { ArrowLeft, ShoppingCart, Trash2, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, Trash2, CheckCircle2, Plus, Minus } from 'lucide-react';
 
-export default function CartModal({ isOpen, onClose, cart, onRemoveItem, onCheckout }) {
+export default function CartModal({ isOpen, onClose, cart, onRemoveItem, onUpdateQuantity, onCheckout }) {
   if (!isOpen) return null;
 
   // Calculate total price
@@ -11,10 +11,11 @@ export default function CartModal({ isOpen, onClose, cart, onRemoveItem, onCheck
     if (!item.price) return total;
     const num = parseInt(item.price.replace(/[^0-9]/g, ''));
     if (isNaN(num)) return total;
+    const qty = item.quantity || 1;
     if (item.price.toUpperCase().includes('K')) {
-      return total + (num * 1000);
+      return total + (num * 1000 * qty);
     }
-    return total + num;
+    return total + (num * qty);
   }, 0);
 
   const formatPrice = (price) => {
@@ -68,10 +69,29 @@ export default function CartModal({ isOpen, onClose, cart, onRemoveItem, onCheck
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
-                    <span className="text-[#f2e28a] font-bold text-lg">{item.price}</span>
+                    <div className="flex flex-col md:flex-row items-end md:items-center gap-2 md:gap-4">
+                      <span className="text-[#f2e28a] font-bold text-lg">{item.price}</span>
+                      
+                      <div className="flex items-center gap-3 bg-black/20 rounded-full px-2 py-1">
+                        <button 
+                          onClick={() => onUpdateQuantity(index, -1)}
+                          className="w-6 h-6 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/20 text-white transition-colors active:scale-95"
+                        >
+                          <Minus className="w-3 h-3" />
+                        </button>
+                        <span className="text-white font-bold text-sm w-4 text-center">{item.quantity || 1}</span>
+                        <button 
+                          onClick={() => onUpdateQuantity(index, 1)}
+                          className="w-6 h-6 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/20 text-white transition-colors active:scale-95"
+                        >
+                          <Plus className="w-3 h-3" />
+                        </button>
+                      </div>
+                    </div>
+
                     <button
                       onClick={() => onRemoveItem(index)}
-                      className="text-red-400 hover:text-red-300 hover:bg-red-500/10 p-2 rounded-full transition-colors active:scale-95"
+                      className="text-red-400 hover:text-red-300 hover:bg-red-500/10 p-2 rounded-full transition-colors active:scale-95 ml-2"
                     >
                       <Trash2 className="w-5 h-5" />
                     </button>
