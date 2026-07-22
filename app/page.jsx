@@ -49,7 +49,7 @@ export default function Home() {
       <div className="w-full relative z-20 bg-gradient-to-b from-[#0b1121] via-[#0b1121] to-[#070b15] shadow-[0_-20px_50px_rgba(11,17,33,1)] pb-10 pt-8">
         <About />
         <Features onOpenModal={handleOpenModal} />
-        <ShopCoverflow onBuyRank={handleBuyRank} />
+        <ShopCoverflow onOpenModal={handleOpenModal} />
         <ReviewsMarquee />
         <FaqAccordion />
         <Footer />

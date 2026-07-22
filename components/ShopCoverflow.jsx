@@ -85,7 +85,7 @@ const ranks = [
   }
 ];
 
-export default function ShopCoverflow({ onBuyRank }) {
+export default function ShopCoverflow({ onOpenModal }) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const moveShop = (step) => {
@@ -152,7 +152,7 @@ export default function ShopCoverflow({ onBuyRank }) {
                         key={idx}
                         onClick={(e) => {
                           e.stopPropagation();
-                          onBuyRank(item.name, p.duration, p.price);
+                          onOpenModal('shop');
                         }}
                         className="w-full flex justify-between items-center border-b border-white/10 pb-3 text-left focus:outline-none bg-transparent group active:scale-95 cursor-pointer transition-all duration-300 ease-in-out"
                       >
@@ -170,11 +170,11 @@ export default function ShopCoverflow({ onBuyRank }) {
                 <button 
                   onClick={(e) => {
                     e.stopPropagation();
-                    onBuyRank(item.name, '1 Bulan / Permanen', item.buyAll);
+                    onOpenModal('shop');
                   }}
                   className={`mt-auto w-full font-bold py-3.5 rounded-xl transition-all duration-300 ease-in-out hover:scale-[1.02] border text-[15px] md:text-[16px] active:scale-95 cursor-pointer ${item.btnClass}`}
                 >
-                  Purchase Now
+                  TAMBAH KE KERANJANG
                 </button>
               </div>
             );
