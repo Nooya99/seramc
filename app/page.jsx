@@ -97,7 +97,7 @@ export default function Home() {
       />
       <CartModal
         isOpen={activeModal === 'cart'}
-        onClose={handleCloseModal}
+        onClose={() => setActiveModal('shop')}
         cart={cart}
         onRemoveItem={handleRemoveFromCart}
         onCheckout={() => setActiveModal('contact')}

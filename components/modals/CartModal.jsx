@@ -1,6 +1,6 @@
 'use client';
 
-import { X, ShoppingCart, Trash2, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, Trash2, CheckCircle2 } from 'lucide-react';
 
 export default function CartModal({ isOpen, onClose, cart, onRemoveItem, onCheckout }) {
   if (!isOpen) return null;
@@ -42,7 +42,7 @@ export default function CartModal({ isOpen, onClose, cart, onRemoveItem, onCheck
             onClick={onClose} 
             className="text-gray-400 hover:text-white bg-black/20 hover:bg-black/40 w-10 h-10 flex items-center justify-center text-xl cursor-pointer transition-all duration-300 ease-in-out active:scale-95 rounded-full"
           >
-            <X className="w-5 h-5" />
+            <ArrowLeft className="w-5 h-5" />
           </button>
         </div>
 
@@ -94,7 +94,7 @@ export default function CartModal({ isOpen, onClose, cart, onRemoveItem, onCheck
               onClick={onCheckout}
               className="w-full font-bold py-4 rounded-2xl transition-all duration-300 ease-in-out text-base md:text-lg active:scale-95 bg-[#25D366] hover:bg-[#1ebd5a] text-white shadow-[0_0_20px_rgba(37,211,102,0.3)] flex items-center justify-center gap-2"
             >
-              Lanjut ke WhatsApp
+              Lanjut pembayaran
             </button>
           </div>
         )}
