@@ -269,7 +269,7 @@ export default function ShopModal({ isOpen, onClose, onBuyRank }) {
                   onClick={() => onBuyRank(item.name, p.duration, p.price)}
                   className={`w-full font-bold py-3.5 rounded-2xl transition-all duration-300 ease-in-out text-[14px] md:text-[15px] active:scale-95 ${item.btnClass}`}
                 >
-                  Purchase Now
+                  TAMBAH KE KERANJANG
                 </button>
               </div>
             ));
@@ -311,7 +311,7 @@ export default function ShopModal({ isOpen, onClose, onBuyRank }) {
                   onClick={() => onBuyRank(item.name, item.benefit, item.price)}
                   className={`w-full font-bold py-3 rounded-xl transition-all duration-300 ease-in-out text-sm active:scale-95 ${item.btnClass}`}
                 >
-                  Purchase Now
+                  TAMBAH KE KERANJANG
                 </button>
               </div>
             );
@@ -353,7 +353,7 @@ export default function ShopModal({ isOpen, onClose, onBuyRank }) {
                   onClick={() => onBuyRank(item.name, item.duration || item.benefit, item.price)}
                   className={`w-full font-bold py-3 rounded-xl transition-all duration-300 ease-in-out text-sm active:scale-95 ${item.btnClass}`}
                 >
-                  Purchase Now
+                  TAMBAH KE KERANJANG
                 </button>
               </div>
             );
