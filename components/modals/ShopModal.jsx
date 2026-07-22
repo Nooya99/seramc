@@ -1,12 +1,13 @@
 'use client';
 
 import { useEffect } from 'react';
-import { ShoppingCart, Award, Shield, Trophy, Gem, Crown, Wand2, X, Key, Infinity, Ticket, Swords, Coins, Package } from 'lucide-react';
+import { ShoppingCart, Pickaxe, Shield, Axe, Diamond, Sword, Flame, X, Key, Infinity, Ticket, Swords, Coins, Package } from 'lucide-react';
 
 const ranks = [
   {
     name: 'LUX',
-    icon: Award,
+    name: 'LUX',
+    icon: Pickaxe,
     badge: 'LUX',
     color: 'orange',
     prices: [
@@ -32,7 +33,7 @@ const ranks = [
   },
   {
     name: 'RIFT',
-    icon: Trophy,
+    icon: Axe,
     badge: 'RIFT',
     color: 'yellow',
     prices: [
@@ -45,7 +46,7 @@ const ranks = [
   },
   {
     name: 'CORE',
-    icon: Gem,
+    icon: Diamond,
     badge: 'CORE',
     color: 'cyan',
     prices: [
@@ -58,7 +59,7 @@ const ranks = [
   },
   {
     name: 'ARCH',
-    icon: Crown,
+    icon: Sword,
     badge: 'ARCH',
     color: 'purple',
     prices: [
@@ -71,7 +72,7 @@ const ranks = [
   },
   {
     name: 'CUSTOM',
-    icon: Wand2,
+    icon: Flame,
     badge: 'CUSTOM',
     color: 'pink',
     isSpecial: true,
@@ -233,9 +234,9 @@ export default function ShopModal({ isOpen, onClose, cart = [], onAddToCart, onV
 
         {/* Ranks Header */}
         <div className="mb-8 flex items-center justify-center gap-3">
-          <Award className="w-8 h-8 text-orange-400 hidden sm:block" />
+          <Pickaxe className="w-8 h-8 text-orange-400 hidden sm:block" />
           <h2 className="text-2xl md:text-3xl font-black text-white font-poppins tracking-wider text-center">RANK PACKAGES</h2>
-          <Award className="w-8 h-8 text-orange-400 hidden sm:block" />
+          <Pickaxe className="w-8 h-8 text-orange-400 hidden sm:block" />
         </div>
 
         {/* Grid Area for Ranks */}

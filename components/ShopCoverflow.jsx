@@ -1,12 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronLeft, ChevronRight, Award, Shield, Trophy, Gem, Crown, Wand2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Pickaxe, Shield, Axe, Diamond, Sword, Flame } from 'lucide-react';
 
 const ranks = [
   {
     name: 'LUX',
-    icon: Award,
+    icon: Pickaxe,
     badge: 'LUX',
     color: 'orange',
     prices: [
@@ -32,7 +32,7 @@ const ranks = [
   },
   {
     name: 'RIFT',
-    icon: Trophy,
+    icon: Axe,
     badge: 'RIFT',
     color: 'yellow',
     prices: [
@@ -45,7 +45,7 @@ const ranks = [
   },
   {
     name: 'CORE',
-    icon: Gem,
+    icon: Diamond,
     badge: 'CORE',
     color: 'cyan',
     prices: [
@@ -58,7 +58,7 @@ const ranks = [
   },
   {
     name: 'ARCH',
-    icon: Crown,
+    icon: Sword,
     badge: 'ARCH',
     color: 'purple',
     prices: [
@@ -71,7 +71,7 @@ const ranks = [
   },
   {
     name: 'CUSTOM',
-    icon: Wand2,
+    icon: Flame,
     badge: 'CUSTOM',
     color: 'pink',
     isSpecial: true,
