@@ -93,7 +93,7 @@ export default function ShopModal({ isOpen, onClose, onBuyRank }) {
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div 
-        className="modal-content relative w-full max-w-5xl max-h-[85vh] overflow-y-auto rounded-3xl bg-[#0b1120] border border-white/20 p-6 md:p-8 shadow-2xl custom-scrollbar"
+        className="modal-content relative w-full max-w-5xl max-h-[85vh] overflow-y-auto rounded-3xl bg-[#0b1120] border border-white/20 p-6 md:p-8 shadow-2xl hide-scrollbar"
       >
         <button 
           onClick={onClose} 
@@ -162,19 +162,12 @@ export default function ShopModal({ isOpen, onClose, onBuyRank }) {
       </div>
 
       <style jsx>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 8px;
+        .hide-scrollbar::-webkit-scrollbar {
+          display: none;
         }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: #0b1120;
-          border-radius: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #1f2937;
-          border-radius: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #374151;
+        .hide-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
         }
       `}</style>
     </div>
