@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { ShoppingCart, Award, Shield, Trophy, Gem, Crown, Wand2, X } from 'lucide-react';
 
 const ranks = [
@@ -85,6 +86,17 @@ const ranks = [
 ];
 
 export default function ShopModal({ isOpen, onClose, onBuyRank }) {
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return (
