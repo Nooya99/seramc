@@ -1,0 +1,18 @@
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Vercel & IDE
+.vercel
+.vscode/
+.idea/
+
+# Archives & Temporary files
+*.zip
+*.tar.gz
+*.tmp
