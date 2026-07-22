@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { ShoppingCart, Award, Shield, Trophy, Gem, Crown, Wand2, X } from 'lucide-react';
+import { ShoppingCart, Award, Shield, Trophy, Gem, Crown, Wand2, X, Key, Infinity, Ticket, Swords, Coins, Package } from 'lucide-react';
 
 const ranks = [
   {
@@ -85,6 +85,98 @@ const ranks = [
   }
 ];
 
+const keysData = [
+  {
+    name: 'PEASANT',
+    icon: Key,
+    badge: 'PEASANT',
+    color: 'stone',
+    price: '13K',
+    benefit: '5 Key',
+    bgClass: 'bg-stone-500/10 text-stone-400 border-stone-400/40',
+    btnClass: 'bg-[#292524] hover:bg-stone-800 text-stone-200 border border-stone-500/20'
+  },
+  {
+    name: 'NOBLE',
+    icon: Key,
+    badge: 'NOBLE',
+    color: 'slate',
+    price: '20K',
+    benefit: '5 Key',
+    bgClass: 'bg-slate-500/10 text-slate-400 border-slate-400/40',
+    btnClass: 'bg-[#1e293b] hover:bg-slate-800 text-slate-200 border border-slate-500/20'
+  },
+  {
+    name: 'IMPERIAL',
+    icon: Key,
+    badge: 'IMPERIAL',
+    color: 'amber',
+    price: '24K',
+    benefit: '5 Key',
+    bgClass: 'bg-amber-500/10 text-amber-400 border-amber-400/40',
+    btnClass: 'bg-[#451a03] hover:bg-amber-900 text-amber-200 border border-amber-500/20'
+  },
+  {
+    name: 'SERA',
+    icon: Key,
+    badge: 'SERA',
+    color: 'violet',
+    price: '28K',
+    benefit: '5 Key',
+    bgClass: 'bg-violet-500/10 text-violet-400 border-violet-400/40',
+    btnClass: 'bg-[#2e1065] hover:bg-violet-900 text-violet-200 border border-violet-500/20'
+  },
+  {
+    name: 'ULTIMATE',
+    icon: Key,
+    badge: 'ULTIMATE',
+    color: 'rose',
+    price: '45K',
+    benefit: '9 Key',
+    bgClass: 'bg-rose-500/10 text-rose-400 border-rose-400/40',
+    btnClass: 'bg-[#4c0519] hover:bg-rose-900 text-rose-200 border border-rose-500/20'
+  }
+];
+
+const othersData = [
+  {
+    name: 'Unlimited Claim',
+    icon: Infinity,
+    badge: 'Unlimited Claim',
+    price: '35K',
+    duration: 'Permanen',
+    bgClass: 'bg-emerald-500/10 text-emerald-400 border-emerald-400/40',
+    btnClass: 'bg-[#064e3b] hover:bg-emerald-900 text-emerald-200 border border-emerald-500/20'
+  },
+  {
+    name: 'Monthly Premium Pass',
+    icon: Ticket,
+    badge: 'Premium Pass',
+    price: '30K',
+    duration: '1 Bulan',
+    bgClass: 'bg-fuchsia-500/10 text-fuchsia-400 border-fuchsia-400/40',
+    btnClass: 'bg-[#4a044e] hover:bg-fuchsia-900 text-fuchsia-200 border border-fuchsia-500/20'
+  },
+  {
+    name: 'Skills All Max 100',
+    icon: Swords,
+    badge: 'Max Skills',
+    price: '300K',
+    duration: 'Per Season',
+    bgClass: 'bg-red-500/10 text-red-400 border-red-400/40',
+    btnClass: 'bg-[#7f1d1d] hover:bg-red-900 text-red-200 border border-red-500/20'
+  },
+  {
+    name: 'Coin Bundle',
+    icon: Coins,
+    badge: 'Coin Bundle',
+    price: '1K',
+    benefit: '35 Coin',
+    bgClass: 'bg-yellow-500/10 text-yellow-400 border-yellow-400/40',
+    btnClass: 'bg-[#422006] hover:bg-yellow-900 text-yellow-200 border border-yellow-500/20'
+  }
+];
+
 export default function ShopModal({ isOpen, onClose, onBuyRank }) {
   useEffect(() => {
     if (isOpen) {
@@ -131,8 +223,15 @@ export default function ShopModal({ isOpen, onClose, onBuyRank }) {
 
         <div className="w-full flex-1 overflow-y-auto custom-scrollbar p-6 md:p-8 rounded-b-3xl">
 
-        {/* Grid Area */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full">
+        {/* Ranks Header */}
+        <div className="mb-8 flex items-center justify-center gap-3">
+          <Award className="w-8 h-8 text-orange-400 hidden sm:block" />
+          <h2 className="text-2xl md:text-3xl font-black text-white font-poppins tracking-wider text-center">RANK PACKAGES</h2>
+          <Award className="w-8 h-8 text-orange-400 hidden sm:block" />
+        </div>
+
+        {/* Grid Area for Ranks */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full mb-16">
           {ranks.flatMap((item) => {
             const Icon = item.icon;
             return item.prices.map((p) => (
@@ -174,6 +273,90 @@ export default function ShopModal({ isOpen, onClose, onBuyRank }) {
                 </button>
               </div>
             ));
+          })}
+        </div>
+
+        {/* Keys Header */}
+        <div className="mb-8 flex items-center justify-center gap-3">
+          <Key className="w-8 h-8 text-amber-400 hidden sm:block" />
+          <h2 className="text-2xl md:text-3xl font-black text-white font-poppins tracking-wider text-center">DAFTAR HARGA KEY</h2>
+          <Key className="w-8 h-8 text-amber-400 hidden sm:block" />
+        </div>
+
+        {/* Grid Area for Keys */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 w-full mb-16">
+          {keysData.map((item) => {
+            const Icon = item.icon;
+            return (
+              <div 
+                key={item.name} 
+                className="bg-[#0f1422] rounded-[1.5rem] p-6 flex flex-col relative overflow-hidden border border-white/5 shadow-xl transition-transform hover:-translate-y-1"
+              >
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-5 border ${item.bgClass}`}>
+                  <Icon className="w-5 h-5" />
+                </div>
+                <div className="mb-5">
+                  <h3 className="font-black text-2xl text-white font-poppins tracking-wide">
+                    {item.badge}
+                  </h3>
+                  <p className="text-gray-400 font-medium text-sm mt-1">{item.benefit}</p>
+                </div>
+                <div className="flex flex-col gap-4 mb-6 mt-auto">
+                  <div className="flex justify-between items-end border-b border-white/5 pb-3">
+                    <span className="text-gray-300 text-sm font-medium">Harga</span>
+                    <span className="text-[#f2e28a] font-bold text-2xl">{item.price}</span>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => onBuyRank(item.name, item.benefit, item.price)}
+                  className={`w-full font-bold py-3 rounded-xl transition-all duration-300 ease-in-out text-sm active:scale-95 ${item.btnClass}`}
+                >
+                  Purchase Now
+                </button>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Others Header */}
+        <div className="mb-8 flex items-center justify-center gap-3">
+          <Package className="w-8 h-8 text-fuchsia-400 hidden sm:block" />
+          <h2 className="text-2xl md:text-3xl font-black text-white font-poppins tracking-wider text-center">OTHERS</h2>
+          <Package className="w-8 h-8 text-fuchsia-400 hidden sm:block" />
+        </div>
+
+        {/* Grid Area for Others */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
+          {othersData.map((item) => {
+            const Icon = item.icon;
+            return (
+              <div 
+                key={item.name} 
+                className="bg-[#0f1422] rounded-[1.5rem] p-6 flex flex-col relative overflow-hidden border border-white/5 shadow-xl transition-transform hover:-translate-y-1"
+              >
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-5 border ${item.bgClass}`}>
+                  <Icon className="w-5 h-5" />
+                </div>
+                <div className="mb-5">
+                  <h3 className="font-black text-xl md:text-2xl text-white font-poppins tracking-wide leading-tight">
+                    {item.badge}
+                  </h3>
+                  <p className="text-gray-400 font-medium text-sm mt-1">{item.duration || item.benefit}</p>
+                </div>
+                <div className="flex flex-col gap-4 mb-6 mt-auto">
+                  <div className="flex justify-between items-end border-b border-white/5 pb-3">
+                    <span className="text-gray-300 text-sm font-medium">Harga</span>
+                    <span className="text-[#f2e28a] font-bold text-2xl">{item.price}</span>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => onBuyRank(item.name, item.duration || item.benefit, item.price)}
+                  className={`w-full font-bold py-3 rounded-xl transition-all duration-300 ease-in-out text-sm active:scale-95 ${item.btnClass}`}
+                >
+                  Purchase Now
+                </button>
+              </div>
+            );
           })}
         </div>
 
