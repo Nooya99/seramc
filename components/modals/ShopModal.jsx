@@ -177,7 +177,7 @@ const othersData = [
   }
 ];
 
-export default function ShopModal({ isOpen, onClose, cart = [], onAddToCart }) {
+export default function ShopModal({ isOpen, onClose, cart = [], onAddToCart, onViewCart }) {
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -201,7 +201,10 @@ export default function ShopModal({ isOpen, onClose, cart = [], onAddToCart }) {
       >
         {/* Navbar inside Modal */}
         <div className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4 border-b border-white/10 bg-[#0b1120] z-20 shrink-0 rounded-t-3xl">
-          <div className="relative w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-full glass-pill text-blue-400 shrink-0 cursor-pointer hover:bg-white/10 transition-colors">
+          <div 
+            className="relative w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-full glass-pill text-blue-400 shrink-0 cursor-pointer hover:bg-white/10 transition-colors"
+            onClick={onViewCart}
+          >
             <ShoppingCart className="w-5 h-5 md:w-6 md:h-6" />
             {cart.length > 0 && (
               <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] md:text-xs font-bold w-5 h-5 md:w-6 md:h-6 flex items-center justify-center rounded-full shadow-lg">

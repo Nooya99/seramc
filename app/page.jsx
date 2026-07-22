@@ -18,6 +18,7 @@ import FeedbackModal from '@/components/modals/FeedbackModal';
 import ContactModal from '@/components/modals/ContactModal';
 import RacesModal from '@/components/modals/RacesModal';
 import ShopModal from '@/components/modals/ShopModal';
+import CartModal from '@/components/modals/CartModal';
 
 export default function Home() {
   const [activeModal, setActiveModal] = useState(null);
@@ -43,6 +44,10 @@ export default function Home() {
       }
     }
     setCart((prev) => [...prev, item]);
+  };
+
+  const handleRemoveFromCart = (indexToRemove) => {
+    setCart((prev) => prev.filter((_, index) => index !== indexToRemove));
   };
 
   return (
@@ -88,6 +93,14 @@ export default function Home() {
         onClose={handleCloseModal}
         cart={cart}
         onAddToCart={handleAddToCart}
+        onViewCart={() => setActiveModal('cart')}
+      />
+      <CartModal
+        isOpen={activeModal === 'cart'}
+        onClose={handleCloseModal}
+        cart={cart}
+        onRemoveItem={handleRemoveFromCart}
+        onCheckout={() => setActiveModal('contact')}
       />
     </main>
   );

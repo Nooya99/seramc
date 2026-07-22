@@ -9,13 +9,17 @@ const admins = [
   { name: 'Admin 3', phone: '628123456789' },
 ];
 
-export default function ContactModal({ isOpen, onClose, pendingPurchase }) {
+export default function ContactModal({ isOpen, onClose, cart = [] }) {
   if (!isOpen) return null;
 
   const defaultMsg = 'Halo Admin, saya ingin bertanya tentang server SERA MC.';
-  const purchaseMsg = pendingPurchase 
-    ? `Halo Admin, saya tertarik untuk membeli Rank ${pendingPurchase.rank} (${pendingPurchase.duration}) seharga ${pendingPurchase.price}.` 
-    : defaultMsg;
+  
+  // Format cart items for WhatsApp message
+  let purchaseMsg = defaultMsg;
+  if (cart.length > 0) {
+    let itemsList = cart.map((item, i) => `${i + 1}. ${item.name} (${item.duration}) - ${item.price}`).join('\n');
+    purchaseMsg = `Halo Admin, saya tertarik untuk membeli item berikut dari Shop:\n\n${itemsList}\n\nMohon info untuk proses pembayarannya. Terima kasih!`;
+  }
 
   const encodedText = encodeURIComponent(purchaseMsg);
 
