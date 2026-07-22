@@ -105,10 +105,10 @@ export default function ShopModal({ isOpen, onClose, onBuyRank }) {
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div 
-        className="modal-content flex flex-col relative w-full max-w-5xl max-h-[85vh] rounded-3xl bg-[#0b1120] border border-white/20 shadow-2xl overflow-hidden"
+        className="modal-content flex flex-col relative w-full max-w-5xl max-h-[85vh] rounded-3xl bg-[#0b1120] border border-white/20 shadow-2xl"
       >
         {/* Navbar inside Modal */}
-        <div className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4 border-b border-white/10 bg-[#0b1120] z-20 shrink-0">
+        <div className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4 border-b border-white/10 bg-[#0b1120] z-20 shrink-0 rounded-t-3xl">
           <div className="w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-full glass-pill text-blue-400 shrink-0">
             <ShoppingCart className="w-5 h-5 md:w-6 md:h-6" />
           </div>
@@ -129,7 +129,7 @@ export default function ShopModal({ isOpen, onClose, onBuyRank }) {
           </button>
         </div>
 
-        <div className="w-full flex-1 overflow-y-auto custom-scrollbar p-6 md:p-8">
+        <div className="w-full flex-1 overflow-y-auto custom-scrollbar p-6 md:p-8 rounded-b-3xl">
 
         {/* Grid Area */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full">
