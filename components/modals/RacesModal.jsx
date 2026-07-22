@@ -24,11 +24,11 @@ const races = [
     icon: Music,
     color: 'text-pink-400 border-pink-400/40 bg-pink-400/10 shadow-[inset_0_0_12px_rgba(244,113,182,0.2)]',
     perks: [
-      'Damage makin sakit kalau darah lagi sekarat 💔',
-      'Dapat regenerasi darah kalau ada Note Block bunyi di dekatmu 🎵',
-      'Bisa duplikat Allay tanpa butuh Jukebox 🧚',
-      'Klik kanan pakai Amethyst Shard bakal ngasih regen darah 💎',
-      'Bunuh Creeper ada peluang 25% drop Music Disc 💿'
+      'Damage makin sakit jika darah sedang sekarat',
+      'Dapat regenerasi darah jika ada Note Block berbunyi di dekatmu',
+      'Bisa duplikat Allay tanpa membutuhkan Jukebox',
+      'Klik kanan menggunakan Amethyst Shard memberikan regenerasi darah',
+      'Membunuh Creeper memiliki peluang 25% menjatuhkan Music Disc'
     ]
   },
   {
@@ -36,10 +36,10 @@ const races = [
     icon: Flame,
     color: 'text-orange-400 border-orange-400/40 bg-orange-400/10 shadow-[inset_0_0_12px_rgba(251,146,60,0.2)]',
     perks: [
-      'Selamanya berwujud menunggang kuda 🐎',
-      'Lompat lebih tinggi & lari lebih kencang dari kuda biasa 💨',
-      'Makin kuat pas malam bulan purnama 🌕',
-      'Akurasi tembakan panah 100% sempurna 🏹'
+      'Selamanya berwujud menunggang kuda',
+      'Lompat lebih tinggi dan lari lebih kencang dari kuda biasa',
+      'Kekuatan meningkat saat malam bulan purnama',
+      'Akurasi tembakan panah 100% sempurna'
     ]
   },
   {
@@ -47,11 +47,11 @@ const races = [
     icon: Flame,
     color: 'text-purple-400 border-purple-400/40 bg-purple-400/10 shadow-[inset_0_0_12px_rgba(192,132,252,0.2)]',
     perks: [
-      'Klik kanan pakai botol kosong buat nyimpen Dragon\'s Breath 🧪',
-      'Darah lebih tebal & makin kuat di dimensi The End 🌌',
-      'Bisa nge-heal pakai End Crystal 🔮',
-      'Klik kanan pakai pedang buat nembak Dragon Fireball 🔥',
-      'Damage dari panah musuh berkurang 🛡️'
+      'Klik kanan menggunakan botol kosong untuk menyimpan Dragon\'s Breath',
+      'Darah lebih tebal dan kekuatan meningkat di dimensi The End',
+      'Dapat memulihkan darah menggunakan End Crystal',
+      'Klik kanan menggunakan pedang untuk menembakkan Dragon Fireball',
+      'Damage dari panah musuh berkurang'
     ]
   },
   {
@@ -59,10 +59,10 @@ const races = [
     icon: Hammer,
     color: 'text-yellow-500 border-yellow-500/40 bg-yellow-500/10 shadow-[inset_0_0_12px_rgba(234,179,8,0.2)]',
     perks: [
-      'Efek Haste & Night Vision permanen! ⛏️👁️',
-      'Nambang ore dapet hasil mineral lebih banyak 💎',
-      'Kebal dari racun (Poison) & potion pelemah (Harming) ☠️🚫',
-      'Tinggi badan cuma 1 blok 📏'
+      'Efek Haste dan Night Vision permanen',
+      'Menambang ore mendapatkan hasil mineral lebih banyak',
+      'Kebal dari racun dan ramuan pelemah',
+      'Tinggi badan hanya setinggi 1 blok'
     ]
   },
   {
@@ -70,10 +70,10 @@ const races = [
     icon: Leaf,
     color: 'text-green-400 border-green-400/40 bg-green-400/10 shadow-[inset_0_0_12px_rgba(74,222,128,0.2)]',
     perks: [
-      'Akurasi panah 100% sempurna 🏹',
-      'Panah lebih sakit & melesat lebih cepat ⚡',
-      'Efek Potion di panah jadi jauh lebih kuat 🧪',
-      'Klik kiri pakai bow buat nembak 3 panah sekaligus (CD 7 detik) 🎯'
+      'Akurasi panah 100% sempurna',
+      'Panah memberikan kerusakan lebih tinggi dan melesat lebih cepat',
+      'Efek ramuan pada panah menjadi jauh lebih kuat',
+      'Klik kiri menggunakan bow untuk menembakkan 3 panah sekaligus (Cooldown 7 detik)'
     ]
   },
   {
@@ -81,10 +81,10 @@ const races = [
     icon: Mountain,
     color: 'text-red-500 border-red-500/40 bg-red-500/10 shadow-[inset_0_0_12px_rgba(239,68,68,0.2)]',
     perks: [
-      'Darah 2x lipat lebih tebal dari manusia ❤️',
-      'Damage pukulan lebih sakit, tapi cooldown mukul lebih lama 👊⏳',
-      'Buruk banget dalam urusan memanah 🏹❌',
-      'Punya Armor bawaan & tinggi badan 3 blok 🧱'
+      'Darah dua kali lipat lebih tebal dari manusia',
+      'Kerusakan pukulan lebih besar, tetapi jeda pukulan lebih lama',
+      'Kurang efektif dalam memanah',
+      'Memiliki pelindung bawaan dan tinggi badan setinggi 3 blok'
     ]
   },
   {
@@ -92,11 +92,11 @@ const races = [
     icon: Building,
     color: 'text-gray-400 border-gray-400/40 bg-gray-400/10 shadow-[inset_0_0_12px_rgba(156,163,175,0.2)]',
     perks: [
-      'Kebal Knockback, Api, dan semua efek status/potion! 🔥🛡️',
-      'Kulit dari batu (butuh SkinsRestorer untuk visual) 🪨',
-      'Jalan lebih lambat 🐢',
-      'Pukulan sakit tapi cooldown lama 👊',
-      'Punya poin Armor alami 🛡️'
+      'Kebal Knockback, Api, dan semua efek status atau ramuan',
+      'Kulit terbuat dari batu (membutuhkan SkinsRestorer untuk visual)',
+      'Kecepatan berjalan lebih lambat',
+      'Pukulan memberikan kerusakan besar tetapi jeda pukulan lama',
+      'Memiliki poin pelindung alami'
     ]
   },
   {
@@ -104,11 +104,11 @@ const races = [
     icon: Droplet,
     color: 'text-blue-400 border-blue-400/40 bg-blue-400/10 shadow-[inset_0_0_12px_rgba(96,165,250,0.2)]',
     perks: [
-      'Bonus darah & damage pas di air atau hujan 🌧️💧',
-      'Di darat jadi lemah & jalan lambat 🏜️',
-      'Bisa napas, lihat jelas, & nambang cepat di dalam air 🌊',
-      'Nggak bisa napas di darat ❌',
-      'Cuma tenggelam kalau kamu mau ⚓'
+      'Mendapatkan bonus darah dan kerusakan saat berada di air atau hujan',
+      'Menjadi lebih lemah dan berjalan lambat saat berada di darat',
+      'Dapat bernapas, melihat dengan jelas, dan menambang cepat di dalam air',
+      'Tidak dapat bernapas di darat',
+      'Hanya tenggelam jika Anda menginginkannya'
     ]
   },
   {
@@ -116,11 +116,11 @@ const races = [
     icon: Skull,
     color: 'text-rose-500 border-rose-500/40 bg-rose-500/10 shadow-[inset_0_0_12px_rgba(244,63,94,0.2)]',
     perks: [
-      'Ubah player lain jadi Vampir dengan cara ngebunuh mereka 🩸',
-      'Terbakar matahari ☀️ Pas di air kena damage 💧',
-      'Dapet heal dikit tiap berhasil nge-kill 🦇',
-      'Damage pukulan lebih sakit ⚔️',
-      'Mob Undead gak bakal nyerang duluan 🧟‍♂️'
+      'Mengubah pemain lain menjadi Vampir dengan cara mengalahkan mereka',
+      'Terbakar sinar matahari dan menerima kerusakan saat di air',
+      'Mendapatkan sedikit pemulihan darah setiap berhasil mengalahkan musuh',
+      'Kerusakan pukulan lebih besar',
+      'Monster Undead tidak akan menyerang terlebih dahulu'
     ]
   },
   {
@@ -128,7 +128,7 @@ const races = [
     icon: User,
     color: 'text-slate-300 border-slate-300/40 bg-slate-300/10 shadow-[inset_0_0_12px_rgba(203,213,225,0.2)]',
     perks: [
-      'Cuma ras manusia biasa dengan deskripsi kustom. Tidak ada kelemahan khusus maupun kekuatan spesial, cocok untuk pengalaman bermain murni Vanilla! 📝'
+      'Ras manusia biasa. Tidak memiliki kelemahan khusus maupun kekuatan spesial, cocok untuk pengalaman bermain murni Vanilla.'
     ]
   }
 ];

@@ -7,7 +7,7 @@ const ranks = [
   {
     name: 'LUX',
     icon: Award,
-    badge: '🥉 LUX',
+    badge: 'LUX',
     color: 'orange',
     prices: [
       { duration: '1 Bulan', price: '25K' },
@@ -20,7 +20,7 @@ const ranks = [
   {
     name: 'VEIL',
     icon: Shield,
-    badge: '🥈 VEIL',
+    badge: 'VEIL',
     color: 'gray',
     prices: [
       { duration: '1 Bulan', price: '40K' },
@@ -33,7 +33,7 @@ const ranks = [
   {
     name: 'RIFT',
     icon: Trophy,
-    badge: '🥇 RIFT',
+    badge: 'RIFT',
     color: 'yellow',
     prices: [
       { duration: '1 Bulan', price: '65K' },
@@ -46,7 +46,7 @@ const ranks = [
   {
     name: 'CORE',
     icon: Gem,
-    badge: '💎 CORE',
+    badge: 'CORE',
     color: 'cyan',
     prices: [
       { duration: '1 Bulan', price: '90K' },
@@ -59,7 +59,7 @@ const ranks = [
   {
     name: 'ARCH',
     icon: Crown,
-    badge: '👑 ARCH',
+    badge: 'ARCH',
     color: 'purple',
     prices: [
       { duration: '1 Bulan', price: '120K' },
@@ -72,7 +72,7 @@ const ranks = [
   {
     name: 'CUSTOM',
     icon: Wand2,
-    badge: '✨ CUSTOM',
+    badge: 'CUSTOM',
     color: 'pink',
     isSpecial: true,
     prices: [
@@ -103,7 +103,7 @@ export default function ShopCoverflow({ onBuyRank }) {
     <section id="shop" className="py-16 md:py-24 px-4 md:px-6 max-w-6xl mx-auto relative z-10 overflow-hidden">
       <div className="text-center mb-10 md:mb-16">
         <h2 className="text-3xl md:text-4xl font-bold text-white mb-2 md:mb-3 font-poppins drop-shadow-lg">
-          🛒 Pricelist Server 🛒
+          Pricelist Server
         </h2>
         <p className="text-gray-200 font-medium text-[14px] md:text-[15px]">
           Dukung server dan dapatkan keuntungan eksklusif sesuai dengan rank pilihanmu.

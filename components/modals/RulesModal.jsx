@@ -26,7 +26,7 @@ export default function RulesModal({ isOpen, onClose }) {
         </h2>
         <p className="text-gray-400 text-xs md:text-sm mb-5">Mohon dibaca, dipahami, dan dipatuhi demi kenyamanan bersama!</p>
 
-        <div className="text-left space-y-5 mb-6 text-[12px] md:text-[13px] text-gray-200 glass-pill p-5 md:p-6 rounded-2xl max-h-[60vh] overflow-y-auto border-white/10 relative z-20">
+        <div className="text-left space-y-5 mb-6 text-[12px] md:text-[13px] text-gray-200 bubble-glass p-5 md:p-6 max-h-[60vh] overflow-y-auto border-white/10 relative z-20" style={{ borderRadius: '12px' }}>
           <div>
             <h4 className="font-bold text-[#f2e28a] mb-2 pb-1 border-b border-white/10 text-[13px] md:text-[14px] flex items-center gap-2">
               <MessageSquare className="w-4 h-4" /> Komunikasi & Sikap

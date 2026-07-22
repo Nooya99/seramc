@@ -25,7 +25,7 @@ export default function Hero({ onOpenModal }) {
         </h1>
 
         <p className="text-gray-200 text-[13px] md:text-[15px] max-w-[760px] mx-auto font-medium mt-3 md:mt-4 leading-[1.7] drop-shadow-md px-2 relative">
-          💎 Selamat datang! Di sini, kamu bukan sekadar bertahan hidup (survive), melainkan membangun peradaban, menguasai pasar ekonomi, dan mengukir reputasimu. Jalin aliansi, dirikan tokomu, dan jadilah legenda di dunia kotak-kotak ini.
+          Selamat datang! Di sini, kamu bukan sekadar bertahan hidup (survive), melainkan membangun peradaban, menguasai pasar ekonomi, dan mengukir reputasimu. Jalin aliansi, dirikan tokomu, dan jadilah legenda di dunia kotak-kotak ini.
         </p>
 
         {/* HERO BUTTONS */}

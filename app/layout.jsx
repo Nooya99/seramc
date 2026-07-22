@@ -24,7 +24,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="id" className={`scroll-smooth ${inter.variable} ${poppins.variable}`}>
-      <body class={`${inter.className} bg-[#0b1121] text-gray-100 antialiased overflow-x-hidden`}>
+      <body className={`${inter.className} bg-[#0b1121] text-gray-100 antialiased overflow-x-hidden`}>
         {/* FIXED BACKGROUND */}
         <div className="fixed top-0 left-0 w-full h-screen -z-10 overflow-hidden bg-[#0b1121]">
           <div 
