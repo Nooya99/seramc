@@ -197,7 +197,7 @@ export default function ShopModal({ isOpen, onClose, onBuyRank }) {
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div 
-        className="modal-content flex flex-col relative w-full max-w-5xl max-h-[85vh] rounded-3xl bg-[#0b1120] border border-white/20 shadow-2xl"
+        className="modal-content flex flex-col relative w-full max-w-7xl max-h-[85vh] rounded-3xl bg-[#0b1120] border border-white/20 shadow-2xl"
       >
         {/* Navbar inside Modal */}
         <div className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4 border-b border-white/10 bg-[#0b1120] z-20 shrink-0 rounded-t-3xl">
