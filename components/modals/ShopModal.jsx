@@ -93,27 +93,31 @@ export default function ShopModal({ isOpen, onClose, onBuyRank }) {
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div 
-        className="modal-content relative w-full max-w-5xl rounded-3xl bg-[#0b1120] border border-white/20 shadow-2xl overflow-hidden"
+        className="modal-content flex flex-col relative w-full max-w-5xl max-h-[85vh] rounded-3xl bg-[#0b1120] border border-white/20 shadow-2xl overflow-hidden"
       >
-        <button 
-          onClick={onClose} 
-          className="absolute top-4 md:top-5 right-4 md:right-5 text-gray-400 hover:text-white glass-pill w-12 h-12 flex items-center justify-center text-xl cursor-pointer transition-all duration-300 ease-in-out active:scale-95 z-20"
-        >
-          <X className="w-5 h-5" />
-        </button>
-
-        <div className="w-full max-h-[85vh] overflow-y-auto custom-scrollbar p-6 md:p-8">
-
-        {/* Header */}
-        <div className="flex flex-col items-center mb-8">
-          <div className="flex items-center gap-3 text-white text-3xl md:text-4xl font-bold tracking-wider font-poppins text-center mb-2">
-            <ShoppingCart className="w-8 h-8 text-blue-400" />
-            SERA SHOP
+        {/* Navbar inside Modal */}
+        <div className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4 border-b border-white/10 bg-[#0b1120] z-20 shrink-0">
+          <div className="w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-full glass-pill text-blue-400 shrink-0">
+            <ShoppingCart className="w-5 h-5 md:w-6 md:h-6" />
           </div>
-          <p className="text-gray-400 text-sm md:text-base text-center max-w-md">
-            Dukung server dan dapatkan keuntungan eksklusif sesuai dengan rank pilihanmu.
-          </p>
+          
+          <div className="flex-1 flex justify-center px-2">
+            <img 
+              src="/LOGO.png" 
+              alt="Sera Shop Logo" 
+              className="h-10 md:h-16 object-contain drop-shadow-xl"
+            />
+          </div>
+
+          <button 
+            onClick={onClose} 
+            className="text-gray-400 hover:text-white glass-pill w-12 h-12 md:w-14 md:h-14 flex items-center justify-center text-xl cursor-pointer transition-all duration-300 ease-in-out active:scale-95 rounded-full shrink-0"
+          >
+            <X className="w-5 h-5 md:w-6 md:h-6" />
+          </button>
         </div>
+
+        <div className="w-full flex-1 overflow-y-auto custom-scrollbar p-6 md:p-8">
 
         {/* Grid Area */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full">
