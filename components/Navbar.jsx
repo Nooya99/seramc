@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { ShoppingCart } from 'lucide-react';
 
 export default function Navbar({ onOpenModal }) {
@@ -39,9 +38,12 @@ export default function Navbar({ onOpenModal }) {
         <div className="hidden lg:flex items-center gap-4 xl:gap-6 text-[12px] xl:text-[13px] font-semibold tracking-wide">
           <a href="#about" className="nav-link text-gray-300 hover:text-white transition-colors px-2 py-1">About</a>
           <a href="#features" className="nav-link text-gray-300 hover:text-white transition-colors px-2 py-1">Features</a>
-          <Link href="/shop" className="nav-link text-gray-300 hover:text-white transition-colors px-2 py-1 flex items-center gap-1">
+          <button 
+            onClick={() => onOpenModal('shop')} 
+            className="nav-link text-gray-300 hover:text-white transition-colors focus:outline-none cursor-pointer px-2 py-1 flex items-center gap-1"
+          >
             <ShoppingCart className="w-3.5 h-3.5" /> Shop
-          </Link>
+          </button>
           <a href="#reviews" className="nav-link text-gray-300 hover:text-white transition-colors px-2 py-1">Reviews</a>
           <a href="#faq" className="nav-link text-gray-300 hover:text-white transition-colors px-2 py-1">FAQ</a>
           <button 

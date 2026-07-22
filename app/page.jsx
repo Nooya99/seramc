@@ -17,6 +17,7 @@ import RulesModal from '@/components/modals/RulesModal';
 import FeedbackModal from '@/components/modals/FeedbackModal';
 import ContactModal from '@/components/modals/ContactModal';
 import RacesModal from '@/components/modals/RacesModal';
+import ShopModal from '@/components/modals/ShopModal';
 
 export default function Home() {
   const [activeModal, setActiveModal] = useState(null);
@@ -75,6 +76,11 @@ export default function Home() {
       <RacesModal 
         isOpen={activeModal === 'races'} 
         onClose={handleCloseModal} 
+      />
+      <ShopModal
+        isOpen={activeModal === 'shop'}
+        onClose={handleCloseModal}
+        onBuyRank={handleBuyRank}
       />
     </main>
   );
