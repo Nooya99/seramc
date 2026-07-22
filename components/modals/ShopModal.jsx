@@ -117,7 +117,7 @@ export default function ShopModal({ isOpen, onClose, onBuyRank }) {
             <img 
               src="/serashop.png" 
               alt="Sera Shop Logo" 
-              className="h-12 md:h-16 object-contain drop-shadow-xl"
+              className="h-12 md:h-16 object-contain drop-shadow-xl scale-[1.8] md:scale-[2.2]"
             />
           </div>
 
