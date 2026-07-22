@@ -298,7 +298,7 @@ export default function ShopModal({ isOpen, onClose, cart = [], onAddToCart, onV
             return (
               <div 
                 key={item.name} 
-                className="bg-[#0f1422] rounded-[1.5rem] p-6 flex flex-col relative overflow-hidden border border-white/5 shadow-xl transition-transform hover:-translate-y-1"
+                className="bg-[#0f1422] rounded-[1.5rem] p-4 xl:p-5 flex flex-col relative overflow-hidden border border-white/5 shadow-xl transition-transform hover:-translate-y-1"
               >
                 <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-5 border ${item.bgClass}`}>
                   <Icon className="w-5 h-5" />
@@ -317,7 +317,7 @@ export default function ShopModal({ isOpen, onClose, cart = [], onAddToCart, onV
                 </div>
                 <button 
                   onClick={() => onAddToCart({ name: item.name, duration: item.benefit, price: item.price })}
-                  className={`w-full font-bold py-3 rounded-xl transition-all duration-300 ease-in-out text-sm active:scale-95 ${item.btnClass}`}
+                  className={`w-full font-bold py-3 rounded-xl transition-all duration-300 ease-in-out text-[11px] xl:text-[12px] whitespace-nowrap active:scale-95 ${item.btnClass}`}
                 >
                   TAMBAH KE KERANJANG
                 </button>
