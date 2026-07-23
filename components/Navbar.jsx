@@ -24,7 +24,7 @@ export default function Navbar({ onOpenModal }) {
           border: isScrolled ? '1px solid rgba(255,255,255,0.3)' : '1px solid rgba(255,255,255,0.15)'
         }}
       >
-        <a href="#" className="relative flex items-center hover:opacity-80 transition-opacity active:scale-95 mr-8 lg:mr-14">
+        <a href="#" className="relative flex items-center hover:opacity-80 transition-opacity active:scale-95 mr-16 lg:mr-28">
           <Image 
             src="/2.png" 
             alt="SERA MC" 
@@ -35,7 +35,7 @@ export default function Navbar({ onOpenModal }) {
           />
         </a>
 
-        <div className="hidden lg:flex items-center gap-5 xl:gap-8 text-[14px] xl:text-[16px] font-semibold tracking-wide">
+        <div className="hidden lg:flex items-center gap-3 xl:gap-5 text-[14px] xl:text-[16px] font-semibold tracking-wide">
           <a href="#about" className="nav-link text-gray-300 hover:text-white transition-colors px-2 py-1">About</a>
           <a href="#features" className="nav-link text-gray-300 hover:text-white transition-colors px-2 py-1">Features</a>
           <button 
