@@ -3,17 +3,12 @@
 import { useState, useEffect } from 'react';
 import PixelIcon from '@/components/PixelIcon';
 
-const admins = [
-  { name: 'Admin 1 (Owner)', phone: '628123456789' },
-  { name: 'Admin 2', phone: '628123456789' },
-  { name: 'Admin 3', phone: '628123456789' },
-];
+const targetAdmin = '628123456789'; // Owner WhatsApp
 
 export default function CheckoutModal({ isOpen, onClose, cart = [], playerContext }) {
   const [ign, setIgn] = useState('');
   const [whatsapp, setWhatsapp] = useState('');
-  const [notes, setNotes] = useState('');
-  const [selectedAdmin, setSelectedAdmin] = useState(admins[0].phone);
+  const [paymentMethod, setPaymentMethod] = useState('QRIS');
 
   useEffect(() => {
     if (playerContext?.nickname) {
@@ -22,6 +17,17 @@ export default function CheckoutModal({ isOpen, onClose, cart = [], playerContex
   }, [playerContext]);
 
   if (!isOpen) return null;
+
+  const calculateTotal = () => {
+    let total = 0;
+    cart.forEach(item => {
+      const num = parseInt(item.price.replace(/[^0-9]/g, ''));
+      if (!isNaN(num)) {
+        total += num * (item.quantity || 1);
+      }
+    });
+    return total > 0 ? `${total}K` : '0';
+  };
 
   const handleCheckout = (e) => {
     e.preventDefault();
@@ -33,10 +39,10 @@ export default function CheckoutModal({ isOpen, onClose, cart = [], playerContex
 
     let itemsList = cart.map((item, i) => `${i + 1}. ${item.quantity || 1}x ${item.name} (${item.duration}) - ${item.price}`).join('\n');
     
-    const purchaseMsg = `*PESANAN BARU - SERA MC*\n\n*In-Game Name:* ${ign}\n*No. WhatsApp:* ${whatsapp}\n\n*Pesanan:*\n${itemsList}\n\n*Catatan Tambahan:*\n${notes || '-'}\n\nMohon info untuk proses pembayarannya. Terima kasih!`;
+    const purchaseMsg = `*PESANAN BARU - SERA MC*\n\n*In-Game Name:* ${ign}\n*No. WhatsApp:* ${whatsapp}\n\n*Pesanan:*\n${itemsList}\n*Total Harga:* ${calculateTotal()}\n\n*Metode Pembayaran:* ${paymentMethod}\n\nMohon info untuk proses pembayarannya. Terima kasih!`;
     
     const encodedText = encodeURIComponent(purchaseMsg);
-    window.open(`https://wa.me/${selectedAdmin}?text=${encodedText}`, '_blank');
+    window.open(`https://wa.me/${targetAdmin}?text=${encodedText}`, '_blank');
     onClose();
   };
 
@@ -95,27 +101,29 @@ export default function CheckoutModal({ isOpen, onClose, cart = [], playerContex
           </div>
 
           <div>
-            <label className="block text-gray-300 text-sm font-bold mb-2">Catatan (Opsional)</label>
-            <textarea 
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="Tambahkan pesan atau request khusus..."
-              className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-[#f2e28a] focus:ring-1 focus:ring-[#f2e28a] transition-all h-24 resize-none"
-            ></textarea>
+            <label className="block text-gray-300 text-sm font-bold mb-2">Ringkasan Pesanan</label>
+            <div className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white">
+              {cart.map((item, idx) => (
+                <div key={idx} className="flex justify-between items-center text-sm mb-2 pb-2 border-b border-white/5 last:border-0 last:mb-0 last:pb-0">
+                  <span className="text-gray-300">{item.quantity || 1}x {item.name} <span className="text-xs text-gray-500">({item.duration})</span></span>
+                  <span className="text-[#f2e28a] font-bold">{item.price}</span>
+                </div>
+              ))}
+              <div className="flex justify-between items-center mt-3 pt-3 border-t border-white/20">
+                <span className="font-bold text-white">Total Pembayaran</span>
+                <span className="text-[#f2e28a] font-bold text-lg">{calculateTotal()}</span>
+              </div>
+            </div>
           </div>
 
           <div>
-            <label className="block text-gray-300 text-sm font-bold mb-2">Pilih Admin WhatsApp</label>
+            <label className="block text-gray-300 text-sm font-bold mb-2">Metode Pembayaran</label>
             <select 
-              value={selectedAdmin}
-              onChange={(e) => setSelectedAdmin(e.target.value)}
-              className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#f2e28a] focus:ring-1 focus:ring-[#f2e28a] transition-all"
+              value={paymentMethod}
+              onChange={(e) => setPaymentMethod(e.target.value)}
+              className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#f2e28a] focus:ring-1 focus:ring-[#f2e28a] transition-all cursor-pointer appearance-none"
             >
-              {admins.map((admin, idx) => (
-                <option key={idx} value={admin.phone} className="bg-[#0b1121]">
-                  {admin.name}
-                </option>
-              ))}
+              <option value="QRIS" className="bg-[#0b1121]">QRIS</option>
             </select>
           </div>
 
@@ -123,7 +131,7 @@ export default function CheckoutModal({ isOpen, onClose, cart = [], playerContex
             type="submit"
             className="w-full bg-[#f2e28a] hover:bg-[#e6d680] text-gray-900 font-bold py-3.5 rounded-xl transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-lg mt-4"
           >
-            Lanjutkan via WhatsApp
+            Lanjutkan Pembayaran
           </button>
         </form>
       </div>
