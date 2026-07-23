@@ -3,16 +3,16 @@ export const playSound = (type) => {
     let src = '';
     switch (type) {
       case 'click':
-        src = '/sounds/click.mp3'; // Suara klik tombol Minecraft
+        src = '/sounds/click.ogg'; // Suara klik tombol Minecraft
         break;
       case 'success':
-        src = '/sounds/success.mp3'; // Suara level up / XP orb Minecraft
+        src = '/sounds/success.ogg'; // Suara level up / XP orb Minecraft
         break;
       case 'error':
-        src = '/sounds/error.mp3'; // Suara villager no / damage
+        src = '/sounds/error.ogg'; // Suara villager no / damage
         break;
       case 'pop':
-        src = '/sounds/pop.mp3'; // Suara item pop
+        src = '/sounds/pop.ogg'; // Suara item pop
         break;
       default:
         return;
