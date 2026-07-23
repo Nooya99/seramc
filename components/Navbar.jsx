@@ -35,20 +35,10 @@ export default function Navbar({ onOpenModal }) {
           />
         </a>
 
-        <div className="hidden lg:flex items-center gap-3 xl:gap-5 text-[14px] xl:text-[16px] font-semibold tracking-wide">
-          <a href="#about" className="nav-link text-gray-300 hover:text-white transition-colors px-2 py-1">About</a>
-          <a href="#features" className="nav-link text-gray-300 hover:text-white transition-colors px-2 py-1">Features</a>
-          <a href="#reviews" className="nav-link text-gray-300 hover:text-white transition-colors px-2 py-1">Reviews</a>
-          <a href="#faq" className="nav-link text-gray-300 hover:text-white transition-colors px-2 py-1">FAQ</a>
-          <button 
-            onClick={() => onOpenModal('contact')} 
-            className="nav-link text-gray-300 hover:text-white transition-colors focus:outline-none cursor-pointer px-2 py-1"
-          >
-            Contact
-          </button>
-        </div>
-
-        <div className="flex items-center gap-2 md:gap-4">
+        <div className="flex items-center gap-3 xl:gap-5 text-[14px] xl:text-[16px] font-semibold tracking-wide">
+          <a href="#about" className="hidden lg:block nav-link text-gray-300 hover:text-white transition-colors px-2 py-1">About</a>
+          <a href="#features" className="hidden lg:block nav-link text-gray-300 hover:text-white transition-colors px-2 py-1">Features</a>
+          
           <button 
             onClick={() => onOpenModal('shop')} 
             className="flex items-center gap-1.5 bg-black/40 hover:bg-[#f2e28a]/20 border border-white/10 hover:border-[#f2e28a]/50 text-gray-300 hover:text-[#f2e28a] font-bold px-3 md:px-4 py-2 md:py-2.5 rounded-full text-[13px] md:text-[15px] transition-all duration-300 ease-in-out hover:scale-105 active:scale-95"
@@ -57,13 +47,22 @@ export default function Navbar({ onOpenModal }) {
             <span>Shop</span>
           </button>
 
+          <a href="#reviews" className="hidden lg:block nav-link text-gray-300 hover:text-white transition-colors px-2 py-1">Reviews</a>
+          <a href="#faq" className="hidden lg:block nav-link text-gray-300 hover:text-white transition-colors px-2 py-1">FAQ</a>
           <button 
-            onClick={() => onOpenModal('ip')} 
-            className="bg-[#f2e28a] hover:bg-[#e6d680] text-gray-900 font-bold px-5 py-2 md:px-6 md:py-2.5 rounded-full text-[13px] md:text-[15px] shadow-lg transition-all duration-300 ease-in-out hover:scale-105 active:scale-95"
+            onClick={() => onOpenModal('contact')} 
+            className="hidden lg:block nav-link text-gray-300 hover:text-white transition-colors focus:outline-none cursor-pointer px-2 py-1"
           >
-            Play with us
+            Contact
           </button>
         </div>
+
+        <button 
+          onClick={() => onOpenModal('ip')} 
+          className="bg-[#f2e28a] hover:bg-[#e6d680] text-gray-900 font-bold px-5 py-2 md:px-6 md:py-2.5 rounded-full text-[13px] md:text-[15px] shadow-lg transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 shrink-0"
+        >
+          Play with us
+        </button>
       </nav>
     </div>
   );
