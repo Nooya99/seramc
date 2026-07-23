@@ -35,12 +35,32 @@ export default function CheckoutModal({ isOpen, onClose, cart = [], playerContex
     }, 0);
   };
 
-  const handleCheckout = (e) => {
+  const handleCheckout = async (e) => {
     e.preventDefault();
     
     if (!ign || !whatsapp) {
       alert('Mohon isi In-Game Name dan Nomor WhatsApp Anda.');
       return;
+    }
+
+    // Save to database
+    try {
+      const orderData = {
+        ign,
+        whatsapp,
+        items: cart,
+        totalAmount: calculateTotal(),
+        paymentMethod
+      };
+
+      await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData)
+      });
+    } catch (error) {
+      console.error('Failed to save order to database', error);
+      // We continue to WhatsApp even if DB fails so user can still order
     }
 
     let itemsList = cart.map((item, i) => {
