@@ -24,10 +24,16 @@ import PlayerLoginModal from '@/components/modals/PlayerLoginModal';
 
 export default function Home() {
   const [activeModal, setActiveModal] = useState(null);
+  const [pendingModal, setPendingModal] = useState(null);
   const [cart, setCart] = useState([]);
   const [playerContext, setPlayerContext] = useState(null);
 
   const handleOpenModal = (modalName) => {
+    if ((modalName === 'shop' || modalName === 'checkout') && !playerContext) {
+      setPendingModal(modalName);
+      setActiveModal('playerLogin');
+      return;
+    }
     setActiveModal(modalName);
   };
 
@@ -139,7 +145,7 @@ export default function Home() {
         cart={cart}
         onRemoveItem={handleRemoveFromCart}
         onUpdateQuantity={handleUpdateQuantity}
-        onCheckout={() => setActiveModal('checkout')}
+        onCheckout={() => handleOpenModal('checkout')}
       />
       <CheckoutModal
         isOpen={activeModal === 'checkout'}
@@ -149,10 +155,14 @@ export default function Home() {
       />
       <PlayerLoginModal
         isOpen={activeModal === 'playerLogin'}
-        onClose={() => setActiveModal('shop')}
+        onClose={() => {
+          setActiveModal(pendingModal === 'checkout' ? 'cart' : null);
+          setPendingModal(null);
+        }}
         onSave={(data) => {
           setPlayerContext(data);
-          setActiveModal('shop');
+          setActiveModal(pendingModal || 'shop');
+          setPendingModal(null);
         }}
       />
     </main>
