@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PixelIcon from '@/components/PixelIcon';
 
 const admins = [
@@ -9,11 +9,17 @@ const admins = [
   { name: 'Admin 3', phone: '628123456789' },
 ];
 
-export default function CheckoutModal({ isOpen, onClose, cart = [] }) {
+export default function CheckoutModal({ isOpen, onClose, cart = [], playerContext }) {
   const [ign, setIgn] = useState('');
   const [whatsapp, setWhatsapp] = useState('');
   const [notes, setNotes] = useState('');
   const [selectedAdmin, setSelectedAdmin] = useState(admins[0].phone);
+
+  useEffect(() => {
+    if (playerContext?.nickname) {
+      setIgn(playerContext.nickname);
+    }
+  }, [playerContext]);
 
   if (!isOpen) return null;
 

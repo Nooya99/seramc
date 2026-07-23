@@ -20,10 +20,12 @@ import RacesModal from '@/components/modals/RacesModal';
 import ShopModal from '@/components/modals/ShopModal';
 import CartModal from '@/components/modals/CartModal';
 import CheckoutModal from '@/components/modals/CheckoutModal';
+import PlayerLoginModal from '@/components/modals/PlayerLoginModal';
 
 export default function Home() {
   const [activeModal, setActiveModal] = useState(null);
   const [cart, setCart] = useState([]);
+  const [playerContext, setPlayerContext] = useState(null);
 
   const handleOpenModal = (modalName) => {
     setActiveModal(modalName);
@@ -126,6 +128,8 @@ export default function Home() {
         isOpen={activeModal === 'shop'}
         onClose={handleCloseModal}
         cart={cart}
+        playerContext={playerContext}
+        onLoginClick={() => setActiveModal('playerLogin')}
         onAddToCart={handleAddToCart}
         onViewCart={() => setActiveModal('cart')}
       />
@@ -141,6 +145,15 @@ export default function Home() {
         isOpen={activeModal === 'checkout'}
         onClose={() => setActiveModal('cart')}
         cart={cart}
+        playerContext={playerContext}
+      />
+      <PlayerLoginModal
+        isOpen={activeModal === 'playerLogin'}
+        onClose={() => setActiveModal('shop')}
+        onSave={(data) => {
+          setPlayerContext(data);
+          setActiveModal('shop');
+        }}
       />
     </main>
   );
