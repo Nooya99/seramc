@@ -4,9 +4,9 @@ import Image from 'next/image';
 import PixelIcon from '@/components/PixelIcon';
 
 const admins = [
-  { name: 'Admin 1 (Owner)', phone: '628123456789' },
-  { name: 'Admin 2', phone: '628123456789' },
-  { name: 'Admin 3', phone: '628123456789' },
+  { name: 'Admin 1 (Owner)', phone: '6285161516730' },
+  { name: 'Admin 2', phone: '6285161516730' },
+  { name: 'Admin 3', phone: '6285161516730' },
 ];
 
 export default function ContactModal({ isOpen, onClose, cart = [] }) {

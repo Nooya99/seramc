@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import PixelIcon from '@/components/PixelIcon';
 
-const targetAdmin = '628123456789'; // Owner WhatsApp
+const targetAdmin = '6285161516730'; // Owner WhatsApp
 
 export default function CheckoutModal({ isOpen, onClose, cart = [], playerContext }) {
   const [ign, setIgn] = useState('');

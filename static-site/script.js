@@ -45,9 +45,9 @@ setTimeout(() => {
         // SILAKAN UBAH NOMOR WHATSAPP ADMIN DI BAWAH INI (Gunakan kode negara, misal 62)
         // =========================================================================
         const adminWhatsAppNumbers = [
-            '628123456789', // Nomor WhatsApp Admin 1 (Owner)
-            '628123456789', // Nomor WhatsApp Admin 2
-            '628123456789'  // Nomor WhatsApp Admin 3
+            '6285161516730', // Nomor WhatsApp Admin 1 (Owner)
+            '6285161516730', // Nomor WhatsApp Admin 2
+            '6285161516730'  // Nomor WhatsApp Admin 3
         ];
 
         function buyRank(rankName, duration, price) {
