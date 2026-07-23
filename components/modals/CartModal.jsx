@@ -5,21 +5,19 @@ import PixelIcon from '@/components/PixelIcon';
 export default function CartModal({ isOpen, onClose, cart, onRemoveItem, onUpdateQuantity, onCheckout }) {
   if (!isOpen) return null;
 
-  // Calculate total price
-  // Prices are strings like '25K', '1K', '300K'
+  const parsePrice = (priceStr) => {
+    if (!priceStr) return 0;
+    const num = parseInt(priceStr.replace(/[^0-9]/g, ''));
+    if (isNaN(num)) return 0;
+    return priceStr.toUpperCase().includes('K') ? num * 1000 : num;
+  };
+
   const totalPrice = cart.reduce((total, item) => {
-    if (!item.price) return total;
-    const num = parseInt(item.price.replace(/[^0-9]/g, ''));
-    if (isNaN(num)) return total;
-    const qty = item.quantity || 1;
-    if (item.price.toUpperCase().includes('K')) {
-      return total + (num * 1000 * qty);
-    }
-    return total + (num * qty);
+    return total + (parsePrice(item.price) * (item.quantity || 1));
   }, 0);
 
   const formatPrice = (price) => {
-    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(price);
+    return price.toLocaleString('id-ID');
   };
 
   return (
@@ -70,7 +68,7 @@ export default function CartModal({ isOpen, onClose, cart, onRemoveItem, onUpdat
                   </div>
                   <div className="flex items-center gap-4">
                     <div className="flex flex-col md:flex-row items-end md:items-center gap-2 md:gap-4">
-                      <span className="text-[#f2e28a] font-bold text-lg">{item.price}</span>
+                      <span className="text-[#f2e28a] font-bold text-lg">{formatPrice(parsePrice(item.price) * (item.quantity || 1))}</span>
                       
                       <div className="flex items-center gap-3 bg-black/20 rounded-full px-2 py-1">
                         <button 

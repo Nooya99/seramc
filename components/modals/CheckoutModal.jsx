@@ -18,15 +18,21 @@ export default function CheckoutModal({ isOpen, onClose, cart = [], playerContex
 
   if (!isOpen) return null;
 
+  const parsePrice = (priceStr) => {
+    if (!priceStr) return 0;
+    const num = parseInt(priceStr.replace(/[^0-9]/g, ''));
+    if (isNaN(num)) return 0;
+    return priceStr.toUpperCase().includes('K') ? num * 1000 : num;
+  };
+
+  const formatPrice = (price) => {
+    return price.toLocaleString('id-ID');
+  };
+
   const calculateTotal = () => {
-    let total = 0;
-    cart.forEach(item => {
-      const num = parseInt(item.price.replace(/[^0-9]/g, ''));
-      if (!isNaN(num)) {
-        total += num * (item.quantity || 1);
-      }
-    });
-    return total > 0 ? `${total}K` : '0';
+    return cart.reduce((total, item) => {
+      return total + parsePrice(item.price) * (item.quantity || 1);
+    }, 0);
   };
 
   const handleCheckout = (e) => {
@@ -37,9 +43,12 @@ export default function CheckoutModal({ isOpen, onClose, cart = [], playerContex
       return;
     }
 
-    let itemsList = cart.map((item, i) => `${i + 1}. ${item.quantity || 1}x ${item.name} (${item.duration}) - ${item.price}`).join('\n');
+    let itemsList = cart.map((item, i) => {
+      const itemTotal = parsePrice(item.price) * (item.quantity || 1);
+      return `${i + 1}. ${item.quantity || 1}x ${item.name} (${item.duration}) - ${formatPrice(itemTotal)}`;
+    }).join('\n');
     
-    const purchaseMsg = `*PESANAN BARU - SERA MC*\n\n*In-Game Name:* ${ign}\n*No. WhatsApp:* ${whatsapp}\n\n*Pesanan:*\n${itemsList}\n*Total Harga:* ${calculateTotal()}\n\n*Metode Pembayaran:* ${paymentMethod}\n\nMohon info untuk proses pembayarannya. Terima kasih!`;
+    const purchaseMsg = `*PESANAN BARU - SERA MC*\n\n*In-Game Name:* ${ign}\n*No. WhatsApp:* ${whatsapp}\n\n*Pesanan:*\n${itemsList}\n*Total Harga:* ${formatPrice(calculateTotal())}\n\n*Metode Pembayaran:* ${paymentMethod}\n\nMohon info untuk proses pembayarannya. Terima kasih!`;
     
     const encodedText = encodeURIComponent(purchaseMsg);
     window.open(`https://wa.me/${targetAdmin}?text=${encodedText}`, '_blank');
@@ -103,17 +112,24 @@ export default function CheckoutModal({ isOpen, onClose, cart = [], playerContex
           <div>
             <label className="block text-gray-300 text-sm font-bold mb-2">Ringkasan Pesanan</label>
             <div className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white">
+              <div className="flex justify-between items-center text-[10px] md:text-xs text-gray-500 font-bold mb-3 pb-2 border-b border-white/20 uppercase tracking-widest">
+                <span>Item</span>
+                <span>Total</span>
+              </div>
               <div className="max-h-[140px] overflow-y-auto pr-2" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.2) transparent' }}>
-                {cart.map((item, idx) => (
-                  <div key={idx} className="flex justify-between items-center text-sm mb-2 pb-2 border-b border-white/5 last:border-0 last:mb-0 last:pb-0">
-                    <span className="text-gray-300">{item.quantity || 1}x {item.name} <span className="text-xs text-gray-500">({item.duration})</span></span>
-                    <span className="text-[#f2e28a] font-bold">{item.price}</span>
-                  </div>
-                ))}
+                {cart.map((item, idx) => {
+                  const itemTotal = parsePrice(item.price) * (item.quantity || 1);
+                  return (
+                    <div key={idx} className="flex justify-between items-center text-sm mb-2 pb-2 border-b border-white/5 last:border-0 last:mb-0 last:pb-0">
+                      <span className="text-gray-300">{item.quantity || 1}x {item.name} <span className="text-xs text-gray-500">({item.duration})</span></span>
+                      <span className="text-[#f2e28a] font-bold">{formatPrice(itemTotal)}</span>
+                    </div>
+                  );
+                })}
               </div>
               <div className="flex justify-between items-center mt-3 pt-3 border-t border-white/20">
-                <span className="font-bold text-white">Total Pembayaran</span>
-                <span className="text-[#f2e28a] font-bold text-lg">{calculateTotal()}</span>
+                <span className="font-bold text-white uppercase text-xs tracking-wider">TOTAL</span>
+                <span className="text-[#f2e28a] font-bold text-lg">{formatPrice(calculateTotal())}</span>
               </div>
             </div>
           </div>

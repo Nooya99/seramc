@@ -14,11 +14,23 @@ export default function ContactModal({ isOpen, onClose, cart = [] }) {
 
   const defaultMsg = 'Halo Admin, saya ingin bertanya tentang server SERA MC.';
   
-  // Format cart items for WhatsApp message
+  const parsePrice = (priceStr) => {
+    if (!priceStr) return 0;
+    const num = parseInt(priceStr.replace(/[^0-9]/g, ''));
+    if (isNaN(num)) return 0;
+    return priceStr.toUpperCase().includes('K') ? num * 1000 : num;
+  };
+
+  const formatPrice = (price) => price.toLocaleString('id-ID');
+
   let purchaseMsg = defaultMsg;
   if (cart.length > 0) {
-    let itemsList = cart.map((item, i) => `${i + 1}. ${item.quantity || 1}x ${item.name} (${item.duration}) - ${item.price}`).join('\n');
-    purchaseMsg = `Halo Admin, saya tertarik untuk membeli item berikut dari Shop:\n\n${itemsList}\n\nMohon info untuk proses pembayarannya. Terima kasih!`;
+    let itemsList = cart.map((item, i) => {
+      const itemTotal = parsePrice(item.price) * (item.quantity || 1);
+      return `${i + 1}. ${item.quantity || 1}x ${item.name} (${item.duration}) - ${formatPrice(itemTotal)}`;
+    }).join('\n');
+    const grandTotal = cart.reduce((total, item) => total + (parsePrice(item.price) * (item.quantity || 1)), 0);
+    purchaseMsg = `Halo Admin, saya tertarik untuk membeli item berikut dari Shop:\n\n${itemsList}\n*Total Harga:* ${formatPrice(grandTotal)}\n\nMohon info untuk proses pembayarannya. Terima kasih!`;
   }
 
   const encodedText = encodeURIComponent(purchaseMsg);
