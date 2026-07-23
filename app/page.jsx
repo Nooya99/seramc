@@ -4,6 +4,7 @@ import { useState, useRef } from 'react';
 import PixelIcon from '@/components/PixelIcon';
 import Navbar from '@/components/Navbar';
 import NoticeToast from '@/components/NoticeToast';
+import { playSound } from '@/utils/sound';
 import Hero from '@/components/Hero';
 import About from '@/components/About';
 import Features from '@/components/Features';
@@ -41,6 +42,7 @@ export default function Home() {
   };
 
   const handleOpenModal = (modalName) => {
+    playSound('click');
     if ((modalName === 'shop' || modalName === 'checkout') && !playerContext) {
       if (modalName === 'shop') setActiveModal('shop');
       setPendingModal(modalName);
@@ -56,6 +58,7 @@ export default function Home() {
   };
 
   const handleCloseModal = () => {
+    playSound('pop');
     if (loginTimeoutRef.current) clearTimeout(loginTimeoutRef.current);
     setActiveModal(null);
     setIsLoginOpen(false);
@@ -70,10 +73,12 @@ export default function Home() {
       if (existingItemIndex !== -1) {
         // Item already in cart
         if (item.duration && item.duration.includes('Permanen')) {
+          playSound('error');
           addToast('Gagal Menambahkan', `Item ${item.name} (${item.duration}) maksimal 1 per akun.`, 'error');
           return prev;
         }
         
+        playSound('success');
         addToast('Berhasil Ditambahkan', `${item.name} x${(prev[existingItemIndex].quantity || 1) + 1} masuk ke keranjang!`, 'success');
         // Increment quantity
         const newCart = [...prev];
@@ -84,6 +89,7 @@ export default function Home() {
         return newCart;
       }
 
+      playSound('success');
       addToast('Berhasil Ditambahkan', `${item.name} masuk ke keranjang!`, 'success');
       // Add new item with quantity 1
       return [...prev, { ...item, quantity: 1 }];
@@ -101,16 +107,19 @@ export default function Home() {
       }
 
       if (item.duration && item.duration.includes('Permanen') && newQuantity > 1) {
+        playSound('error');
         addToast('Batas Maksimal', `Item ${item.name} (${item.duration}) maksimal 1 per akun.`, 'error');
         return prev;
       }
 
+      playSound('click');
       newCart[indexToUpdate] = { ...item, quantity: newQuantity };
       return newCart;
     });
   };
 
   const handleRemoveFromCart = (indexToRemove) => {
+    playSound('pop');
     setCart((prev) => prev.filter((_, index) => index !== indexToRemove));
   };
 
