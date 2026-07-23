@@ -40,12 +40,13 @@ export default function PlayerLoginModal({ isOpen, onClose, onSave }) {
       >
         <button 
           onClick={onClose} 
-          className="absolute top-4 md:top-5 right-4 md:right-5 text-gray-400 hover:text-white glass-pill w-10 h-10 flex items-center justify-center text-xl cursor-pointer transition-all duration-300 ease-in-out active:scale-95"
+          className="absolute top-4 md:top-5 left-4 md:left-5 text-gray-400 hover:text-white glass-pill px-3 h-10 flex items-center justify-center gap-2 cursor-pointer transition-all duration-300 ease-in-out active:scale-95"
         >
-          <PixelIcon name="close" className="w-5 h-5" />
+          <PixelIcon name="arrow-left" className="w-5 h-5" />
+          <span className="font-bold text-sm hidden sm:block">Back</span>
         </button>
 
-        <h2 className="text-xl md:text-2xl font-bold text-white mb-6 font-poppins text-center">Data Pemain</h2>
+        <h2 className="text-xl md:text-2xl font-bold text-white mb-6 mt-12 sm:mt-8 font-poppins text-center">Data Pemain</h2>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
