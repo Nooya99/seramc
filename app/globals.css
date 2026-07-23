@@ -18,21 +18,23 @@ body {
 .animate-bg { animation: bg-pan 30s ease-in-out infinite; }
 
 @keyframes glow-pulse {
-  0%, 100% { opacity: 0.3; transform: scale(1); }
-  50% { opacity: 0.6; transform: scale(1.15); }
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.05); }
 }
 .crystal-orb {
   position: fixed;
   border-radius: 50%;
-  filter: blur(100px);
+  -webkit-mask-image: radial-gradient(circle, black 0%, transparent 65%);
+  mask-image: radial-gradient(circle, black 0%, transparent 65%);
   z-index: 0;
   pointer-events: none;
-  animation: glow-pulse 6s infinite ease-in-out;
+  /* Glow pulse kept but very subtle */
+  animation: glow-pulse 8s infinite ease-in-out;
 }
 
 @keyframes crystal-blink {
-  0%, 100% { opacity: 0.1; transform: scale(0.6) rotate(0deg); box-shadow: 0 0 0px rgba(255,255,255,0); }
-  50% { opacity: 1; transform: scale(1.2) rotate(45deg); box-shadow: 0 0 20px 4px rgba(255,255,255,0.8); }
+  0%, 100% { opacity: 0.1; transform: scale(0.6) rotate(0deg); }
+  50% { opacity: 0.8; transform: scale(1.1) rotate(45deg); }
 }
 .sparkle {
   position: absolute;
@@ -45,13 +47,13 @@ body {
 
 /* Glassmorphism Cards */
 .bubble-glass {
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 1.5rem;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25), inset 0 0 20px rgba(255,255,255,0.02);
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 15px 0 rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
 }
 
 .feature-card-solid {
@@ -69,8 +71,8 @@ body {
 
 .glass-pill {
   background: rgba(11, 17, 33, 0.6);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 9999px;
   transition: all 0.3s ease;
@@ -83,8 +85,8 @@ body {
 
 /* Marquee Reviews */
 @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-.animate-marquee { animation: marquee 35s linear infinite; }
-.animate-marquee-reverse { animation: marquee 35s linear infinite reverse; }
+.animate-marquee { animation: marquee 35s linear infinite; will-change: transform; }
+.animate-marquee-reverse { animation: marquee 35s linear infinite reverse; will-change: transform; }
 .animate-marquee:hover, .animate-marquee-reverse:hover { animation-play-state: paused; }
 .fade-edges { mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent); -webkit-mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent); }
 

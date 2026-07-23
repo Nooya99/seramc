@@ -28,7 +28,7 @@ export default function RootLayout({ children }) {
         {/* FIXED BACKGROUND */}
         <div className="fixed top-0 left-0 w-full h-screen -z-10 overflow-hidden bg-[#0b1121]">
           <div 
-            className="absolute w-full h-full bg-cover bg-center animate-bg opacity-70" 
+            className="absolute w-full h-full bg-cover bg-center opacity-70" 
             style={{
               backgroundImage: `linear-gradient(to bottom, rgba(11, 17, 33, 0.4), rgba(11, 17, 33, 0.95)), url('/background.png')`
             }}
