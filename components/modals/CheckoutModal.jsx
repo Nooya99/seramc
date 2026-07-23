@@ -103,12 +103,14 @@ export default function CheckoutModal({ isOpen, onClose, cart = [], playerContex
           <div>
             <label className="block text-gray-300 text-sm font-bold mb-2">Ringkasan Pesanan</label>
             <div className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white">
-              {cart.map((item, idx) => (
-                <div key={idx} className="flex justify-between items-center text-sm mb-2 pb-2 border-b border-white/5 last:border-0 last:mb-0 last:pb-0">
-                  <span className="text-gray-300">{item.quantity || 1}x {item.name} <span className="text-xs text-gray-500">({item.duration})</span></span>
-                  <span className="text-[#f2e28a] font-bold">{item.price}</span>
-                </div>
-              ))}
+              <div className="max-h-[140px] overflow-y-auto pr-2" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.2) transparent' }}>
+                {cart.map((item, idx) => (
+                  <div key={idx} className="flex justify-between items-center text-sm mb-2 pb-2 border-b border-white/5 last:border-0 last:mb-0 last:pb-0">
+                    <span className="text-gray-300">{item.quantity || 1}x {item.name} <span className="text-xs text-gray-500">({item.duration})</span></span>
+                    <span className="text-[#f2e28a] font-bold">{item.price}</span>
+                  </div>
+                ))}
+              </div>
               <div className="flex justify-between items-center mt-3 pt-3 border-t border-white/20">
                 <span className="font-bold text-white">Total Pembayaran</span>
                 <span className="text-[#f2e28a] font-bold text-lg">{calculateTotal()}</span>
