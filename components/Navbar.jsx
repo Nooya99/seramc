@@ -24,7 +24,7 @@ export default function Navbar({ onOpenModal }) {
           border: isScrolled ? '1px solid rgba(255,255,255,0.3)' : '1px solid rgba(255,255,255,0.15)'
         }}
       >
-        <a href="#" className="relative flex items-center hover:opacity-80 transition-opacity active:scale-95">
+        <a href="#" className="relative flex items-center hover:opacity-80 transition-opacity active:scale-95 mr-8 lg:mr-14">
           <Image 
             src="/2.png" 
             alt="SERA MC" 
