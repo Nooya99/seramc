@@ -168,6 +168,7 @@ export default function Home() {
       />
       <PlayerLoginModal
         isOpen={isLoginOpen}
+        playerContext={playerContext}
         onClose={() => {
           setIsLoginOpen(false);
           if (pendingModal === 'checkout') {
@@ -178,8 +179,10 @@ export default function Home() {
         onSave={(data) => {
           setPlayerContext(data);
           setIsLoginOpen(false);
-          if (pendingModal === 'checkout') {
+          if (pendingModal === 'checkout' && data) {
             setActiveModal('checkout');
+          } else if (pendingModal === 'checkout' && !data) {
+            setActiveModal('cart');
           }
           setPendingModal(null);
         }}

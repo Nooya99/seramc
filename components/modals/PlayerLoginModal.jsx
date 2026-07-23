@@ -1,11 +1,25 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PixelIcon from '@/components/PixelIcon';
 
-export default function PlayerLoginModal({ isOpen, onClose, onSave }) {
+export default function PlayerLoginModal({ isOpen, onClose, onSave, playerContext }) {
   const [nickname, setNickname] = useState('');
   const [edition, setEdition] = useState('java'); // 'java' or 'bedrock'
+
+  useEffect(() => {
+    if (isOpen && playerContext) {
+      let rawNickname = playerContext.nickname;
+      if (playerContext.edition === 'bedrock' && rawNickname.startsWith('_')) {
+        rawNickname = rawNickname.substring(1);
+      }
+      setNickname(rawNickname);
+      setEdition(playerContext.edition || 'java');
+    } else if (isOpen && !playerContext) {
+      setNickname('');
+      setEdition('java');
+    }
+  }, [isOpen, playerContext]);
 
   if (!isOpen) return null;
 
@@ -92,6 +106,18 @@ export default function PlayerLoginModal({ isOpen, onClose, onSave }) {
           >
             Simpan Nickname
           </button>
+
+          {playerContext && (
+            <button 
+              type="button"
+              onClick={() => {
+                onSave(null);
+              }}
+              className="w-full bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/30 font-bold py-3 rounded-xl transition-all duration-300 ease-in-out"
+            >
+              Hapus Nickname (Log Out)
+            </button>
+          )}
         </form>
       </div>
     </div>
