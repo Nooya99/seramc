@@ -35,14 +35,14 @@ export default function Navbar({ onOpenModal }) {
           />
         </a>
 
-        <div className="hidden lg:flex items-center gap-4 xl:gap-6 text-[12px] xl:text-[13px] font-semibold tracking-wide">
+        <div className="hidden lg:flex items-center gap-5 xl:gap-8 text-[14px] xl:text-[16px] font-semibold tracking-wide">
           <a href="#about" className="nav-link text-gray-300 hover:text-white transition-colors px-2 py-1">About</a>
           <a href="#features" className="nav-link text-gray-300 hover:text-white transition-colors px-2 py-1">Features</a>
           <button 
             onClick={() => onOpenModal('shop')} 
             className="nav-link text-gray-300 hover:text-white transition-colors focus:outline-none cursor-pointer px-2 py-1 flex items-center gap-1"
           >
-            <PixelIcon name="shopping-cart" className="w-3.5 h-3.5" /> Shop
+            <PixelIcon name="shopping-cart" className="w-4 h-4" /> Shop
           </button>
           <a href="#reviews" className="nav-link text-gray-300 hover:text-white transition-colors px-2 py-1">Reviews</a>
           <a href="#faq" className="nav-link text-gray-300 hover:text-white transition-colors px-2 py-1">FAQ</a>
@@ -56,7 +56,7 @@ export default function Navbar({ onOpenModal }) {
 
         <button 
           onClick={() => onOpenModal('ip')} 
-          className="bg-[#f2e28a] hover:bg-[#e6d680] text-gray-900 font-bold px-5 py-2 md:px-6 md:py-2.5 rounded-full text-[12px] md:text-[13px] shadow-lg transition-all duration-300 ease-in-out hover:scale-105 active:scale-95"
+          className="bg-[#f2e28a] hover:bg-[#e6d680] text-gray-900 font-bold px-5 py-2 md:px-6 md:py-2.5 rounded-full text-[13px] md:text-[15px] shadow-lg transition-all duration-300 ease-in-out hover:scale-105 active:scale-95"
         >
           Play with us
         </button>
