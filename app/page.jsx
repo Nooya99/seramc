@@ -184,6 +184,10 @@ export default function Home() {
       <CheckoutModal
         isOpen={activeModal === 'checkout'}
         onClose={() => setActiveModal('cart')}
+        onSuccess={() => {
+          setCart([]);
+          setActiveModal('shop');
+        }}
         cart={cart}
         playerContext={playerContext}
       />

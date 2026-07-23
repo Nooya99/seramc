@@ -5,7 +5,7 @@ import PixelIcon from '@/components/PixelIcon';
 
 const targetAdmin = '6285161516730'; // Owner WhatsApp
 
-export default function CheckoutModal({ isOpen, onClose, cart = [], playerContext }) {
+export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], playerContext }) {
   const [ign, setIgn] = useState('');
   const [whatsapp, setWhatsapp] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('QRIS');
@@ -72,7 +72,15 @@ export default function CheckoutModal({ isOpen, onClose, cart = [], playerContex
     
     const encodedText = encodeURIComponent(purchaseMsg);
     window.open(`https://wa.me/${targetAdmin}?text=${encodedText}`, '_blank');
-    onClose();
+    
+    setTimeout(() => {
+      alert('Pesanan berhasil! Pesanan Anda sedang diproses.');
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        onClose();
+      }
+    }, 500);
   };
 
   return (
