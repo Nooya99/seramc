@@ -1,6 +1,14 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+const parsePrice = (priceStr) => {
+  if (typeof priceStr === 'number') return priceStr;
+  if (!priceStr) return 0;
+  const num = parseInt(priceStr.replace(/[^0-9]/g, ''));
+  if (isNaN(num)) return 0;
+  return priceStr.toUpperCase().includes('K') ? num * 1000 : num;
+};
+
 export async function POST(request) {
   try {
     const body = await request.json();
@@ -19,6 +27,31 @@ export async function POST(request) {
         create: { ign, whatsapp: whatsapp || null }
       });
 
+      const orderItemsData = [];
+      for (const item of items) {
+        let product = await tx.product.findFirst({
+          where: { name: item.name }
+        });
+
+        if (!product) {
+          product = await tx.product.create({
+            data: {
+              name: item.name,
+              category: 'Shop Item',
+              price: parsePrice(item.price),
+              duration: item.duration || 'Permanen',
+            }
+          });
+        }
+
+        orderItemsData.push({
+          productId: product.id,
+          quantity: item.quantity || 1,
+          price: parsePrice(item.price),
+          duration: item.duration || 'Permanen'
+        });
+      }
+
       // Create order
       const newOrder = await tx.order.create({
         data: {
@@ -27,12 +60,7 @@ export async function POST(request) {
           paymentMethod: paymentMethod || 'QRIS',
           status: 'PENDING',
           items: {
-            create: items.map(item => ({
-              productId: item.productId || item.id,
-              quantity: item.quantity,
-              price: item.price,
-              duration: item.duration || 'Permanen'
-            }))
+            create: orderItemsData
           }
         }
       });
@@ -43,7 +71,7 @@ export async function POST(request) {
     return NextResponse.json(order, { status: 201 });
   } catch (error) {
     console.error('Error creating order:', error);
-    return NextResponse.json({ error: 'Failed to create order' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to create order', details: error.message }, { status: 500 });
   }
 }
 
