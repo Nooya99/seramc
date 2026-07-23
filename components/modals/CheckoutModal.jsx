@@ -78,7 +78,7 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
     
     setTimeout(() => {
       setCheckoutStatus('success');
-      setCheckoutMessage('Pesanan berhasil! Pesanan Anda sedang diproses.');
+      setCheckoutMessage('PESANAN ANDA SEDANG DI PROSES');
     }, 500);
   };
 
@@ -103,8 +103,8 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
             >
               <PixelIcon name={checkoutStatus === 'success' ? 'check' : 'close'} className="w-12 h-12" />
             </div>
-            <h3 className="text-2xl md:text-3xl font-bold text-white mb-3 font-poppins" style={{ animation: 'slideUp 0.5s ease-out 0.2s both' }}>
-              {checkoutStatus === 'success' ? 'Berhasil!' : 'Gagal!'}
+            <h3 className="text-2xl md:text-3xl font-bold text-white mb-3 font-poppins uppercase tracking-wide" style={{ animation: 'slideUp 0.5s ease-out 0.2s both' }}>
+              {checkoutStatus === 'success' ? 'PESANAN BERHASIL!' : 'GAGAL!'}
             </h3>
             <p className="text-gray-300 mb-8 text-sm md:text-base max-w-[280px]" style={{ animation: 'slideUp 0.5s ease-out 0.3s both' }}>
               {checkoutMessage}
