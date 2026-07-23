@@ -94,7 +94,7 @@ export default function CheckoutModal({ isOpen, onClose, cart = [], playerContex
               type="tel" 
               value={whatsapp}
               onChange={(e) => setWhatsapp(e.target.value)}
-              placeholder="Contoh: 08123456789"
+              placeholder="Contoh: 085161516730"
               className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-[#f2e28a] focus:ring-1 focus:ring-[#f2e28a] transition-all"
               required
             />
