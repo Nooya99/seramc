@@ -201,9 +201,9 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
         className="modal-content flex flex-col relative w-full max-w-7xl max-h-[85vh] rounded-3xl bg-[#0b1120] border border-white/20 shadow-2xl"
       >
         {/* Navbar inside Modal */}
-        <div className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4 border-b border-white/10 bg-[#0b1120] z-20 shrink-0 rounded-t-3xl">
+        <div className="relative flex items-center justify-between px-4 py-3 md:px-6 md:py-4 border-b border-white/10 bg-[#0b1120] z-20 shrink-0 rounded-t-3xl min-h-[72px] md:min-h-[88px]">
           
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 relative z-10">
             <div 
               className="relative w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-full glass-pill text-blue-400 shrink-0 cursor-pointer hover:bg-white/10 transition-colors"
               onClick={onViewCart}
@@ -239,20 +239,20 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
             )}
           </div>
           
-          <div className="flex-1 flex justify-center px-2">
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
             <img 
               src="/serashop.png" 
               alt="Sera Shop Logo" 
-              className="h-12 md:h-16 object-contain drop-shadow-xl scale-[1.8] md:scale-[2.2]"
+              className="h-12 md:h-16 object-contain drop-shadow-xl scale-[1.8] md:scale-[2.2] pointer-events-auto"
             />
           </div>
 
           <button 
-          onClick={onClose}
-          className="absolute top-4 right-4 md:top-6 md:right-6 text-gray-400 hover:text-white bg-black/20 hover:bg-black/40 rounded-full p-2 md:p-2.5 transition-all duration-300 backdrop-blur-sm z-50 hover:scale-110 active:scale-95"
-        >
-          <PixelIcon name="close" className="w-5 h-5 md:w-6 md:h-6" />
-        </button>
+            onClick={onClose}
+            className="absolute top-1/2 -translate-y-1/2 right-4 md:right-6 text-gray-400 hover:text-white bg-black/20 hover:bg-black/40 rounded-full p-2 md:p-2.5 transition-all duration-300 backdrop-blur-sm z-50 hover:scale-110 active:scale-95"
+          >
+            <PixelIcon name="close" className="w-5 h-5 md:w-6 md:h-6" />
+          </button>
         </div>
 
         <div className="w-full flex-1 overflow-y-auto custom-scrollbar p-6 md:p-8 rounded-b-3xl">
