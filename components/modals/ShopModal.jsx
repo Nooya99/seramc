@@ -11,10 +11,10 @@ const ranks = [
     badge: 'LUX',
     color: 'orange',
     prices: [
-      { duration: '1 Bulan', price: '25K' },
-      { duration: 'Permanen', price: '45K' },
+      { duration: '1 Bulan', price: '25.000' },
+      { duration: 'Permanen', price: '45.000' },
     ],
-    buyAll: '25K / 45K',
+    buyAll: '25.000 / 45.000',
     bgClass: 'bg-orange-500/10 text-orange-400 border-orange-400/40',
     btnClass: 'bg-[#3b2314] hover:bg-orange-900 text-orange-200 border border-orange-500/20'
   },
@@ -24,10 +24,10 @@ const ranks = [
     badge: 'VEIL',
     color: 'gray',
     prices: [
-      { duration: '1 Bulan', price: '40K' },
-      { duration: 'Permanen', price: '65K' },
+      { duration: '1 Bulan', price: '40.000' },
+      { duration: 'Permanen', price: '65.000' },
     ],
-    buyAll: '40K / 65K',
+    buyAll: '40.000 / 65.000',
     bgClass: 'bg-gray-400/10 text-gray-400 border-gray-400/40',
     btnClass: 'bg-[#2b2f3a] hover:bg-gray-700 text-gray-200 border border-gray-500/20'
   },
@@ -37,10 +37,10 @@ const ranks = [
     badge: 'RIFT',
     color: 'yellow',
     prices: [
-      { duration: '1 Bulan', price: '65K' },
-      { duration: 'Permanen', price: '90K' },
+      { duration: '1 Bulan', price: '65.000' },
+      { duration: 'Permanen', price: '90.000' },
     ],
-    buyAll: '65K / 90K',
+    buyAll: '65.000 / 90.000',
     bgClass: 'bg-yellow-400/10 text-yellow-400 border-yellow-400/40',
     btnClass: 'bg-[#3d3315] hover:bg-yellow-900 text-yellow-200 border border-yellow-500/20'
   },
@@ -50,10 +50,10 @@ const ranks = [
     badge: 'CORE',
     color: 'cyan',
     prices: [
-      { duration: '1 Bulan', price: '90K' },
-      { duration: 'Permanen', price: '120K' },
+      { duration: '1 Bulan', price: '90.000' },
+      { duration: 'Permanen', price: '120.000' },
     ],
-    buyAll: '90K / 120K',
+    buyAll: '90.000 / 120.000',
     bgClass: 'bg-cyan-400/10 text-cyan-400 border-cyan-400/40',
     btnClass: 'bg-[#15323d] hover:bg-cyan-900 text-cyan-200 border border-cyan-500/20'
   },
@@ -63,10 +63,10 @@ const ranks = [
     badge: 'ARCH',
     color: 'purple',
     prices: [
-      { duration: '1 Bulan', price: '120K' },
-      { duration: 'Permanen', price: '160K' },
+      { duration: '1 Bulan', price: '120.000' },
+      { duration: 'Permanen', price: '160.000' },
     ],
-    buyAll: '120K / 160K',
+    buyAll: '120.000 / 160.000',
     bgClass: 'bg-purple-500/10 text-purple-400 border-purple-500/40',
     btnClass: 'bg-[#2d153d] hover:bg-purple-900 text-purple-200 border border-purple-500/20'
   },
@@ -77,10 +77,10 @@ const ranks = [
     color: 'pink',
     isSpecial: true,
     prices: [
-      { duration: '1 Bulan', price: '300K' },
-      { duration: 'Permanen', price: '450K' },
+      { duration: '1 Bulan', price: '300.000' },
+      { duration: 'Permanen', price: '450.000' },
     ],
-    buyAll: '300K / 450K',
+    buyAll: '300.000 / 450.000',
     bgClass: 'bg-pink-500/10 text-pink-400 border-pink-400/40',
     btnClass: 'bg-[#3d152a] hover:bg-pink-900 text-pink-200 border border-pink-500/20'
   }
@@ -92,7 +92,7 @@ const keysData = [
     iconName: 'unlock',
     badge: 'PEASANT',
     color: 'stone',
-    price: '13K',
+    price: '13.000',
     benefit: '5 Key',
     bgClass: 'bg-stone-500/10 text-stone-400 border-stone-400/40',
     btnClass: 'bg-[#292524] hover:bg-stone-800 text-stone-200 border border-stone-500/20'
@@ -102,7 +102,7 @@ const keysData = [
     iconName: 'unlock',
     badge: 'NOBLE',
     color: 'slate',
-    price: '20K',
+    price: '20.000',
     benefit: '5 Key',
     bgClass: 'bg-slate-500/10 text-slate-400 border-slate-400/40',
     btnClass: 'bg-[#1e293b] hover:bg-slate-800 text-slate-200 border border-slate-500/20'
@@ -112,7 +112,7 @@ const keysData = [
     iconName: 'unlock',
     badge: 'IMPERIAL',
     color: 'amber',
-    price: '24K',
+    price: '24.000',
     benefit: '5 Key',
     bgClass: 'bg-amber-500/10 text-amber-400 border-amber-400/40',
     btnClass: 'bg-[#451a03] hover:bg-amber-900 text-amber-200 border border-amber-500/20'
@@ -122,7 +122,7 @@ const keysData = [
     iconName: 'unlock',
     badge: 'SERA',
     color: 'violet',
-    price: '28K',
+    price: '28.000',
     benefit: '5 Key',
     bgClass: 'bg-violet-500/10 text-violet-400 border-violet-400/40',
     btnClass: 'bg-[#2e1065] hover:bg-violet-900 text-violet-200 border border-violet-500/20'
@@ -132,7 +132,7 @@ const keysData = [
     iconName: 'unlock',
     badge: 'ULTIMATE',
     color: 'rose',
-    price: '45K',
+    price: '45.000',
     benefit: '9 Key',
     bgClass: 'bg-rose-500/10 text-rose-400 border-rose-400/40',
     btnClass: 'bg-[#4c0519] hover:bg-rose-900 text-rose-200 border border-rose-500/20'
@@ -144,7 +144,7 @@ const othersData = [
     name: 'Unlimited Claim',
     iconName: 'repeat',
     badge: 'Unlimited Claim',
-    price: '35K',
+    price: '35.000',
     duration: 'Permanen',
     bgClass: 'bg-emerald-500/10 text-emerald-400 border-emerald-400/40',
     btnClass: 'bg-[#064e3b] hover:bg-emerald-900 text-emerald-200 border border-emerald-500/20'
@@ -153,7 +153,7 @@ const othersData = [
     name: 'Monthly Premium Pass',
     iconName: 'membercard',
     badge: 'Premium Pass',
-    price: '30K',
+    price: '30.000',
     duration: '1 Bulan',
     bgClass: 'bg-fuchsia-500/10 text-fuchsia-400 border-fuchsia-400/40',
     btnClass: 'bg-[#4a044e] hover:bg-fuchsia-900 text-fuchsia-200 border border-fuchsia-500/20'
@@ -162,7 +162,7 @@ const othersData = [
     name: 'Skills All Max 100',
     iconName: 'sword',
     badge: 'Max Skills',
-    price: '300K',
+    price: '300.000',
     duration: 'Per Season',
     bgClass: 'bg-red-500/10 text-red-400 border-red-400/40',
     btnClass: 'bg-[#7f1d1d] hover:bg-red-900 text-red-200 border border-red-500/20'
@@ -171,7 +171,7 @@ const othersData = [
     name: 'Coin Bundle',
     iconName: 'coins',
     badge: 'Coin Bundle',
-    price: '1K',
+    price: '1.000',
     benefit: '35 Coin',
     bgClass: 'bg-yellow-500/10 text-yellow-400 border-yellow-400/40',
     btnClass: 'bg-[#422006] hover:bg-yellow-900 text-yellow-200 border border-yellow-500/20'
