@@ -19,6 +19,7 @@ import ContactModal from '@/components/modals/ContactModal';
 import RacesModal from '@/components/modals/RacesModal';
 import ShopModal from '@/components/modals/ShopModal';
 import CartModal from '@/components/modals/CartModal';
+import CheckoutModal from '@/components/modals/CheckoutModal';
 
 export default function Home() {
   const [activeModal, setActiveModal] = useState(null);
@@ -134,7 +135,12 @@ export default function Home() {
         cart={cart}
         onRemoveItem={handleRemoveFromCart}
         onUpdateQuantity={handleUpdateQuantity}
-        onCheckout={() => setActiveModal('contact')}
+        onCheckout={() => setActiveModal('checkout')}
+      />
+      <CheckoutModal
+        isOpen={activeModal === 'checkout'}
+        onClose={() => setActiveModal('cart')}
+        cart={cart}
       />
     </main>
   );
