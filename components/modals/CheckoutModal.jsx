@@ -61,14 +61,25 @@ export default function CheckoutModal({ isOpen, onClose, cart = [], playerContex
         <form onSubmit={handleCheckout} className="space-y-4">
           <div>
             <label className="block text-gray-300 text-sm font-bold mb-2">In-Game Name (IGN)</label>
-            <input 
-              type="text" 
-              value={ign}
-              onChange={(e) => setIgn(e.target.value)}
-              placeholder="Contoh: Steve_Minecraft"
-              className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-[#f2e28a] focus:ring-1 focus:ring-[#f2e28a] transition-all"
-              required
-            />
+            {playerContext ? (
+              <div className="flex items-center gap-3 bg-black/40 border border-white/10 rounded-xl px-4 py-3">
+                <div className="w-8 h-8 md:w-10 md:h-10 rounded-full overflow-hidden border-2 border-[#f2e28a] shrink-0 bg-[#0b1120]">
+                  <img src={playerContext.avatarUrl} alt={playerContext.nickname} className="w-full h-full object-cover rendering-pixelated" style={{ imageRendering: 'pixelated' }} />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-white font-bold text-sm md:text-base font-poppins">{playerContext.nickname}</span>
+                </div>
+              </div>
+            ) : (
+              <input 
+                type="text" 
+                value={ign}
+                onChange={(e) => setIgn(e.target.value)}
+                placeholder="Contoh: Steve_Minecraft"
+                className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-[#f2e28a] focus:ring-1 focus:ring-[#f2e28a] transition-all"
+                required
+              />
+            )}
           </div>
 
           <div>
