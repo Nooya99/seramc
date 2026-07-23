@@ -9,6 +9,8 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
   const [ign, setIgn] = useState('');
   const [whatsapp, setWhatsapp] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('QRIS');
+  const [checkoutStatus, setCheckoutStatus] = useState(null);
+  const [checkoutMessage, setCheckoutMessage] = useState('');
 
   useEffect(() => {
     if (playerContext?.nickname) {
@@ -39,7 +41,8 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
     e.preventDefault();
     
     if (!ign || !whatsapp) {
-      alert('Mohon isi In-Game Name dan Nomor WhatsApp Anda.');
+      setCheckoutStatus('error');
+      setCheckoutMessage('Mohon isi In-Game Name dan Nomor WhatsApp Anda.');
       return;
     }
 
@@ -74,34 +77,65 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
     window.open(`https://wa.me/${targetAdmin}?text=${encodedText}`, '_blank');
     
     setTimeout(() => {
-      alert('Pesanan berhasil! Pesanan Anda sedang diproses.');
-      if (onSuccess) {
-        onSuccess();
-      } else {
-        onClose();
-      }
+      setCheckoutStatus('success');
+      setCheckoutMessage('Pesanan berhasil! Pesanan Anda sedang diproses.');
     }, 500);
   };
 
   return (
     <div 
       className="modal fixed inset-0 bg-black/70 backdrop-blur-md z-[100] flex justify-center items-center px-4 active"
-      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+      onClick={(e) => { if (e.target === e.currentTarget && !checkoutStatus) onClose(); }}
     >
       <div 
-        className="modal-content bubble-glass w-full max-w-lg rounded-[2rem] p-6 md:p-8 relative"
+        className="modal-content bubble-glass w-full max-w-lg rounded-[2rem] p-6 md:p-8 relative overflow-hidden"
         style={{ background: 'rgba(11,17,33,0.95)', border: '1px solid rgba(255,255,255,0.2)' }}
       >
+        {checkoutStatus && (
+          <div className="absolute inset-0 bg-[#0b1120]/95 backdrop-blur-xl z-50 flex flex-col items-center justify-center p-8 text-center" style={{ animation: 'fadeIn 0.3s ease-out forwards' }}>
+            <div 
+              className={`w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-2xl ${
+                checkoutStatus === 'success' 
+                  ? 'bg-emerald-500/20 text-emerald-400 border-[3px] border-emerald-500/50 shadow-emerald-500/20' 
+                  : 'bg-red-500/20 text-red-400 border-[3px] border-red-500/50 shadow-red-500/20'
+              }`}
+              style={{ animation: 'scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards' }}
+            >
+              <PixelIcon name={checkoutStatus === 'success' ? 'check' : 'close'} className="w-12 h-12" />
+            </div>
+            <h3 className="text-2xl md:text-3xl font-bold text-white mb-3 font-poppins" style={{ animation: 'slideUp 0.5s ease-out 0.2s both' }}>
+              {checkoutStatus === 'success' ? 'Berhasil!' : 'Gagal!'}
+            </h3>
+            <p className="text-gray-300 mb-8 text-sm md:text-base max-w-[280px]" style={{ animation: 'slideUp 0.5s ease-out 0.3s both' }}>
+              {checkoutMessage}
+            </p>
+            <button 
+              onClick={() => {
+                const currentStatus = checkoutStatus;
+                setCheckoutStatus(null);
+                if (currentStatus === 'success') {
+                  if (onSuccess) onSuccess();
+                  else onClose();
+                }
+              }}
+              className="w-full max-w-[200px] bg-[#f2e28a] hover:bg-[#e6d680] text-gray-900 font-bold py-3.5 rounded-xl transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-lg active:scale-95"
+              style={{ animation: 'slideUp 0.5s ease-out 0.4s both' }}
+            >
+              Oke
+            </button>
+          </div>
+        )}
+
         <button 
           onClick={onClose} 
-          className="absolute top-4 md:top-5 right-4 md:right-5 text-gray-400 hover:text-white glass-pill w-10 h-10 flex items-center justify-center text-xl cursor-pointer transition-all duration-300 ease-in-out active:scale-95"
+          className="absolute top-4 md:top-5 right-4 md:right-5 text-gray-400 hover:text-white glass-pill w-10 h-10 flex items-center justify-center text-xl cursor-pointer transition-all duration-300 ease-in-out active:scale-95 z-40"
         >
           <PixelIcon name="close" className="w-5 h-5" />
         </button>
 
         <h2 className="text-xl md:text-2xl font-bold text-white mb-6 font-poppins text-center">Informasi Pembelian</h2>
 
-        <form onSubmit={handleCheckout} className="space-y-4">
+        <form onSubmit={handleCheckout} className="space-y-4 relative z-10">
           <div>
             <label className="block text-gray-300 text-sm font-bold mb-2">In-Game Name (IGN)</label>
             {playerContext ? (
@@ -144,7 +178,7 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
                 <span>Item</span>
                 <span>Total</span>
               </div>
-              <div className="max-h-[140px] overflow-y-auto pr-2" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.2) transparent' }}>
+              <div className="max-h-[140px] overflow-y-auto pr-2 custom-scrollbar">
                 {cart.map((item, idx) => {
                   const itemTotal = parsePrice(item.price) * (item.quantity || 1);
                   return (
@@ -181,6 +215,31 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
           </button>
         </form>
       </div>
+
+      <style jsx>{`
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes scaleIn {
+          from { transform: scale(0.5); opacity: 0; }
+          to { transform: scale(1); opacity: 1; }
+        }
+        @keyframes slideUp {
+          from { transform: translateY(20px); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.2);
+          border-radius: 10px;
+        }
+      `}</style>
     </div>
   );
 }
