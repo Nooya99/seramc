@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { Star, StarHalf } from 'lucide-react';
+import PixelIcon from '@/components/PixelIcon';
 
 const reviewsRow1 = [
   { name: 'CraftySteve', skin: 'Steve', text: '"Gokil sih custom enchant-nya banyak pilihan! Capek-capek nyari resource berharga jadi makin worth it gara-gara efek pedangnya."', rating: 5 },
@@ -22,9 +22,9 @@ export default function ReviewsMarquee() {
     return (
       <div className="flex text-[#f2e28a] text-[10px] md:text-xs gap-0.5">
         {[...Array(Math.floor(rating))].map((_, i) => (
-          <Star key={i} className="w-3 h-3 fill-[#f2e28a]" />
+          <PixelIcon key={i} name="star" className="w-3 h-3" />
         ))}
-        {rating % 1 !== 0 && <StarHalf className="w-3 h-3 fill-[#f2e28a]" />}
+        {rating % 1 !== 0 && <PixelIcon name="star" className="w-3 h-3 opacity-50" />}
       </div>
     );
   };

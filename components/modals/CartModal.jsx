@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowLeft, ShoppingCart, Trash2, CheckCircle2, Plus, Minus } from 'lucide-react';
+import PixelIcon from '@/components/PixelIcon';
 
 export default function CartModal({ isOpen, onClose, cart, onRemoveItem, onUpdateQuantity, onCheckout }) {
   if (!isOpen) return null;
@@ -34,7 +34,7 @@ export default function CartModal({ isOpen, onClose, cart, onRemoveItem, onUpdat
         <div className="flex items-center justify-between px-6 py-5 border-b border-white/10 bg-[#0f1422] z-20 shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 flex items-center justify-center rounded-full bg-blue-500/10 text-blue-400">
-              <ShoppingCart className="w-6 h-6" />
+              <PixelIcon name="shopping-cart" className="w-6 h-6" />
             </div>
             <h2 className="text-xl md:text-2xl font-bold text-white font-poppins">Keranjang Belanja</h2>
           </div>
@@ -43,7 +43,7 @@ export default function CartModal({ isOpen, onClose, cart, onRemoveItem, onUpdat
             onClick={onClose} 
             className="text-gray-400 hover:text-white bg-black/20 hover:bg-black/40 w-10 h-10 flex items-center justify-center text-xl cursor-pointer transition-all duration-300 ease-in-out active:scale-95 rounded-full"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <PixelIcon name="arrow-left" className="w-5 h-5" />
           </button>
         </div>
 
@@ -51,7 +51,7 @@ export default function CartModal({ isOpen, onClose, cart, onRemoveItem, onUpdat
         <div className="w-full flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar">
           {cart.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-10 text-center">
-              <ShoppingCart className="w-16 h-16 text-gray-600 mb-4" />
+              <PixelIcon name="shopping-cart" className="w-16 h-16 text-gray-600 mb-4" />
               <h3 className="text-xl font-bold text-gray-300 mb-2">Keranjang Anda Kosong</h3>
               <p className="text-gray-500">Silakan pilih item dari Shop untuk ditambahkan ke keranjang.</p>
             </div>
@@ -61,7 +61,7 @@ export default function CartModal({ isOpen, onClose, cart, onRemoveItem, onUpdat
                 <div key={index} className="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-white/20 transition-colors">
                   <div className="flex items-start gap-4">
                     <div className="w-10 h-10 flex items-center justify-center rounded-full bg-indigo-500/10 text-indigo-400 shrink-0 mt-1">
-                      <CheckCircle2 className="w-5 h-5" />
+                      <PixelIcon name="check" className="w-5 h-5" />
                     </div>
                     <div>
                       <h4 className="font-bold text-white text-lg">{item.name}</h4>
@@ -77,14 +77,14 @@ export default function CartModal({ isOpen, onClose, cart, onRemoveItem, onUpdat
                           onClick={() => onUpdateQuantity(index, -1)}
                           className="w-6 h-6 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/20 text-white transition-colors active:scale-95"
                         >
-                          <Minus className="w-3 h-3" />
+                          <PixelIcon name="minus" className="w-3 h-3" />
                         </button>
                         <span className="text-white font-bold text-sm w-4 text-center">{item.quantity || 1}</span>
                         <button 
                           onClick={() => onUpdateQuantity(index, 1)}
                           className="w-6 h-6 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/20 text-white transition-colors active:scale-95"
                         >
-                          <Plus className="w-3 h-3" />
+                          <PixelIcon name="plus" className="w-3 h-3" />
                         </button>
                       </div>
                     </div>
@@ -93,7 +93,7 @@ export default function CartModal({ isOpen, onClose, cart, onRemoveItem, onUpdat
                       onClick={() => onRemoveItem(index)}
                       className="text-red-400 hover:text-red-300 hover:bg-red-500/10 p-2 rounded-full transition-colors active:scale-95 ml-2"
                     >
-                      <Trash2 className="w-5 h-5" />
+                      <PixelIcon name="trash" className="w-5 h-5" />
                     </button>
                   </div>
                 </div>

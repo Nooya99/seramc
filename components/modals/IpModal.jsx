@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Gamepad2, X } from 'lucide-react';
+import PixelIcon from '@/components/PixelIcon';
 
 export default function IpModal({ isOpen, onClose }) {
   const [copied, setCopied] = useState(false);
@@ -36,11 +36,11 @@ export default function IpModal({ isOpen, onClose }) {
           onClick={onClose} 
           className="modal-close-btn absolute top-4 md:top-5 right-4 md:right-5 text-gray-400 hover:text-white glass-pill w-12 h-12 flex items-center justify-center text-xl cursor-pointer transition-all duration-300 ease-in-out active:scale-95"
         >
-          <X className="w-5 h-5" />
+          <PixelIcon name="close" className="w-5 h-5" />
         </button>
 
         <div className="w-14 md:w-16 h-14 md:h-16 bg-green-500/20 text-green-400 rounded-full flex items-center justify-center text-xl md:text-2xl mx-auto mb-4 border border-green-500/40 shadow-[0_0_20px_rgba(34,197,94,0.3)]">
-          <Gamepad2 className="w-7 h-7" />
+          <PixelIcon name="device-laptop" className="w-7 h-7" />
         </div>
 
         <h2 className="text-xl md:text-2xl font-bold text-white mb-2 font-poppins">Server IP</h2>

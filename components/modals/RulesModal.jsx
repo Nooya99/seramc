@@ -1,6 +1,6 @@
 'use client';
 
-import { Megaphone, MessageSquare, Swords, ShieldAlert, Gavel, Info, X } from 'lucide-react';
+import PixelIcon from '@/components/PixelIcon';
 
 export default function RulesModal({ isOpen, onClose }) {
   if (!isOpen) return null;
@@ -18,18 +18,18 @@ export default function RulesModal({ isOpen, onClose }) {
           onClick={onClose} 
           className="modal-close-btn absolute top-4 md:top-5 right-4 md:right-5 text-gray-400 hover:text-white glass-pill w-12 h-12 flex items-center justify-center text-xl cursor-pointer transition-all duration-300 ease-in-out active:scale-95"
         >
-          <X className="w-5 h-5" />
+          <PixelIcon name="close" className="w-5 h-5" />
         </button>
 
         <h2 className="text-xl md:text-2xl font-bold text-white mb-2 font-poppins flex items-center justify-center gap-2">
-          <Megaphone className="w-6 h-6 text-[#f2e28a]" /> Peraturan Server
+          <PixelIcon name="speaker" className="w-6 h-6 text-[#f2e28a]" /> Peraturan Server
         </h2>
         <p className="text-gray-400 text-xs md:text-sm mb-5">Mohon dibaca, dipahami, dan dipatuhi demi kenyamanan bersama!</p>
 
         <div className="text-left space-y-5 mb-6 text-[12px] md:text-[13px] text-gray-200 bubble-glass p-5 md:p-6 max-h-[60vh] overflow-y-auto border-white/10 relative z-20" style={{ borderRadius: '12px' }}>
           <div>
             <h4 className="font-bold text-[#f2e28a] mb-2 pb-1 border-b border-white/10 text-[13px] md:text-[14px] flex items-center gap-2">
-              <MessageSquare className="w-4 h-4" /> Komunikasi & Sikap
+              <PixelIcon name="message" className="w-4 h-4" /> Komunikasi & Sikap
             </h4>
             <ul className="text-gray-400 space-y-1.5 pl-1">
               <li><span className="text-white font-semibold">• Hormati Sesama:</span> Dilarang melakukan perundungan (bullying), pelecehan, rasisme, atau ujaran kebencian.</li>
@@ -41,7 +41,7 @@ export default function RulesModal({ isOpen, onClose }) {
 
           <div>
             <h4 className="font-bold text-[#f2e28a] mb-2 pb-1 border-b border-white/10 text-[13px] md:text-[14px] flex items-center gap-2">
-              <Swords className="w-4 h-4" /> Gameplay (In-Game)
+              <PixelIcon name="sword" className="w-4 h-4" /> Gameplay (In-Game)
             </h4>
             <ul className="text-gray-400 space-y-1.5 pl-1">
               <li><span className="text-white font-semibold">• No Griefing:</span> Dilarang merusak, mengubah, atau mengambil block milik pemain lain.</li>
@@ -53,7 +53,7 @@ export default function RulesModal({ isOpen, onClose }) {
 
           <div>
             <h4 className="font-bold text-[#f2e28a] mb-2 pb-1 border-b border-white/10 text-[13px] md:text-[14px] flex items-center gap-2">
-              <ShieldAlert className="w-4 h-4" /> Teknis & Fair Play
+              <PixelIcon name="shield" className="w-4 h-4" /> Teknis & Fair Play
             </h4>
             <ul className="text-gray-400 space-y-1.5 pl-1">
               <li><span className="text-white font-semibold">• No Mod Ilegal:</span> Penggunaan X-ray, Fly, KillAura, dll = BAN PERMANEN.</li>
@@ -64,7 +64,7 @@ export default function RulesModal({ isOpen, onClose }) {
 
           <div>
             <h4 className="font-bold text-red-400 mb-2 pb-1 border-b border-white/10 text-[13px] md:text-[14px] flex items-center gap-2">
-              <Gavel className="w-4 h-4" /> Tingkatan Sanksi
+              <PixelIcon name="scale" className="w-4 h-4" /> Tingkatan Sanksi
             </h4>
             <ul className="text-gray-400 space-y-2 pl-1">
               <li><strong className="text-yellow-400">1. Ringan:</strong> Peringatan (Warn) 1-3 ➜ Mute beberapa jam/hari.</li>
@@ -75,7 +75,7 @@ export default function RulesModal({ isOpen, onClose }) {
 
           <div className="bg-black/30 p-3 rounded-xl border border-white/5 mt-4">
             <p className="text-gray-300 text-xs text-center italic flex items-center justify-center gap-1">
-              <Info className="w-4 h-4 text-[#f2e28a]" /> Dengan bermain di server ini, kamu dianggap telah membaca dan menyetujui seluruh peraturan di atas.
+              <PixelIcon name="info-box" className="w-4 h-4 text-[#f2e28a]" /> Dengan bermain di server ini, kamu dianggap telah membaca dan menyetujui seluruh peraturan di atas.
             </p>
           </div>
         </div>

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import PixelIcon from '@/components/PixelIcon';
 
 const slides = [
   '/slide 1.png',
@@ -52,13 +52,13 @@ export default function About() {
               onClick={() => moveSlide(-1)} 
               className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/40 hover:bg-black/70 text-white w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out z-20 active:scale-95"
             >
-              <ChevronLeft className="w-6 h-6" />
+              <PixelIcon name="chevron-left" className="w-6 h-6" />
             </button>
             <button 
               onClick={() => moveSlide(1)} 
               className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/40 hover:bg-black/70 text-white w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out z-20 active:scale-95"
             >
-              <ChevronRight className="w-6 h-6" />
+              <PixelIcon name="chevron-right" className="w-6 h-6" />
             </button>
 
             <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex gap-3 z-20 p-2">

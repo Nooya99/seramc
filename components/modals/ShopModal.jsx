@@ -1,13 +1,13 @@
 'use client';
 
 import { useEffect } from 'react';
-import { ShoppingCart, Pickaxe, Shield, Axe, Diamond, Sword, Flame, X, Key, Infinity, Ticket, Swords, Coins, Package } from 'lucide-react';
+import PixelIcon from '@/components/PixelIcon';
 
 const ranks = [
   {
     name: 'LUX',
     name: 'LUX',
-    icon: Pickaxe,
+    iconName: 'star',
     badge: 'LUX',
     color: 'orange',
     prices: [
@@ -20,7 +20,7 @@ const ranks = [
   },
   {
     name: 'VEIL',
-    icon: Shield,
+    iconName: 'shield',
     badge: 'VEIL',
     color: 'gray',
     prices: [
@@ -33,7 +33,7 @@ const ranks = [
   },
   {
     name: 'RIFT',
-    icon: Axe,
+    iconName: 'trophy',
     badge: 'RIFT',
     color: 'yellow',
     prices: [
@@ -46,7 +46,7 @@ const ranks = [
   },
   {
     name: 'CORE',
-    icon: Diamond,
+    iconName: 'diamond-gem',
     badge: 'CORE',
     color: 'cyan',
     prices: [
@@ -59,7 +59,7 @@ const ranks = [
   },
   {
     name: 'ARCH',
-    icon: Sword,
+    iconName: 'crown',
     badge: 'ARCH',
     color: 'purple',
     prices: [
@@ -72,7 +72,7 @@ const ranks = [
   },
   {
     name: 'CUSTOM',
-    icon: Flame,
+    iconName: 'fire',
     badge: 'CUSTOM',
     color: 'pink',
     isSpecial: true,
@@ -89,7 +89,7 @@ const ranks = [
 const keysData = [
   {
     name: 'PEASANT',
-    icon: Key,
+    iconName: 'unlock',
     badge: 'PEASANT',
     color: 'stone',
     price: '13K',
@@ -99,7 +99,7 @@ const keysData = [
   },
   {
     name: 'NOBLE',
-    icon: Key,
+    iconName: 'unlock',
     badge: 'NOBLE',
     color: 'slate',
     price: '20K',
@@ -109,7 +109,7 @@ const keysData = [
   },
   {
     name: 'IMPERIAL',
-    icon: Key,
+    iconName: 'unlock',
     badge: 'IMPERIAL',
     color: 'amber',
     price: '24K',
@@ -119,7 +119,7 @@ const keysData = [
   },
   {
     name: 'SERA',
-    icon: Key,
+    iconName: 'unlock',
     badge: 'SERA',
     color: 'violet',
     price: '28K',
@@ -129,7 +129,7 @@ const keysData = [
   },
   {
     name: 'ULTIMATE',
-    icon: Key,
+    iconName: 'unlock',
     badge: 'ULTIMATE',
     color: 'rose',
     price: '45K',
@@ -142,7 +142,7 @@ const keysData = [
 const othersData = [
   {
     name: 'Unlimited Claim',
-    icon: Infinity,
+    iconName: 'repeat',
     badge: 'Unlimited Claim',
     price: '35K',
     duration: 'Permanen',
@@ -151,7 +151,7 @@ const othersData = [
   },
   {
     name: 'Monthly Premium Pass',
-    icon: Ticket,
+    iconName: 'membercard',
     badge: 'Premium Pass',
     price: '30K',
     duration: '1 Bulan',
@@ -160,7 +160,7 @@ const othersData = [
   },
   {
     name: 'Skills All Max 100',
-    icon: Swords,
+    iconName: 'sword',
     badge: 'Max Skills',
     price: '300K',
     duration: 'Per Season',
@@ -169,7 +169,7 @@ const othersData = [
   },
   {
     name: 'Coin Bundle',
-    icon: Coins,
+    iconName: 'coins',
     badge: 'Coin Bundle',
     price: '1K',
     benefit: '35 Coin',
@@ -206,7 +206,7 @@ export default function ShopModal({ isOpen, onClose, cart = [], onAddToCart, onV
             className="relative w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-full glass-pill text-blue-400 shrink-0 cursor-pointer hover:bg-white/10 transition-colors"
             onClick={onViewCart}
           >
-            <ShoppingCart className="w-5 h-5 md:w-6 md:h-6" />
+            <PixelIcon name="shopping-cart" className="w-5 h-5 md:w-6 md:h-6" />
             {cart.length > 0 && (
               <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] md:text-xs font-bold w-5 h-5 md:w-6 md:h-6 flex items-center justify-center rounded-full shadow-lg">
                 {cart.reduce((total, item) => total + (item.quantity || 1), 0)}
@@ -223,26 +223,25 @@ export default function ShopModal({ isOpen, onClose, cart = [], onAddToCart, onV
           </div>
 
           <button 
-            onClick={onClose} 
-            className="text-gray-400 hover:text-white glass-pill w-12 h-12 md:w-14 md:h-14 flex items-center justify-center text-xl cursor-pointer transition-all duration-300 ease-in-out active:scale-95 rounded-full shrink-0"
-          >
-            <X className="w-5 h-5 md:w-6 md:h-6" />
-          </button>
+          onClick={onClose}
+          className="absolute top-4 right-4 md:top-6 md:right-6 text-gray-400 hover:text-white bg-black/20 hover:bg-black/40 rounded-full p-2 md:p-2.5 transition-all duration-300 backdrop-blur-sm z-50 hover:scale-110 active:scale-95"
+        >
+          <PixelIcon name="close" className="w-5 h-5 md:w-6 md:h-6" />
+        </button>
         </div>
 
         <div className="w-full flex-1 overflow-y-auto custom-scrollbar p-6 md:p-8 rounded-b-3xl">
 
         {/* Ranks Header */}
         <div className="mb-8 flex items-center justify-center gap-3">
-          <Pickaxe className="w-8 h-8 text-orange-400 hidden sm:block" />
+          <PixelIcon name="star" className="w-8 h-8 text-orange-400 hidden sm:block" />
           <h2 className="text-2xl md:text-3xl font-black text-white font-poppins tracking-wider text-center">RANK PACKAGES</h2>
-          <Pickaxe className="w-8 h-8 text-orange-400 hidden sm:block" />
+          <PixelIcon name="star" className="w-8 h-8 text-orange-400 hidden sm:block" />
         </div>
 
         {/* Grid Area for Ranks */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full mb-16">
           {ranks.flatMap((item) => {
-            const Icon = item.icon;
             return item.prices.map((p) => (
               <div 
                 key={`${item.name}-${p.duration}`} 
@@ -250,7 +249,7 @@ export default function ShopModal({ isOpen, onClose, cart = [], onAddToCart, onV
               >
                 {/* Icon */}
                 <div className={`w-14 h-14 rounded-full flex items-center justify-center mb-6 border ${item.bgClass}`}>
-                  <Icon className="w-6 h-6" />
+                  <PixelIcon name={item.iconName} className="w-6 h-6" />
                 </div>
                 
                 {/* Rank Name & Duration */}
@@ -286,23 +285,22 @@ export default function ShopModal({ isOpen, onClose, cart = [], onAddToCart, onV
         </div>
 
         {/* Keys Header */}
-        <div className="mb-8 flex items-center justify-center gap-3">
-          <Key className="w-8 h-8 text-amber-400 hidden sm:block" />
+        <div className="mt-16 mb-8 flex items-center justify-center gap-3">
+          <PixelIcon name="unlock" className="w-8 h-8 text-yellow-400 hidden sm:block" />
           <h2 className="text-2xl md:text-3xl font-black text-white font-poppins tracking-wider text-center">DAFTAR HARGA KEY</h2>
-          <Key className="w-8 h-8 text-amber-400 hidden sm:block" />
+          <PixelIcon name="unlock" className="w-8 h-8 text-yellow-400 hidden sm:block" />
         </div>
 
         {/* Grid Area for Keys */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 w-full mb-16">
           {keysData.map((item) => {
-            const Icon = item.icon;
             return (
               <div 
                 key={item.name} 
                 className="bg-[#0f1422] rounded-[1.5rem] p-4 xl:p-5 flex flex-col relative overflow-hidden border border-white/5 shadow-xl transition-transform hover:-translate-y-1"
               >
                 <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-5 border ${item.bgClass}`}>
-                  <Icon className="w-5 h-5" />
+                  <PixelIcon name={item.iconName} className="w-5 h-5" />
                 </div>
                 <div className="mb-5">
                   <h3 className="font-black text-2xl text-white font-poppins tracking-wide">
@@ -328,23 +326,22 @@ export default function ShopModal({ isOpen, onClose, cart = [], onAddToCart, onV
         </div>
 
         {/* Others Header */}
-        <div className="mb-8 flex items-center justify-center gap-3">
-          <Package className="w-8 h-8 text-fuchsia-400 hidden sm:block" />
-          <h2 className="text-2xl md:text-3xl font-black text-white font-poppins tracking-wider text-center">OTHERS</h2>
-          <Package className="w-8 h-8 text-fuchsia-400 hidden sm:block" />
+        <div className="mt-16 mb-8 flex items-center justify-center gap-3">
+          <PixelIcon name="package" className="w-8 h-8 text-blue-400 hidden sm:block" />
+          <h2 className="text-2xl md:text-3xl font-black text-white font-poppins tracking-wider text-center">[ OTHERS ]</h2>
+          <PixelIcon name="package" className="w-8 h-8 text-blue-400 hidden sm:block" />
         </div>
 
         {/* Grid Area for Others */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
           {othersData.map((item) => {
-            const Icon = item.icon;
             return (
               <div 
                 key={item.name} 
                 className="bg-[#0f1422] rounded-[1.5rem] p-6 flex flex-col relative overflow-hidden border border-white/5 shadow-xl transition-transform hover:-translate-y-1"
               >
                 <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-5 border ${item.bgClass}`}>
-                  <Icon className="w-5 h-5" />
+                  <PixelIcon name={item.iconName} className="w-5 h-5" />
                 </div>
                 <div className="mb-5">
                   <h3 className="font-black text-xl md:text-2xl text-white font-poppins tracking-wide leading-tight">

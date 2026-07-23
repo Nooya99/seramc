@@ -1,12 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronLeft, ChevronRight, Pickaxe, Shield, Axe, Diamond, Sword, Flame } from 'lucide-react';
+import PixelIcon from '@/components/PixelIcon';
 
 const ranks = [
   {
     name: 'LUX',
-    icon: Pickaxe,
+    iconName: 'star',
     badge: 'LUX',
     color: 'orange',
     prices: [
@@ -19,7 +19,7 @@ const ranks = [
   },
   {
     name: 'VEIL',
-    icon: Shield,
+    iconName: 'shield',
     badge: 'VEIL',
     color: 'gray',
     prices: [
@@ -32,7 +32,7 @@ const ranks = [
   },
   {
     name: 'RIFT',
-    icon: Axe,
+    iconName: 'trophy',
     badge: 'RIFT',
     color: 'yellow',
     prices: [
@@ -45,7 +45,7 @@ const ranks = [
   },
   {
     name: 'CORE',
-    icon: Diamond,
+    iconName: 'diamond-gem',
     badge: 'CORE',
     color: 'cyan',
     prices: [
@@ -58,7 +58,7 @@ const ranks = [
   },
   {
     name: 'ARCH',
-    icon: Sword,
+    iconName: 'crown',
     badge: 'ARCH',
     color: 'purple',
     prices: [
@@ -71,7 +71,7 @@ const ranks = [
   },
   {
     name: 'CUSTOM',
-    icon: Flame,
+    iconName: 'fire',
     badge: 'CUSTOM',
     color: 'pink',
     isSpecial: true,
@@ -115,12 +115,11 @@ export default function ShopCoverflow({ onOpenModal }) {
           onClick={() => moveShop(-1)} 
           className="absolute left-2 md:left-10 z-40 text-gray-400 hover:text-[#f2e28a] transition-all duration-300 ease-in-out hover:scale-110 active:scale-95"
         >
-          <ChevronLeft className="w-12 h-12 md:w-16 md:h-16" />
+          <PixelIcon name="chevron-left" className="w-12 h-12 md:w-16 md:h-16" />
         </button>
  
         <div id="shop-track" className="relative w-full max-w-5xl h-full flex justify-center items-center">
           {ranks.map((item, index) => {
-            const Icon = item.icon;
             const cardState = getCardClass(index);
  
             return (
@@ -141,7 +140,7 @@ export default function ShopCoverflow({ onOpenModal }) {
  
                 <div className="mb-8">
                   <div className={`w-14 h-14 rounded-full flex items-center justify-center text-2xl mb-5 border ${item.bgClass}`}>
-                    <Icon className="w-7 h-7" />
+                    <PixelIcon name={item.iconName} className="w-7 h-7" />
                   </div>
                   
                   <h3 className="font-bold text-2xl md:text-3xl text-white font-poppins">{item.badge}</h3>
@@ -185,7 +184,7 @@ export default function ShopCoverflow({ onOpenModal }) {
           onClick={() => moveShop(1)} 
           className="absolute right-2 md:right-10 z-40 text-gray-400 hover:text-[#f2e28a] transition-all duration-300 ease-in-out hover:scale-110 active:scale-95"
         >
-          <ChevronRight className="w-12 h-12 md:w-16 md:h-16" />
+          <PixelIcon name="chevron-right" className="w-12 h-12 md:w-16 md:h-16" />
         </button>
       </div>
     </section>

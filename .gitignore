@@ -17,3 +17,5 @@ Thumbs.db
 *.tar.gz
 *.tmp
 node_modules
+
+.vercel

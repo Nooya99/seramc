@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronDown } from 'lucide-react';
+import PixelIcon from '@/components/PixelIcon';
 
 const faqs = [
   {
@@ -69,7 +69,7 @@ export default function FaqAccordion() {
                 className="w-full px-5 md:px-6 py-4 md:py-5 text-left font-bold text-white flex justify-between items-center text-[14px] md:text-[15px] outline-none hover:text-[#f2e28a] transition-colors relative z-50 cursor-pointer active:scale-95"
               >
                 {faq.q}
-                <ChevronDown className={`w-4 h-4 text-gray-400 faq-icon transition-transform duration-300 ${isOpen ? 'rotate-180 text-[#f2e28a]' : ''}`} />
+                <PixelIcon name="chevron-down" className={`w-4 h-4 text-gray-400 faq-icon transition-transform duration-300 ${isOpen ? 'rotate-180 text-[#f2e28a]' : ''}`} />
               </button>
 
               <div 

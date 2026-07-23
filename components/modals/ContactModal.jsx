@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { Phone, MessageCircle, Video, CheckSquare, X } from 'lucide-react';
+import PixelIcon from '@/components/PixelIcon';
 
 const admins = [
   { name: 'Admin 1 (Owner)', phone: '628123456789' },
@@ -36,7 +36,7 @@ export default function ContactModal({ isOpen, onClose, cart = [] }) {
           onClick={onClose} 
           className="modal-close-btn absolute top-4 md:top-5 right-4 md:right-5 text-gray-400 hover:text-white glass-pill w-12 h-12 flex items-center justify-center text-xl cursor-pointer transition-all duration-300 ease-in-out active:scale-95"
         >
-          <X className="w-5 h-5" />
+          <PixelIcon name="close" className="w-5 h-5" />
         </button>
 
         <Image 
@@ -60,7 +60,7 @@ export default function ContactModal({ isOpen, onClose, cart = [] }) {
               className="w-full flex items-center gap-4 bg-black/40 hover:bg-[#25D366]/10 border border-white/10 hover:border-[#25D366]/50 rounded-full p-2 pr-6 transition-all duration-300 ease-in-out group cursor-pointer active:scale-95"
             >
               <div className="w-10 h-10 bg-[#25D366]/20 text-[#25D366] rounded-full flex items-center justify-center text-lg flex-shrink-0 group-hover:scale-110 transition-transform">
-                <Phone className="w-5 h-5" />
+                <PixelIcon name="phone" className="w-5 h-5" />
               </div>
               <div className="text-left">
                 <h4 className="font-bold text-white text-[13px] md:text-sm leading-tight">{admin.name}</h4>
@@ -79,7 +79,7 @@ export default function ContactModal({ isOpen, onClose, cart = [] }) {
             className="bg-[#131826] border border-white/5 hover:border-[#5865F2]/50 rounded-2xl p-4 flex items-center gap-4 transition-all duration-300 ease-in-out group hover:-translate-y-1 hover:shadow-[0_5px_15px_rgba(88,101,242,0.2)] active:scale-98"
           >
             <div className="w-11 h-11 bg-[#5865F2]/10 text-[#5865F2] rounded-full flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-110 transition-transform">
-              <MessageCircle className="w-5 h-5" />
+              <PixelIcon name="message" className="w-5 h-5" />
             </div>
             <div className="text-left">
               <h4 className="font-bold text-white text-[13px] md:text-sm leading-tight">Discord Server</h4>
@@ -93,7 +93,7 @@ export default function ContactModal({ isOpen, onClose, cart = [] }) {
             className="bg-[#131826] border border-white/5 hover:border-[#25D366]/50 rounded-2xl p-4 flex items-center gap-4 transition-all duration-300 ease-in-out group hover:-translate-y-1 hover:shadow-[0_5px_15px_rgba(37,211,102,0.2)] active:scale-98"
           >
             <div className="w-11 h-11 bg-[#25D366]/10 text-[#25D366] rounded-full flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-110 transition-transform">
-              <Phone className="w-5 h-5" />
+              <PixelIcon name="phone" className="w-5 h-5" />
             </div>
             <div className="text-left">
               <h4 className="font-bold text-white text-[13px] md:text-sm leading-tight">WhatsApp Group</h4>
@@ -107,7 +107,7 @@ export default function ContactModal({ isOpen, onClose, cart = [] }) {
             className="bg-[#131826] border border-white/5 hover:border-[#ff0050]/50 rounded-2xl p-4 flex items-center gap-4 transition-all duration-300 ease-in-out group hover:-translate-y-1 hover:shadow-[0_5px_15px_rgba(255,0,80,0.2)] active:scale-98"
           >
             <div className="w-11 h-11 bg-white/5 text-white group-hover:text-[#ff0050] rounded-full flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-110 transition-transform">
-              <Video className="w-5 h-5" />
+              <PixelIcon name="video" className="w-5 h-5" />
             </div>
             <div className="text-left">
               <h4 className="font-bold text-white text-[13px] md:text-sm leading-tight">TikTok Resmi</h4>
@@ -121,7 +121,7 @@ export default function ContactModal({ isOpen, onClose, cart = [] }) {
             className="bg-[#131826] border border-white/5 hover:border-[#f2e28a]/50 rounded-2xl p-4 flex items-center gap-4 transition-all duration-300 ease-in-out group hover:-translate-y-1 hover:shadow-[0_5px_15px_rgba(242,226,138,0.2)] active:scale-98"
           >
             <div className="w-11 h-11 bg-[#f2e28a]/10 text-[#f2e28a] rounded-full flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-110 transition-transform">
-              <CheckSquare className="w-5 h-5" />
+              <PixelIcon name="checkbox-on" className="w-5 h-5" />
             </div>
             <div className="text-left">
               <h4 className="font-bold text-white text-[13px] md:text-sm leading-tight">Vote Server</h4>

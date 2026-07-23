@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Send, Check, X } from 'lucide-react';
+import PixelIcon from '@/components/PixelIcon';
 
 export default function FeedbackModal({ isOpen, onClose }) {
   const [submitted, setSubmitted] = useState(false);
@@ -36,11 +36,11 @@ export default function FeedbackModal({ isOpen, onClose }) {
           onClick={onClose} 
           className="modal-close-btn absolute top-4 md:top-5 right-4 md:right-5 text-gray-400 hover:text-white glass-pill w-12 h-12 flex items-center justify-center text-xl cursor-pointer transition-all duration-300 ease-in-out active:scale-95"
         >
-          <X className="w-5 h-5" />
+          <PixelIcon name="close" className="w-5 h-5" />
         </button>
 
         <h2 className="text-xl md:text-2xl font-bold text-white mb-2 font-poppins text-center flex items-center justify-center gap-2">
-          <Send className="w-5 h-5 text-[#f2e28a]" /> Kritik & Saran
+          <PixelIcon name="mail" className="w-5 h-5 text-[#f2e28a]" /> Kritik & Saran
         </h2>
         <p className="text-gray-400 text-xs md:text-sm mb-6 text-center">
           Bantu kami membangun SERA MC menjadi lebih baik!
@@ -77,7 +77,7 @@ export default function FeedbackModal({ isOpen, onClose }) {
           >
             {submitted ? (
               <>
-                <Check className="w-5 h-5" /> Terkirim!
+                <PixelIcon name="check" className="w-5 h-5" /> Terkirim!
               </>
             ) : (
               'Kirim Pesan'
