@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import Navbar from '@/components/Navbar';
 import NoticeToast from '@/components/NoticeToast';
 import Hero from '@/components/Hero';
@@ -27,18 +27,28 @@ export default function Home() {
   const [pendingModal, setPendingModal] = useState(null);
   const [cart, setCart] = useState([]);
   const [playerContext, setPlayerContext] = useState(null);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const loginTimeoutRef = useRef(null);
 
   const handleOpenModal = (modalName) => {
     if ((modalName === 'shop' || modalName === 'checkout') && !playerContext) {
+      if (modalName === 'shop') setActiveModal('shop');
       setPendingModal(modalName);
-      setActiveModal('playerLogin');
+      
+      if (loginTimeoutRef.current) clearTimeout(loginTimeoutRef.current);
+      loginTimeoutRef.current = setTimeout(() => {
+        setIsLoginOpen(true);
+      }, 1000); // 1 second delay
+      
       return;
     }
     setActiveModal(modalName);
   };
 
   const handleCloseModal = () => {
+    if (loginTimeoutRef.current) clearTimeout(loginTimeoutRef.current);
     setActiveModal(null);
+    setIsLoginOpen(false);
   };
 
   const handleAddToCart = (item) => {
@@ -135,7 +145,10 @@ export default function Home() {
         onClose={handleCloseModal}
         cart={cart}
         playerContext={playerContext}
-        onLoginClick={() => setActiveModal('playerLogin')}
+        onLoginClick={() => {
+          setPendingModal('shop');
+          setIsLoginOpen(true);
+        }}
         onAddToCart={handleAddToCart}
         onViewCart={() => setActiveModal('cart')}
       />
@@ -154,14 +167,20 @@ export default function Home() {
         playerContext={playerContext}
       />
       <PlayerLoginModal
-        isOpen={activeModal === 'playerLogin'}
+        isOpen={isLoginOpen}
         onClose={() => {
-          setActiveModal(pendingModal === 'checkout' ? 'cart' : null);
+          setIsLoginOpen(false);
+          if (pendingModal === 'checkout') {
+            setActiveModal('cart');
+          }
           setPendingModal(null);
         }}
         onSave={(data) => {
           setPlayerContext(data);
-          setActiveModal(pendingModal || 'shop');
+          setIsLoginOpen(false);
+          if (pendingModal === 'checkout') {
+            setActiveModal('checkout');
+          }
           setPendingModal(null);
         }}
       />
