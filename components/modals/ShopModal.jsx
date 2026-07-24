@@ -13,7 +13,6 @@ const initialRanks = [
       { duration: '1 Bulan', price: '25.000' },
       { duration: 'Permanen', price: '45.000' },
     ],
-    buyAll: '25.000 / 45.000',
     bgClass: 'bg-orange-500/10 text-orange-400 border-orange-400/40',
     btnClass: 'bg-[#3b2314] hover:bg-orange-900 text-orange-200 border border-orange-500/20'
   },
@@ -26,7 +25,6 @@ const initialRanks = [
       { duration: '1 Bulan', price: '40.000' },
       { duration: 'Permanen', price: '65.000' },
     ],
-    buyAll: '40.000 / 65.000',
     bgClass: 'bg-gray-400/10 text-gray-400 border-gray-400/40',
     btnClass: 'bg-[#2b2f3a] hover:bg-gray-700 text-gray-200 border border-gray-500/20'
   },
@@ -39,7 +37,6 @@ const initialRanks = [
       { duration: '1 Bulan', price: '65.000' },
       { duration: 'Permanen', price: '90.000' },
     ],
-    buyAll: '65.000 / 90.000',
     bgClass: 'bg-yellow-400/10 text-yellow-400 border-yellow-400/40',
     btnClass: 'bg-[#3d3315] hover:bg-yellow-900 text-yellow-200 border border-yellow-500/20'
   },
@@ -52,7 +49,6 @@ const initialRanks = [
       { duration: '1 Bulan', price: '90.000' },
       { duration: 'Permanen', price: '120.000' },
     ],
-    buyAll: '90.000 / 120.000',
     bgClass: 'bg-cyan-400/10 text-cyan-400 border-cyan-400/40',
     btnClass: 'bg-[#15323d] hover:bg-cyan-900 text-cyan-200 border border-cyan-500/20'
   },
@@ -65,7 +61,6 @@ const initialRanks = [
       { duration: '1 Bulan', price: '120.000' },
       { duration: 'Permanen', price: '160.000' },
     ],
-    buyAll: '120.000 / 160.000',
     bgClass: 'bg-purple-500/10 text-purple-400 border-purple-500/40',
     btnClass: 'bg-[#2d153d] hover:bg-purple-900 text-purple-200 border border-purple-500/20'
   },
@@ -79,7 +74,6 @@ const initialRanks = [
       { duration: '1 Bulan', price: '300.000' },
       { duration: 'Permanen', price: '450.000' },
     ],
-    buyAll: '300.000 / 450.000',
     bgClass: 'bg-pink-500/10 text-pink-400 border-pink-400/40',
     btnClass: 'bg-[#3d152a] hover:bg-pink-900 text-pink-200 border border-pink-500/20'
   }
@@ -149,7 +143,7 @@ const initialOthersData = [
     btnClass: 'bg-[#064e3b] hover:bg-emerald-900 text-emerald-200 border border-emerald-500/20'
   },
   {
-    name: 'Monthly Premium Pass',
+    name: 'Premium Pass',
     iconName: 'membercard',
     badge: 'Premium Pass',
     price: '30.000',
@@ -158,7 +152,7 @@ const initialOthersData = [
     btnClass: 'bg-[#4a044e] hover:bg-fuchsia-900 text-fuchsia-200 border border-fuchsia-500/20'
   },
   {
-    name: 'Skills All Max 100',
+    name: 'Max Skills',
     iconName: 'sword',
     badge: 'Max Skills',
     price: '300.000',
@@ -200,9 +194,10 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
       if (res.ok) {
         const dbProducts = await res.json();
         if (dbProducts && dbProducts.length > 0) {
+          // 1. Ranks Mapping
           const rankItems = dbProducts.filter(p => (p.category || '').toLowerCase() === 'rank');
           if (rankItems.length > 0) {
-            const updated = initialRanks.map(rank => {
+            const updatedRanks = initialRanks.map(rank => {
               const matchedFromDb = rankItems.filter(p => p.name.toUpperCase().includes(rank.name));
               if (matchedFromDb.length > 0) {
                 return {
@@ -215,7 +210,41 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
               }
               return rank;
             });
-            setRanks(updated);
+            setRanks(updatedRanks);
+          }
+
+          // 2. Keys Mapping
+          const keyItems = dbProducts.filter(p => (p.category || '').toLowerCase().includes('key') || (p.category || '').toLowerCase().includes('crate'));
+          if (keyItems.length > 0) {
+            const updatedKeys = initialKeysData.map(key => {
+              const matched = keyItems.find(p => p.name.toUpperCase().includes(key.name));
+              if (matched) {
+                return {
+                  ...key,
+                  price: matched.price ? matched.price.toLocaleString('id-ID') : key.price,
+                  benefit: matched.duration || key.benefit
+                };
+              }
+              return key;
+            });
+            setKeysData(updatedKeys);
+          }
+
+          // 3. Others Mapping
+          const otherItems = dbProducts.filter(p => (p.category || '').toLowerCase() === 'others' || (p.category || '').toLowerCase() === 'other');
+          if (otherItems.length > 0) {
+            const updatedOthers = initialOthersData.map(oth => {
+              const matched = otherItems.find(p => p.name.toUpperCase().includes(oth.badge.toUpperCase()) || p.name.toUpperCase().includes(oth.name.toUpperCase()));
+              if (matched) {
+                return {
+                  ...oth,
+                  price: matched.price ? matched.price.toLocaleString('id-ID') : oth.price,
+                  duration: matched.duration || oth.duration
+                };
+              }
+              return oth;
+            });
+            setOthersData(updatedOthers);
           }
         }
       }
