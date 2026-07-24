@@ -52,7 +52,8 @@ export async function POST(request) {
         duration: item.duration || 'Permanen',
         description: item.description || null,
         image: item.image || null,
-        isPopular: Boolean(item.isPopular)
+        isPopular: Boolean(item.isPopular),
+        updatedAt: new Date().toISOString()
       }));
 
       const { error: insertError } = await supabaseAdmin
@@ -89,7 +90,8 @@ export async function POST(request) {
       duration: body.duration || 'Permanen',
       description: body.description || null,
       image: body.image || null,
-      isPopular: Boolean(body.isPopular)
+      isPopular: Boolean(body.isPopular),
+      updatedAt: new Date().toISOString()
     };
 
     const { data, error } = await supabaseAdmin
