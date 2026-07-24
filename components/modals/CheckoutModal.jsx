@@ -51,6 +51,9 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
     }
 
     // Save to database
+    let shortOrderId = null;
+    let initialCheckoutMsg = '';
+    
     try {
       const orderData = {
         ign,
@@ -69,14 +72,17 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
       if (res.ok) {
         const data = await res.json();
         // Extract the short order ID (first segment of UUID)
-        const shortOrderId = data.id ? data.id.split('-')[0].toUpperCase() : null;
+        shortOrderId = data.id ? data.id.split('-')[0].toUpperCase() : null;
         if (shortOrderId) {
-          setCheckoutMessage(`PESANAN ANDA SEDANG DI PROSES. ID Pesanan Anda: ${shortOrderId}`);
+          initialCheckoutMsg = `PESANAN ANDA SEDANG DI PROSES. ID Pesanan Anda: ${shortOrderId}`;
+          setCheckoutMessage(initialCheckoutMsg);
         } else {
-          setCheckoutMessage('PESANAN ANDA SEDANG DI PROSES');
+          initialCheckoutMsg = 'PESANAN ANDA SEDANG DI PROSES';
+          setCheckoutMessage(initialCheckoutMsg);
         }
       } else {
-        setCheckoutMessage('PESANAN ANDA SEDANG DI PROSES');
+        initialCheckoutMsg = 'PESANAN ANDA SEDANG DI PROSES';
+        setCheckoutMessage(initialCheckoutMsg);
       }
     } catch (error) {
       console.error('Failed to save order to database', error);
@@ -88,15 +94,15 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
       return `${i + 1}. ${item.quantity || 1}x ${item.name} (${item.duration}) - ${formatPrice(itemTotal)}`;
     }).join('\n');
     
-    const purchaseMsg = `*PESANAN BARU - SERA MC*\n\n*In-Game Name:* ${ign}\n*No. WhatsApp:* ${whatsapp}\n\n*Pesanan:*\n${itemsList}\n*Total Harga:* ${formatPrice(calculateTotal())}\n\n*Metode Pembayaran:* ${paymentMethod}\n\nMohon info untuk proses pembayarannya. Terima kasih!`;
+    const purchaseMsg = `*PESANAN BARU - SERA MC*\n\n*In-Game Name:* ${ign}\n*No. WhatsApp:* ${whatsapp}${shortOrderId ? `\n*ID Pesanan:* ${shortOrderId}` : ''}\n\n*Pesanan:*\n${itemsList}\n*Total Harga:* ${formatPrice(calculateTotal())}\n\n*Metode Pembayaran:* ${paymentMethod}\n\nMohon info untuk proses pembayarannya. Terima kasih!`;
     
     const encodedText = encodeURIComponent(purchaseMsg);
     window.open(`https://wa.me/${targetAdmin}?text=${encodedText}`, '_blank');
     
     setTimeout(() => {
       setCheckoutStatus('success');
-      // checkoutMessage is already set in the try-catch block, so we don't overwrite it here
-      if (!checkoutMessage) setCheckoutMessage('PESANAN ANDA SEDANG DI PROSES');
+      // Set to generic message if the database request didn't finish setting it
+      setCheckoutMessage(prev => prev || initialCheckoutMsg || 'PESANAN ANDA SEDANG DI PROSES');
     }, 500);
   };
 
