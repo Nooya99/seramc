@@ -180,6 +180,7 @@ export default function ShopCoverflow({ onOpenModal }) {
               return {
                 name: baseName,
                 ...style,
+                isPopular: items.some(p => p.isPopular),
                 prices: sortedPrices
               };
             });
@@ -241,6 +242,13 @@ export default function ShopCoverflow({ onOpenModal }) {
                 {item.isSpecial && (
                   <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-[#f2e28a] text-gray-900 text-xs md:text-sm font-bold px-5 py-1.5 rounded-full uppercase shadow-lg z-10">
                     SPECIAL TIER
+                  </div>
+                )}
+                
+                {item.isPopular && !item.isSpecial && (
+                  <div className="absolute top-4 right-4 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 px-2 py-1 rounded-full text-[10px] md:text-xs font-black flex items-center gap-1 shadow-lg shadow-amber-500/20 z-10">
+                    <PixelIcon name="fire" className="w-3 h-3 md:w-3.5 md:h-3.5 text-slate-950" />
+                    POPULER
                   </div>
                 )}
  
