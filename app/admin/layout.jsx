@@ -10,8 +10,6 @@ import {
   LogOut, 
   Menu, 
   X, 
-  Database, 
-  ShieldCheck, 
   Sparkles,
   ExternalLink,
   ChevronRight
@@ -21,10 +19,9 @@ export default function AdminLayout({ children }) {
   const pathname = usePathname();
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [dbStatus, setDbStatus] = useState('connecting'); // connecting, online, error
+  const [dbStatus, setDbStatus] = useState('connecting');
 
   useEffect(() => {
-    // Check Supabase connection health
     fetch('/api/products')
       .then(res => {
         if (res.ok) setDbStatus('online');
@@ -71,9 +68,11 @@ export default function AdminLayout({ children }) {
         {/* Brand Header */}
         <div className="p-6 border-b border-slate-800/80">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 text-white font-black text-xl tracking-wider">
-              S
-            </div>
+            <img 
+              src="/LOGO.png" 
+              alt="SERA MC Logo" 
+              className="h-11 w-auto object-contain drop-shadow-md"
+            />
             <div>
               <h1 className="font-bold text-lg text-white tracking-wide flex items-center gap-1.5">
                 SERA MC
@@ -151,9 +150,11 @@ export default function AdminLayout({ children }) {
       {/* Header Mobile */}
       <header className="md:hidden flex items-center justify-between p-4 bg-[#0b101d] border-b border-slate-800 sticky top-0 z-40">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white font-bold text-lg">
-            S
-          </div>
+          <img 
+            src="/LOGO.png" 
+            alt="SERA MC Logo" 
+            className="h-8 w-auto object-contain drop-shadow-md"
+          />
           <span className="font-bold text-white tracking-wide text-sm">SERA MC Admin</span>
         </div>
 

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ShieldCheck, Lock, Sparkles, Key } from 'lucide-react';
+import { ShieldCheck, Lock, Key } from 'lucide-react';
 
 export default function AdminLogin() {
   const [password, setPassword] = useState('');
@@ -36,12 +36,16 @@ export default function AdminLogin() {
       <div className="bg-[#0b101d]/90 border border-slate-800 p-8 sm:p-10 rounded-3xl w-full max-w-md backdrop-blur-2xl shadow-2xl relative z-10 space-y-8">
         {/* Top Logo & Title */}
         <div className="text-center space-y-3">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center mx-auto shadow-xl shadow-cyan-500/25 border border-cyan-400/30 text-white font-black text-3xl">
-            S
+          <div className="flex justify-center mb-2">
+            <img 
+              src="/LOGO.png" 
+              alt="SERA MC Official Logo" 
+              className="h-20 sm:h-24 object-contain drop-shadow-[0_10px_25px_rgba(0,0,0,0.5)] transition-transform hover:scale-105"
+            />
           </div>
           <div>
             <h1 className="text-2xl font-extrabold text-white tracking-tight flex items-center justify-center gap-2">
-              SERA MC <span className="text-xs uppercase bg-cyan-500/20 text-cyan-300 px-2 py-0.5 rounded-full border border-cyan-500/30">Admin</span>
+              SERA MC <span className="text-xs uppercase bg-cyan-500/20 text-cyan-300 px-2 py-0.5 rounded-full border border-cyan-500/30 font-semibold">Admin</span>
             </h1>
             <p className="text-xs text-slate-400 mt-1">
               Portal Manajemen & Control Panel Supabase DB
