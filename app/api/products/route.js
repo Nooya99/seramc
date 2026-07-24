@@ -26,39 +26,43 @@ export async function GET() {
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { name, description, category, price, duration, isPopular, image } = body;
 
-    if (!name || price === undefined) {
-      return NextResponse.json({ error: 'Nama dan Harga wajib diisi' }, { status: 400 });
+    // Check if payload is batch insert array or object with items
+    const isBatch = Array.isArray(body) || (body.items && Array.isArray(body.items));
+    const itemsToInsert = isBatch ? (Array.isArray(body) ? body : body.items) : [body];
+
+    if (itemsToInsert.length === 0) {
+      return NextResponse.json({ error: 'No items provided' }, { status: 400 });
     }
 
-    const newProduct = {
+    const nowIso = new Date().toISOString();
+    const formattedPayload = itemsToInsert.map(item => ({
       id: crypto.randomUUID(),
-      name,
-      description: description || '',
-      category: category || 'Rank',
-      price: parseInt(price),
-      duration: duration || 'Permanen',
-      image: image || null,
-      isPopular: Boolean(isPopular),
-      updatedAt: new Date().toISOString()
-    };
+      name: item.name,
+      description: item.description || '',
+      category: item.category || 'Rank',
+      price: parseInt(item.price),
+      duration: item.duration || 'Permanen',
+      image: item.image || null,
+      isPopular: Boolean(item.isPopular),
+      updatedAt: nowIso,
+      createdAt: nowIso
+    }));
 
-    const { data: product, error } = await supabaseAdmin
+    const { data: products, error } = await supabaseAdmin
       .from('Product')
-      .insert([newProduct])
-      .select()
-      .single();
+      .insert(formattedPayload)
+      .select();
 
     if (error) {
-      console.error('Supabase error creating product:', error);
+      console.error('Supabase error creating product(s):', error);
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json(product, { status: 201 });
+    return NextResponse.json(isBatch ? products : products[0], { status: 201 });
   } catch (error) {
-    console.error('Error creating product:', error);
-    return NextResponse.json({ error: 'Failed to create product', details: error.message }, { status: 500 });
+    console.error('Error creating product(s):', error);
+    return NextResponse.json({ error: 'Failed to create product(s)', details: error.message }, { status: 500 });
   }
 }
 

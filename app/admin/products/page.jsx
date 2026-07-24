@@ -10,8 +10,7 @@ import {
   RefreshCw, 
   Sparkles,
   CheckSquare,
-  Square,
-  X
+  Square
 } from 'lucide-react';
 import { ConfirmModal, Toast } from '@/components/admin/NotificationModal';
 
@@ -219,7 +218,6 @@ export default function AdminProductsPage() {
         const idsToDelete = [...selectedIds];
         const previousProducts = [...products];
 
-        // Optimistic state update
         setProducts(prev => prev.filter(p => !idsToDelete.includes(p.id)));
         setSelectedIds([]);
 
@@ -246,13 +244,13 @@ export default function AdminProductsPage() {
     });
   };
 
-  // Generate All Default Shop Items (Ranks, Keys, & Others)
+  // Generate All Default Shop Items (21 Items: Ranks, Keys, & Others) in 1 Batch Request
   const seedDefaultShopItems = async () => {
     setConfirmModal({
       isOpen: true,
       title: 'Generate All Shop Items',
-      message: 'Tambahkan seluruh item default Toko SERA MC (RANK, KEY, & OTHERS) ke Database Supabase?',
-      count: 0,
+      message: 'Tambahkan seluruh 21 item default Toko SERA MC (RANK, KEY, & OTHERS) sekaligus ke Database Supabase?',
+      count: 21,
       onConfirm: async () => {
         setConfirmModal({ isOpen: false });
         setSaving(true);
@@ -286,16 +284,25 @@ export default function AdminProductsPage() {
           { name: 'Coin Bundle', category: 'Others', price: 1000, duration: '35 Coin', description: 'Bundle 35 Coin Server', isPopular: false }
         ];
 
-        for (const item of defaultShopItems) {
-          await fetch('/api/products', {
+        try {
+          const res = await fetch('/api/products', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(item)
+            body: JSON.stringify(defaultShopItems)
           });
+
+          if (res.ok) {
+            const inserted = await res.json();
+            setProducts(inserted);
+            showToast('Seluruh 21 item toko (RANK, KEY, OTHER) berhasil di-generate!');
+          } else {
+            showToast('Gagal memproses batch insert.', 'error');
+          }
+        } catch (err) {
+          showToast('Terjadi kesalahan jaringan.', 'error');
+        } finally {
+          setSaving(false);
         }
-        await fetchProducts();
-        setSaving(false);
-        showToast('Seluruh item toko berhasil di-generate!');
       }
     });
   };
