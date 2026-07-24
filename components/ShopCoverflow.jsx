@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PixelIcon from '@/components/PixelIcon';
 
-const ranks = [
+const initialRanks = [
   {
     name: 'LUX',
     iconName: 'star',
@@ -86,7 +86,42 @@ const ranks = [
 ];
 
 export default function ShopCoverflow({ onOpenModal }) {
+  const [ranks, setRanks] = useState(initialRanks);
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    fetchDbProducts();
+  }, []);
+
+  const fetchDbProducts = async () => {
+    try {
+      const res = await fetch('/api/products');
+      if (res.ok) {
+        const dbProducts = await res.json();
+        if (dbProducts && dbProducts.length > 0) {
+          const rankItems = dbProducts.filter(p => (p.category || '').toLowerCase() === 'rank');
+          if (rankItems.length > 0) {
+            const updated = initialRanks.map(rank => {
+              const matchedFromDb = rankItems.filter(p => p.name.toUpperCase().includes(rank.name));
+              if (matchedFromDb.length > 0) {
+                return {
+                  ...rank,
+                  prices: matchedFromDb.map(p => ({
+                    duration: p.duration || 'Permanen',
+                    price: p.price ? p.price.toLocaleString('id-ID') : p.price
+                  }))
+                };
+              }
+              return rank;
+            });
+            setRanks(updated);
+          }
+        }
+      }
+    } catch (err) {
+      console.error('Error fetching DB products:', err);
+    }
+  };
 
   const moveShop = (step) => {
     setCurrentIndex((prev) => (prev + step + ranks.length) % ranks.length);
@@ -134,7 +169,7 @@ export default function ShopCoverflow({ onOpenModal }) {
               >
                 {item.isSpecial && (
                   <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-[#f2e28a] text-gray-900 text-xs md:text-sm font-bold px-5 py-1.5 rounded-full uppercase shadow-lg z-10">
-                    Special Tier
+                    SPECIAL TIER
                   </div>
                 )}
  

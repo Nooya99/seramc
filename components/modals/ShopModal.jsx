@@ -1,11 +1,10 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import PixelIcon from '@/components/PixelIcon';
 
-const ranks = [
+const initialRanks = [
   {
-    name: 'LUX',
     name: 'LUX',
     iconName: 'star',
     badge: 'LUX',
@@ -86,7 +85,7 @@ const ranks = [
   }
 ];
 
-const keysData = [
+const initialKeysData = [
   {
     name: 'PEASANT',
     iconName: 'unlock',
@@ -139,7 +138,7 @@ const keysData = [
   }
 ];
 
-const othersData = [
+const initialOthersData = [
   {
     name: 'Unlimited Claim',
     iconName: 'repeat',
@@ -179,9 +178,14 @@ const othersData = [
 ];
 
 export default function ShopModal({ isOpen, onClose, cart = [], playerContext, onLoginClick, onAddToCart, onViewCart }) {
+  const [ranks, setRanks] = useState(initialRanks);
+  const [keysData, setKeysData] = useState(initialKeysData);
+  const [othersData, setOthersData] = useState(initialOthersData);
+
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
+      fetchDbProducts();
     } else {
       document.body.style.overflow = 'unset';
     }
@@ -189,6 +193,36 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
       document.body.style.overflow = 'unset';
     };
   }, [isOpen]);
+
+  const fetchDbProducts = async () => {
+    try {
+      const res = await fetch('/api/products');
+      if (res.ok) {
+        const dbProducts = await res.json();
+        if (dbProducts && dbProducts.length > 0) {
+          const rankItems = dbProducts.filter(p => (p.category || '').toLowerCase() === 'rank');
+          if (rankItems.length > 0) {
+            const updated = initialRanks.map(rank => {
+              const matchedFromDb = rankItems.filter(p => p.name.toUpperCase().includes(rank.name));
+              if (matchedFromDb.length > 0) {
+                return {
+                  ...rank,
+                  prices: matchedFromDb.map(p => ({
+                    duration: p.duration || 'Permanen',
+                    price: p.price ? p.price.toLocaleString('id-ID') : p.price
+                  }))
+                };
+              }
+              return rank;
+            });
+            setRanks(updated);
+          }
+        }
+      }
+    } catch (err) {
+      console.error('Error fetching DB products for modal:', err);
+    }
+  };
 
   if (!isOpen) return null;
 

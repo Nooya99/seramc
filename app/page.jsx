@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import PixelIcon from '@/components/PixelIcon';
 import Navbar from '@/components/Navbar';
 import NoticeToast from '@/components/NoticeToast';
@@ -33,6 +33,21 @@ export default function Home() {
   const [toasts, setToasts] = useState([]);
   const loginTimeoutRef = useRef(null);
 
+  // Restore nickname from browser cache (localStorage) on initial mount
+  useEffect(() => {
+    try {
+      const savedContext = localStorage.getItem('sera_player_context');
+      if (savedContext) {
+        const parsed = JSON.parse(savedContext);
+        if (parsed && parsed.nickname) {
+          setPlayerContext(parsed);
+        }
+      }
+    } catch (err) {
+      console.error('Error restoring player context from localStorage:', err);
+    }
+  }, []);
+
   const addToast = (title, description, type = 'success') => {
     const id = Date.now() + Math.random();
     setToasts(prev => [...prev, { id, title, description, type }]);
@@ -50,7 +65,7 @@ export default function Home() {
       if (loginTimeoutRef.current) clearTimeout(loginTimeoutRef.current);
       loginTimeoutRef.current = setTimeout(() => {
         setIsLoginOpen(true);
-      }, 1000); // 1 second delay
+      }, 800);
       
       return;
     }
@@ -71,7 +86,6 @@ export default function Home() {
       );
 
       if (existingItemIndex !== -1) {
-        // Item already in cart
         if (item.duration && item.duration.includes('Permanen')) {
           playSound('error');
           addToast('Gagal Menambahkan', `Item ${item.name} (${item.duration}) maksimal 1 per akun.`, 'error');
@@ -80,7 +94,6 @@ export default function Home() {
         
         playSound('success');
         addToast('Berhasil Ditambahkan', `${item.name} x${(prev[existingItemIndex].quantity || 1) + 1} masuk ke keranjang!`, 'success');
-        // Increment quantity
         const newCart = [...prev];
         newCart[existingItemIndex] = {
           ...newCart[existingItemIndex],
@@ -91,7 +104,6 @@ export default function Home() {
 
       playSound('success');
       addToast('Berhasil Ditambahkan', `${item.name} masuk ke keranjang!`, 'success');
-      // Add new item with quantity 1
       return [...prev, { ...item, quantity: 1 }];
     });
   };
@@ -103,7 +115,7 @@ export default function Home() {
       const newQuantity = (item.quantity || 1) + delta;
       
       if (newQuantity < 1) {
-        return prev; // Or we could remove the item, but let's keep min 1
+        return prev;
       }
 
       if (item.duration && item.duration.includes('Permanen') && newQuantity > 1) {

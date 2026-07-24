@@ -5,7 +5,7 @@ import PixelIcon from '@/components/PixelIcon';
 
 export default function PlayerLoginModal({ isOpen, onClose, onSave, playerContext }) {
   const [nickname, setNickname] = useState('');
-  const [edition, setEdition] = useState('java'); // 'java' or 'bedrock'
+  const [edition, setEdition] = useState('java');
 
   useEffect(() => {
     if (isOpen && playerContext) {
@@ -23,7 +23,7 @@ export default function PlayerLoginModal({ isOpen, onClose, onSave, playerContex
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!nickname.trim()) return;
 
@@ -34,12 +34,43 @@ export default function PlayerLoginModal({ isOpen, onClose, onSave, playerContex
 
     const avatarUrl = `https://minotar.net/helm/${finalNickname}/100.png`;
 
-    onSave({
+    const playerData = {
       nickname: finalNickname,
       edition,
       avatarUrl
-    });
-    
+    };
+
+    // 1. Save to Browser Caching (localStorage)
+    try {
+      localStorage.setItem('sera_player_context', JSON.stringify(playerData));
+      localStorage.setItem('sera_player_ign', finalNickname);
+    } catch (err) {
+      console.error('Failed to write to localStorage:', err);
+    }
+
+    // 2. Sync Nickname to Supabase Database (/api/users)
+    try {
+      fetch('/api/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ign: finalNickname })
+      }).catch(err => console.error('Failed to sync user to Supabase:', err));
+    } catch (err) {
+      console.error('Failed to invoke /api/users:', err);
+    }
+
+    onSave(playerData);
+    onClose();
+  };
+
+  const handleLogout = () => {
+    try {
+      localStorage.removeItem('sera_player_context');
+      localStorage.removeItem('sera_player_ign');
+    } catch (err) {
+      console.error('Failed to clear localStorage:', err);
+    }
+    onSave(null);
     onClose();
   };
 
@@ -110,9 +141,7 @@ export default function PlayerLoginModal({ isOpen, onClose, onSave, playerContex
           {playerContext && (
             <button 
               type="button"
-              onClick={() => {
-                onSave(null);
-              }}
+              onClick={handleLogout}
               className="w-full bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/30 font-bold py-3 rounded-xl transition-all duration-300 ease-in-out"
             >
               Hapus Nickname (Log Out)
