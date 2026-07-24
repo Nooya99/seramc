@@ -15,7 +15,8 @@ import {
   Crown,
   Key,
   Layers,
-  Grid
+  Grid,
+  CheckCircle2
 } from 'lucide-react';
 import { ConfirmModal, Toast } from '@/components/admin/NotificationModal';
 
@@ -60,6 +61,35 @@ export default function AdminProductsPage() {
     image: ''
   });
 
+  const defaultShopItems = [
+    // RANK PACKAGES
+    { name: 'LUX Rank (1 Bulan)', category: 'Rank', price: 25000, duration: '1 Bulan', description: 'Prefix [LUX] 1 Bulan, Akses fitur khusus', isPopular: false },
+    { name: 'LUX Rank (Permanen)', category: 'Rank', price: 45000, duration: 'Permanen', description: 'Prefix [LUX] Permanen, Akses fitur khusus', isPopular: false },
+    { name: 'VEIL Rank (1 Bulan)', category: 'Rank', price: 40000, duration: '1 Bulan', description: 'Prefix [VEIL] 1 Bulan, Kit & Perks VEIL', isPopular: false },
+    { name: 'VEIL Rank (Permanen)', category: 'Rank', price: 65000, duration: 'Permanen', description: 'Prefix [VEIL] Permanen, Kit & Perks VEIL', isPopular: false },
+    { name: 'RIFT Rank (1 Bulan)', category: 'Rank', price: 65000, duration: '1 Bulan', description: 'Prefix [RIFT] 1 Bulan, Multi-home & Fly', isPopular: false },
+    { name: 'RIFT Rank (Permanen)', category: 'Rank', price: 90000, duration: 'Permanen', description: 'Prefix [RIFT] Permanen, Multi-home & Fly', isPopular: false },
+    { name: 'CORE Rank (1 Bulan)', category: 'Rank', price: 90000, duration: '1 Bulan', description: 'Prefix [CORE] 1 Bulan, Akses Komando Ekstra', isPopular: true },
+    { name: 'CORE Rank (Permanen)', category: 'Rank', price: 120000, duration: 'Permanen', description: 'Prefix [CORE] Permanen, Akses Komando Ekstra', isPopular: true },
+    { name: 'ARCH Rank (1 Bulan)', category: 'Rank', price: 120000, duration: '1 Bulan', description: 'Prefix [ARCH] 1 Bulan, Kasta Elit Server', isPopular: false },
+    { name: 'ARCH Rank (Permanen)', category: 'Rank', price: 160000, duration: 'Permanen', description: 'Prefix [ARCH] Permanen, Kasta Elit Server', isPopular: false },
+    { name: 'CUSTOM Rank (1 Bulan)', category: 'Rank', price: 300000, duration: '1 Bulan', description: 'Custom Title 1 Bulan', isPopular: true },
+    { name: 'CUSTOM Rank (Permanen)', category: 'Rank', price: 450000, duration: 'Permanen', description: 'Custom Title Permanen', isPopular: true },
+
+    // DAFTAR HARGA KEY
+    { name: 'PEASANT Key', category: 'Key / Crate', price: 13000, duration: '5 Key', description: 'Paket 5 Key Peasant Crate', isPopular: false },
+    { name: 'NOBLE Key', category: 'Key / Crate', price: 20000, duration: '5 Key', description: 'Paket 5 Key Noble Crate', isPopular: false },
+    { name: 'IMPERIAL Key', category: 'Key / Crate', price: 24000, duration: '5 Key', description: 'Paket 5 Key Imperial Crate', isPopular: false },
+    { name: 'SERA Key', category: 'Key / Crate', price: 28000, duration: '5 Key', description: 'Paket 5 Key SERA Special Crate', isPopular: true },
+    { name: 'ULTIMATE Key', category: 'Key / Crate', price: 45000, duration: '9 Key', description: 'Paket 9 Key Ultimate Crate', isPopular: true },
+
+    // OTHERS
+    { name: 'Unlimited Claim', category: 'Others', price: 35000, duration: 'Permanen', description: 'Unlimited Claim Land Permanen', isPopular: false },
+    { name: 'Premium Pass', category: 'Others', price: 30000, duration: '1 Bulan', description: 'Pass Bulanan dengan Hadiah Spesial', isPopular: true },
+    { name: 'Max Skills', category: 'Others', price: 300000, duration: 'Per Season', description: 'Boost Seluruh Level Skill Ke 100 Max', isPopular: false },
+    { name: 'Coin Bundle', category: 'Others', price: 1000, duration: '35 Coin', description: 'Bundle 35 Coin Server', isPopular: false }
+  ];
+
   useEffect(() => {
     fetchProducts();
   }, []);
@@ -79,6 +109,13 @@ export default function AdminProductsPage() {
       setLoading(false);
     }
   };
+
+  // Check how many default items already exist in current products list
+  const existingDefaultCount = defaultShopItems.filter(d => 
+    products.some(p => p.name.trim().toLowerCase() === d.name.trim().toLowerCase())
+  ).length;
+
+  const isAllDefaultGenerated = existingDefaultCount === defaultShopItems.length;
 
   // Click Trash Icon on Card -> Activates Select Mode & selects this product
   const handleTrashClick = (id) => {
@@ -180,7 +217,11 @@ export default function AdminProductsPage() {
 
       if (res.ok) {
         const savedProduct = await res.json();
-        setProducts(prev => prev.map(p => p.id === tempId || p.id === editingProduct?.id ? savedProduct : p));
+        if (Array.isArray(savedProduct)) {
+          setProducts(savedProduct);
+        } else {
+          setProducts(prev => prev.map(p => p.id === tempId || p.id === editingProduct?.id ? savedProduct : p));
+        }
         showToast(editingProduct ? 'Produk berhasil diperbarui!' : 'Produk baru berhasil ditambahkan!');
       } else {
         const errData = await res.json();
@@ -242,59 +283,39 @@ export default function AdminProductsPage() {
     });
   };
 
-  // Generate All Default Shop Items (21 Items)
+  // Generate All Default Shop Items (Only inserts missing items, prevents duplicates)
   const seedDefaultShopItems = async () => {
+    if (isAllDefaultGenerated) {
+      showToast('Seluruh 21 item default toko sudah ter-generate!', 'error');
+      return;
+    }
+
+    const missingItems = defaultShopItems.filter(d => 
+      !products.some(p => p.name.trim().toLowerCase() === d.name.trim().toLowerCase())
+    );
+
     setConfirmModal({
       isOpen: true,
-      title: 'Generate All Shop Items',
-      message: 'Tambahkan seluruh 21 item default Toko SERA MC (RANK, KEY, & OTHERS) sekaligus ke Database Supabase?',
-      count: 21,
+      title: 'Generate Default Shop Items',
+      message: `Tambahkan ${missingItems.length} item default Toko SERA MC yang belum ada ke Database Supabase?`,
+      count: missingItems.length,
       onConfirm: async () => {
         setConfirmModal({ isOpen: false });
         setSaving(true);
-
-        const defaultShopItems = [
-          // RANK PACKAGES
-          { name: 'LUX Rank (1 Bulan)', category: 'Rank', price: 25000, duration: '1 Bulan', description: 'Prefix [LUX] 1 Bulan, Akses fitur khusus', isPopular: false },
-          { name: 'LUX Rank (Permanen)', category: 'Rank', price: 45000, duration: 'Permanen', description: 'Prefix [LUX] Permanen, Akses fitur khusus', isPopular: false },
-          { name: 'VEIL Rank (1 Bulan)', category: 'Rank', price: 40000, duration: '1 Bulan', description: 'Prefix [VEIL] 1 Bulan, Kit & Perks VEIL', isPopular: false },
-          { name: 'VEIL Rank (Permanen)', category: 'Rank', price: 65000, duration: 'Permanen', description: 'Prefix [VEIL] Permanen, Kit & Perks VEIL', isPopular: false },
-          { name: 'RIFT Rank (1 Bulan)', category: 'Rank', price: 65000, duration: '1 Bulan', description: 'Prefix [RIFT] 1 Bulan, Multi-home & Fly', isPopular: false },
-          { name: 'RIFT Rank (Permanen)', category: 'Rank', price: 90000, duration: 'Permanen', description: 'Prefix [RIFT] Permanen, Multi-home & Fly', isPopular: false },
-          { name: 'CORE Rank (1 Bulan)', category: 'Rank', price: 90000, duration: '1 Bulan', description: 'Prefix [CORE] 1 Bulan, Akses Komando Ekstra', isPopular: true },
-          { name: 'CORE Rank (Permanen)', category: 'Rank', price: 120000, duration: 'Permanen', description: 'Prefix [CORE] Permanen, Akses Komando Ekstra', isPopular: true },
-          { name: 'ARCH Rank (1 Bulan)', category: 'Rank', price: 120000, duration: '1 Bulan', description: 'Prefix [ARCH] 1 Bulan, Kasta Elit Server', isPopular: false },
-          { name: 'ARCH Rank (Permanen)', category: 'Rank', price: 160000, duration: 'Permanen', description: 'Prefix [ARCH] Permanen, Kasta Elit Server', isPopular: false },
-          { name: 'CUSTOM Rank (1 Bulan)', category: 'Rank', price: 300000, duration: '1 Bulan', description: 'Custom Title 1 Bulan', isPopular: true },
-          { name: 'CUSTOM Rank (Permanen)', category: 'Rank', price: 450000, duration: 'Permanen', description: 'Custom Title Permanen', isPopular: true },
-
-          // DAFTAR HARGA KEY
-          { name: 'PEASANT Key', category: 'Key / Crate', price: 13000, duration: '5 Key', description: 'Paket 5 Key Peasant Crate', isPopular: false },
-          { name: 'NOBLE Key', category: 'Key / Crate', price: 20000, duration: '5 Key', description: 'Paket 5 Key Noble Crate', isPopular: false },
-          { name: 'IMPERIAL Key', category: 'Key / Crate', price: 24000, duration: '5 Key', description: 'Paket 5 Key Imperial Crate', isPopular: false },
-          { name: 'SERA Key', category: 'Key / Crate', price: 28000, duration: '5 Key', description: 'Paket 5 Key SERA Special Crate', isPopular: true },
-          { name: 'ULTIMATE Key', category: 'Key / Crate', price: 45000, duration: '9 Key', description: 'Paket 9 Key Ultimate Crate', isPopular: true },
-
-          // OTHERS
-          { name: 'Unlimited Claim', category: 'Others', price: 35000, duration: 'Permanen', description: 'Unlimited Claim Land Permanen', isPopular: false },
-          { name: 'Premium Pass', category: 'Others', price: 30000, duration: '1 Bulan', description: 'Pass Bulanan dengan Hadiah Spesial', isPopular: true },
-          { name: 'Max Skills', category: 'Others', price: 300000, duration: 'Per Season', description: 'Boost Seluruh Level Skill Ke 100 Max', isPopular: false },
-          { name: 'Coin Bundle', category: 'Others', price: 1000, duration: '35 Coin', description: 'Bundle 35 Coin Server', isPopular: false }
-        ];
 
         try {
           const res = await fetch('/api/products', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(defaultShopItems)
+            body: JSON.stringify(missingItems)
           });
 
           if (res.ok) {
-            const inserted = await res.json();
-            setProducts(inserted);
-            showToast('Seluruh 21 item toko (RANK, KEY, OTHER) berhasil di-generate!');
+            const updatedProductsList = await res.json();
+            setProducts(updatedProductsList);
+            showToast(`Berhasil menggenerate ${missingItems.length} item toko baru!`);
           } else {
-            showToast('Gagal memproses batch insert.', 'error');
+            showToast('Gagal memproses generate item.', 'error');
           }
         } catch (err) {
           showToast('Terjadi kesalahan jaringan.', 'error');
@@ -431,13 +452,27 @@ export default function AdminProductsPage() {
         </div>
 
         <div className="flex flex-wrap gap-3">
+          {/* Generate All Button (Disabled if all 21 items generated) */}
           <button
             onClick={seedDefaultShopItems}
-            disabled={saving}
-            className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-sm font-bold border border-amber-500/30 transition-colors"
+            disabled={saving || isAllDefaultGenerated}
+            className={`flex items-center gap-2 px-4 py-3 rounded-2xl text-sm font-bold border transition-colors ${
+              isAllDefaultGenerated
+                ? 'bg-slate-900 text-slate-500 border-slate-800 cursor-not-allowed'
+                : 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border-amber-500/30'
+            }`}
           >
-            <Sparkles className="w-4 h-4" />
-            Generate All Shop Items
+            {isAllDefaultGenerated ? (
+              <>
+                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                Shop Items Complete (21/21)
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-4 h-4 text-amber-400" />
+                Generate All Shop Items ({existingDefaultCount}/21)
+              </>
+            )}
           </button>
 
           <button

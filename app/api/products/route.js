@@ -1,76 +1,119 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
-import crypto from 'crypto';
 
-export const dynamic = 'force-dynamic';
-
+// GET: Fetch all products from Supabase
 export async function GET() {
   try {
-    const { data: products, error } = await supabaseAdmin
+    const { data, error } = await supabaseAdmin
       .from('Product')
       .select('*')
-      .order('createdAt', { ascending: true });
+      .order('createdAt', { ascending: false });
 
     if (error) {
-      console.error('Supabase error fetching products:', error);
+      console.error('Supabase GET products error:', error);
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json(products || []);
+    return NextResponse.json(data || []);
   } catch (error) {
-    console.error('Error fetching products:', error);
+    console.error('API GET products error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
 
+// POST: Add new product(s) - Supports single object or array batch insert without duplicates
 export async function POST(request) {
   try {
     const body = await request.json();
 
-    // Check if payload is batch insert array or object with items
-    const isBatch = Array.isArray(body) || (body.items && Array.isArray(body.items));
-    const itemsToInsert = isBatch ? (Array.isArray(body) ? body : body.items) : [body];
+    // Fetch existing product names to prevent duplicates
+    const { data: existingData } = await supabaseAdmin.from('Product').select('name');
+    const existingNames = new Set((existingData || []).map(p => p.name.trim().toLowerCase()));
 
-    if (itemsToInsert.length === 0) {
-      return NextResponse.json({ error: 'No items provided' }, { status: 400 });
+    // Batch Array Insert
+    if (Array.isArray(body)) {
+      const newItems = body.filter(item => item.name && !existingNames.has(item.name.trim().toLowerCase()));
+
+      if (newItems.length === 0) {
+        // Return existing list if all items already generated
+        const { data: currentProducts } = await supabaseAdmin
+          .from('Product')
+          .select('*')
+          .order('createdAt', { ascending: false });
+        return NextResponse.json(currentProducts || []);
+      }
+
+      const formattedPayload = newItems.map(item => ({
+        name: item.name.trim(),
+        category: item.category || 'Rank',
+        price: parseInt(item.price) || 0,
+        duration: item.duration || 'Permanen',
+        description: item.description || null,
+        image: item.image || null,
+        isPopular: Boolean(item.isPopular)
+      }));
+
+      const { error: insertError } = await supabaseAdmin
+        .from('Product')
+        .insert(formattedPayload);
+
+      if (insertError) {
+        console.error('Supabase batch insert error:', insertError);
+        return NextResponse.json({ error: insertError.message }, { status: 500 });
+      }
+
+      const { data: updatedProducts } = await supabaseAdmin
+        .from('Product')
+        .select('*')
+        .order('createdAt', { ascending: false });
+
+      return NextResponse.json(updatedProducts || []);
     }
 
-    const nowIso = new Date().toISOString();
-    const formattedPayload = itemsToInsert.map(item => ({
-      id: crypto.randomUUID(),
-      name: item.name,
-      description: item.description || '',
-      category: item.category || 'Rank',
-      price: parseInt(item.price),
-      duration: item.duration || 'Permanen',
-      image: item.image || null,
-      isPopular: Boolean(item.isPopular),
-      updatedAt: nowIso,
-      createdAt: nowIso
-    }));
+    // Single Product Insert
+    if (!body.name || !body.price) {
+      return NextResponse.json({ error: 'Nama dan Harga wajib diisi' }, { status: 400 });
+    }
 
-    const { data: products, error } = await supabaseAdmin
+    if (existingNames.has(body.name.trim().toLowerCase())) {
+      return NextResponse.json({ error: `Produk dengan nama "${body.name}" sudah ada!` }, { status: 400 });
+    }
+
+    const payload = {
+      name: body.name.trim(),
+      category: body.category || 'Rank',
+      price: parseInt(body.price) || 0,
+      duration: body.duration || 'Permanen',
+      description: body.description || null,
+      image: body.image || null,
+      isPopular: Boolean(body.isPopular)
+    };
+
+    const { data, error } = await supabaseAdmin
       .from('Product')
-      .insert(formattedPayload)
-      .select();
+      .insert([payload])
+      .select('*')
+      .single();
 
     if (error) {
-      console.error('Supabase error creating product(s):', error);
+      console.error('Supabase POST product error:', error);
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json(isBatch ? products : products[0], { status: 201 });
+    return NextResponse.json(data);
   } catch (error) {
-    console.error('Error creating product(s):', error);
-    return NextResponse.json({ error: 'Failed to create product(s)', details: error.message }, { status: 500 });
+    console.error('API POST product error:', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
 
+// DELETE: Batch delete products by IDs
 export async function DELETE(request) {
   try {
     const { ids } = await request.json();
+
     if (!ids || !Array.isArray(ids) || ids.length === 0) {
-      return NextResponse.json({ error: 'IDs array required' }, { status: 400 });
+      return NextResponse.json({ error: 'IDs array is required' }, { status: 400 });
     }
 
     const { error } = await supabaseAdmin
@@ -79,13 +122,13 @@ export async function DELETE(request) {
       .in('id', ids);
 
     if (error) {
-      console.error('Supabase error batch deleting products:', error);
+      console.error('Supabase DELETE products error:', error);
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json({ message: `${ids.length} products deleted successfully` });
+    return NextResponse.json({ success: true, count: ids.length });
   } catch (error) {
-    console.error('Error batch deleting products:', error);
-    return NextResponse.json({ error: 'Failed to batch delete products' }, { status: 500 });
+    console.error('API DELETE products error:', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
