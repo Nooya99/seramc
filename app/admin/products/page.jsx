@@ -10,7 +10,12 @@ import {
   RefreshCw, 
   Sparkles,
   CheckSquare,
-  Square
+  Square,
+  X,
+  Crown,
+  Key,
+  Layers,
+  Grid
 } from 'lucide-react';
 import { ConfirmModal, Toast } from '@/components/admin/NotificationModal';
 
@@ -20,6 +25,9 @@ export default function AdminProductsPage() {
   const [showModal, setShowModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [saving, setSaving] = useState(false);
+
+  // Category Filter state (Default: 'ALL')
+  const [categoryFilter, setCategoryFilter] = useState('ALL');
 
   // Select / Delete Mode state (OFF by default)
   const [selectMode, setSelectMode] = useState(false);
@@ -300,6 +308,102 @@ export default function AdminProductsPage() {
   const formatPrice = (p) => (p || 0).toLocaleString('id-ID');
   const allSelected = products.length > 0 && selectedIds.length === products.length;
 
+  // Filter Categories logic
+  const rankItems = products.filter(p => p.category === 'Rank');
+  const keyItems = products.filter(p => p.category === 'Key / Crate');
+  const otherItems = products.filter(p => p.category !== 'Rank' && p.category !== 'Key / Crate');
+
+  const categories = [
+    { id: 'ALL', label: 'Semua Katalog (ALL)', icon: <Grid className="w-4 h-4" />, count: products.length },
+    { id: 'Rank', label: '👑 Rank Packages', icon: <Crown className="w-4 h-4" />, count: rankItems.length },
+    { id: 'Key / Crate', label: '🔑 Key / Crate', icon: <Key className="w-4 h-4" />, count: keyItems.length },
+    { id: 'Others', label: '📦 Others & Booster', icon: <Layers className="w-4 h-4" />, count: otherItems.length }
+  ];
+
+  // Helper component to render product card
+  const renderProductCard = (product) => {
+    const isSelected = selectedIds.includes(product.id);
+    return (
+      <div
+        key={product.id}
+        onClick={() => {
+          if (selectMode) toggleSelect(product.id);
+        }}
+        className={`bg-[#0b101d] border rounded-3xl p-6 relative overflow-hidden flex flex-col justify-between group transition-all duration-300 shadow-xl ${
+          selectMode ? 'cursor-pointer' : ''
+        } ${
+          isSelected 
+            ? 'border-cyan-500 ring-2 ring-cyan-500/20 bg-cyan-950/20' 
+            : 'border-slate-800 hover:border-slate-700'
+        }`}
+      >
+        {/* Select Checkbox (Shown ONLY when selectMode === true) */}
+        {selectMode && (
+          <div className="absolute top-4 left-4 z-10">
+            {isSelected ? (
+              <CheckSquare className="w-6 h-6 text-cyan-400 fill-cyan-500/20" />
+            ) : (
+              <Square className="w-6 h-6 text-slate-600 group-hover:text-slate-400" />
+            )}
+          </div>
+        )}
+
+        {product.isPopular && (
+          <div className="absolute top-4 right-4 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 px-3 py-1 rounded-full text-xs font-black flex items-center gap-1 shadow-lg shadow-amber-500/20">
+            <Star className="w-3.5 h-3.5 fill-slate-950" />
+            POPULER
+          </div>
+        )}
+
+        <div className={`space-y-3 ${selectMode ? 'pt-6' : ''}`}>
+          <span className="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-slate-900 text-slate-400 border border-slate-800 inline-block">
+            {product.category || 'Rank'}
+          </span>
+
+          <h3 className="text-xl font-bold text-white group-hover:text-cyan-300 transition-colors">
+            {product.name}
+          </h3>
+
+          <p className="text-xs text-slate-400 line-clamp-2">
+            {product.description || 'Tidak ada deskripsi.'}
+          </p>
+        </div>
+
+        <div className="pt-6 mt-6 border-t border-slate-800/80 flex items-center justify-between">
+          <div>
+            <p className="text-[11px] text-slate-500 font-medium">Durasi / Item: {product.duration}</p>
+            <p className="text-2xl font-black text-emerald-400 font-mono">
+              Rp {formatPrice(product.price)}
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={() => handleOpenModal(product)}
+              className="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors"
+              title="Edit Produk"
+            >
+              <Edit3 className="w-4 h-4" />
+            </button>
+
+            {/* RED TRASH CAN ICON: Activates select mode & selects this item! */}
+            <button
+              onClick={() => handleTrashClick(product.id)}
+              className={`p-2.5 rounded-xl transition-all ${
+                isSelected 
+                  ? 'bg-rose-600 text-white shadow-lg shadow-rose-600/30' 
+                  : 'bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20'
+              }`}
+              title="Klik untuk memilih & hapus item"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-8 pb-24 relative">
       {/* Toast & Confirmation Modal */}
@@ -346,6 +450,58 @@ export default function AdminProductsPage() {
         </div>
       </div>
 
+      {/* Category Selection Tabs Bar (Under Header) */}
+      <div className="flex items-center gap-2 p-2 bg-[#0b101d] border border-slate-800 rounded-2xl overflow-x-auto">
+        {categories.map((cat) => (
+          <button
+            key={cat.id}
+            onClick={() => setCategoryFilter(cat.id)}
+            className={`flex items-center gap-2.5 px-5 py-3 rounded-xl text-xs font-extrabold tracking-wider transition-all whitespace-nowrap ${
+              categoryFilter === cat.id
+                ? 'bg-cyan-500 text-slate-950 shadow-lg shadow-cyan-500/20'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800/60 border border-transparent'
+            }`}
+          >
+            {cat.icon}
+            <span>{cat.label}</span>
+            <span className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${
+              categoryFilter === cat.id ? 'bg-slate-950 text-cyan-300' : 'bg-slate-900 text-slate-400 border border-slate-800'
+            }`}>
+              {cat.count}
+            </span>
+          </button>
+        ))}
+      </div>
+
+      {/* Select All Bar with Close (X) Button on Far Right */}
+      {selectMode && products.length > 0 && (
+        <div className="flex items-center justify-between bg-rose-950/20 p-4 rounded-2xl border border-rose-500/30 animate-in fade-in duration-200">
+          <button
+            onClick={toggleSelectAll}
+            className="flex items-center gap-2 text-sm font-bold text-slate-300 hover:text-white transition-colors"
+          >
+            {allSelected ? (
+              <CheckSquare className="w-5 h-5 text-cyan-400" />
+            ) : (
+              <Square className="w-5 h-5 text-slate-500" />
+            )}
+            <span>{allSelected ? 'Batal Select Semua' : 'Select All (' + products.length + ' Produk)'}</span>
+          </button>
+
+          {/* Close X Button at far right */}
+          <button
+            onClick={() => {
+              setSelectedIds([]);
+              setSelectMode(false);
+            }}
+            className="p-1.5 rounded-xl bg-slate-800/80 hover:bg-rose-500/20 text-slate-400 hover:text-rose-300 border border-slate-700/80 transition-colors flex items-center justify-center"
+            title="Batal Select / Tutup"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+      )}
+
       {/* Product List Grid */}
       {loading ? (
         <div className="p-16 text-center text-slate-400 space-y-3">
@@ -360,94 +516,70 @@ export default function AdminProductsPage() {
             Klik &quot;Generate All Shop Items&quot; untuk mengisi otomatis seluruh Ranks, Keys, dan Others ke Database Supabase.
           </p>
         </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {products.map((product) => {
-            const isSelected = selectedIds.includes(product.id);
-            return (
-              <div
-                key={product.id}
-                onClick={() => {
-                  if (selectMode) toggleSelect(product.id);
-                }}
-                className={`bg-[#0b101d] border rounded-3xl p-6 relative overflow-hidden flex flex-col justify-between group transition-all duration-300 shadow-xl ${
-                  selectMode ? 'cursor-pointer' : ''
-                } ${
-                  isSelected 
-                    ? 'border-cyan-500 ring-2 ring-cyan-500/20 bg-cyan-950/20' 
-                    : 'border-slate-800 hover:border-slate-700'
-                }`}
-              >
-                {/* Select Checkbox (Shown ONLY when selectMode === true) */}
-                {selectMode && (
-                  <div className="absolute top-4 left-4 z-10">
-                    {isSelected ? (
-                      <CheckSquare className="w-6 h-6 text-cyan-400 fill-cyan-500/20" />
-                    ) : (
-                      <Square className="w-6 h-6 text-slate-600 group-hover:text-slate-400" />
-                    )}
-                  </div>
-                )}
-
-                {product.isPopular && (
-                  <div className="absolute top-4 right-4 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 px-3 py-1 rounded-full text-xs font-black flex items-center gap-1 shadow-lg shadow-amber-500/20">
-                    <Star className="w-3.5 h-3.5 fill-slate-950" />
-                    POPULER
-                  </div>
-                )}
-
-                <div className={`space-y-3 ${selectMode ? 'pt-6' : ''}`}>
-                  <span className="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-slate-900 text-slate-400 border border-slate-800 inline-block">
-                    {product.category || 'Rank'}
-                  </span>
-
-                  <h3 className="text-xl font-bold text-white group-hover:text-cyan-300 transition-colors">
-                    {product.name}
-                  </h3>
-
-                  <p className="text-xs text-slate-400 line-clamp-2">
-                    {product.description || 'Tidak ada deskripsi.'}
-                  </p>
-                </div>
-
-                <div className="pt-6 mt-6 border-t border-slate-800/80 flex items-center justify-between">
-                  <div>
-                    <p className="text-[11px] text-slate-500 font-medium">Durasi / Item: {product.duration}</p>
-                    <p className="text-2xl font-black text-emerald-400 font-mono">
-                      Rp {formatPrice(product.price)}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                    <button
-                      onClick={() => handleOpenModal(product)}
-                      className="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors"
-                      title="Edit Produk"
-                    >
-                      <Edit3 className="w-4 h-4" />
-                    </button>
-
-                    {/* RED TRASH CAN ICON: Activates select mode & selects this item! */}
-                    <button
-                      onClick={() => handleTrashClick(product.id)}
-                      className={`p-2.5 rounded-xl transition-all ${
-                        isSelected 
-                          ? 'bg-rose-600 text-white shadow-lg shadow-rose-600/30' 
-                          : 'bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20'
-                      }`}
-                      title="Klik untuk memilih & hapus item"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
+      ) : categoryFilter === 'ALL' ? (
+        /* Render Category Separators when ALL is selected */
+        <div className="space-y-10">
+          {/* RANK SECTION */}
+          {rankItems.length > 0 && (
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 pb-3 border-b border-slate-800">
+                <Crown className="w-5 h-5 text-amber-400" />
+                <h2 className="text-lg font-black text-white tracking-wide">👑 PAKET RANK SERAMC</h2>
+                <span className="px-2.5 py-0.5 text-xs font-bold rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/20">
+                  {rankItems.length} Rank
+                </span>
               </div>
-            );
-          })}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {rankItems.map(renderProductCard)}
+              </div>
+            </div>
+          )}
+
+          {/* KEY SECTION */}
+          {keyItems.length > 0 && (
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 pb-3 border-b border-slate-800">
+                <Key className="w-5 h-5 text-cyan-400" />
+                <h2 className="text-lg font-black text-white tracking-wide">🔑 DAFTAR KEY & CRATE</h2>
+                <span className="px-2.5 py-0.5 text-xs font-bold rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
+                  {keyItems.length} Key
+                </span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {keyItems.map(renderProductCard)}
+              </div>
+            </div>
+          )}
+
+          {/* OTHERS SECTION */}
+          {otherItems.length > 0 && (
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 pb-3 border-b border-slate-800">
+                <Layers className="w-5 h-5 text-fuchsia-400" />
+                <h2 className="text-lg font-black text-white tracking-wide">📦 PAKET LAINNYA & BOOSTER</h2>
+                <span className="px-2.5 py-0.5 text-xs font-bold rounded-full bg-fuchsia-500/10 text-fuchsia-300 border border-fuchsia-500/20">
+                  {otherItems.length} Item
+                </span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {otherItems.map(renderProductCard)}
+              </div>
+            </div>
+          )}
+        </div>
+      ) : (
+        /* Filtered Grid View for specific category */
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {products
+            .filter(p => {
+              if (categoryFilter === 'Others') return p.category !== 'Rank' && p.category !== 'Key / Crate';
+              return p.category === categoryFilter;
+            })
+            .map(renderProductCard)}
         </div>
       )}
 
-      {/* Floating Bulk Action Bar (Appears when red trash icon is clicked and item(s) selected) */}
+      {/* Floating Bulk Action Bar */}
       {selectMode && selectedIds.length > 0 && (
         <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-40 bg-[#0b101d]/95 border border-cyan-500/40 p-4 rounded-2xl backdrop-blur-2xl shadow-2xl shadow-cyan-500/10 flex items-center gap-4 sm:gap-6 animate-in slide-in-from-bottom-5 duration-200">
           <div className="flex items-center gap-2">
@@ -458,13 +590,6 @@ export default function AdminProductsPage() {
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3">
-            <button
-              onClick={toggleSelectAll}
-              className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 text-xs font-bold border border-slate-700 whitespace-nowrap"
-            >
-              {allSelected ? 'Unselect All' : 'Select All (' + products.length + ')'}
-            </button>
-
             <button
               onClick={() => {
                 setSelectedIds([]);
