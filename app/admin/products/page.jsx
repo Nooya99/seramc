@@ -336,9 +336,9 @@ export default function AdminProductsPage() {
 
   const categories = [
     { id: 'ALL', label: 'Semua Katalog (ALL)', icon: <Grid className="w-4 h-4" />, count: products.length },
-    { id: 'Rank', label: '👑 Rank Packages', icon: <Crown className="w-4 h-4" />, count: rankItems.length },
-    { id: 'Key / Crate', label: '🔑 Key / Crate', icon: <Key className="w-4 h-4" />, count: keyItems.length },
-    { id: 'Others', label: '📦 Others & Booster', icon: <Layers className="w-4 h-4" />, count: otherItems.length }
+    { id: 'Rank', label: 'Rank Packages', icon: <Crown className="w-4 h-4" />, count: rankItems.length },
+    { id: 'Key / Crate', label: 'Key / Crate', icon: <Key className="w-4 h-4" />, count: keyItems.length },
+    { id: 'Others', label: 'Others & Booster', icon: <Layers className="w-4 h-4" />, count: otherItems.length }
   ];
 
   // Helper component to render product card
@@ -559,7 +559,7 @@ export default function AdminProductsPage() {
             <div className="space-y-4">
               <div className="flex items-center gap-3 pb-3 border-b border-slate-800">
                 <Crown className="w-5 h-5 text-amber-400" />
-                <h2 className="text-lg font-black text-white tracking-wide">👑 PAKET RANK SERAMC</h2>
+                <h2 className="text-lg font-black text-white tracking-wide">PAKET RANK SERAMC</h2>
                 <span className="px-2.5 py-0.5 text-xs font-bold rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/20">
                   {rankItems.length} Rank
                 </span>
@@ -575,7 +575,7 @@ export default function AdminProductsPage() {
             <div className="space-y-4">
               <div className="flex items-center gap-3 pb-3 border-b border-slate-800">
                 <Key className="w-5 h-5 text-cyan-400" />
-                <h2 className="text-lg font-black text-white tracking-wide">🔑 DAFTAR KEY & CRATE</h2>
+                <h2 className="text-lg font-black text-white tracking-wide">DAFTAR KEY & CRATE</h2>
                 <span className="px-2.5 py-0.5 text-xs font-bold rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
                   {keyItems.length} Key
                 </span>
@@ -591,7 +591,7 @@ export default function AdminProductsPage() {
             <div className="space-y-4">
               <div className="flex items-center gap-3 pb-3 border-b border-slate-800">
                 <Layers className="w-5 h-5 text-fuchsia-400" />
-                <h2 className="text-lg font-black text-white tracking-wide">📦 PAKET LAINNYA & BOOSTER</h2>
+                <h2 className="text-lg font-black text-white tracking-wide">PAKET LAINNYA & BOOSTER</h2>
                 <span className="px-2.5 py-0.5 text-xs font-bold rounded-full bg-fuchsia-500/10 text-fuchsia-300 border border-fuchsia-500/20">
                   {otherItems.length} Item
                 </span>
