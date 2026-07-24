@@ -61,3 +61,27 @@ export async function POST(request) {
     return NextResponse.json({ error: 'Failed to create product', details: error.message }, { status: 500 });
   }
 }
+
+export async function DELETE(request) {
+  try {
+    const { ids } = await request.json();
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return NextResponse.json({ error: 'IDs array required' }, { status: 400 });
+    }
+
+    const { error } = await supabaseAdmin
+      .from('Product')
+      .delete()
+      .in('id', ids);
+
+    if (error) {
+      console.error('Supabase error batch deleting products:', error);
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json({ message: `${ids.length} products deleted successfully` });
+  } catch (error) {
+    console.error('Error batch deleting products:', error);
+    return NextResponse.json({ error: 'Failed to batch delete products' }, { status: 500 });
+  }
+}

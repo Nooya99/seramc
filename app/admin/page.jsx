@@ -14,8 +14,11 @@ import {
   MessageCircle,
   TrendingUp,
   Package,
-  AlertCircle
+  AlertCircle,
+  CheckSquare,
+  Square
 } from 'lucide-react';
+import { ConfirmModal, Toast } from '@/components/admin/NotificationModal';
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -24,6 +27,26 @@ export default function AdminDashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [selectedOrder, setSelectedOrder] = useState(null);
+
+  // Multi-select & Batch action state
+  const [selectedIds, setSelectedIds] = useState([]);
+
+  // Confirm Modal state
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    count: 0,
+    onConfirm: null
+  });
+
+  // Toast notification state
+  const [toast, setToast] = useState(null);
+
+  const showToast = (message, type = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3500);
+  };
 
   useEffect(() => {
     fetchOrders();
@@ -39,8 +62,36 @@ export default function AdminDashboard() {
       }
     } catch (error) {
       console.error('Failed to fetch orders:', error);
+      showToast('Gagal mengambil data pesanan', 'error');
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Filtered list
+  const filteredOrders = orders.filter(order => {
+    const matchesSearch = 
+      (order.user?.ign || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (order.user?.whatsapp || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+      order.id.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesStatus = statusFilter === 'ALL' || order.status === statusFilter;
+
+    return matchesSearch && matchesStatus;
+  });
+
+  // Checkbox toggle
+  const toggleSelect = (id) => {
+    setSelectedIds(prev => 
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.length === filteredOrders.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(filteredOrders.map(o => o.id));
     }
   };
 
@@ -48,7 +99,6 @@ export default function AdminDashboard() {
   const handleUpdateStatus = async (orderId, newStatus) => {
     const previousOrders = [...orders];
 
-    // 1. Instant Optimistic State Update (0ms)
     setOrders(prev => prev.map(o => {
       if (o.id === orderId) {
         const updated = { ...o, status: newStatus };
@@ -65,46 +115,91 @@ export default function AdminDashboard() {
         body: JSON.stringify({ status: newStatus })
       });
 
-      if (!res.ok) {
-        alert('Gagal mengupdate status pesanan.');
-        setOrders(previousOrders); // Revert
+      if (res.ok) {
+        showToast('Status transaksi berhasil diperbarui!');
+      } else {
+        showToast('Gagal mengupdate status pesanan.', 'error');
+        setOrders(previousOrders);
       }
     } catch (error) {
-      console.error('Error updating order:', error);
-      alert('Terjadi kesalahan jaringan.');
-      setOrders(previousOrders); // Revert
+      showToast('Terjadi kesalahan jaringan.', 'error');
+      setOrders(previousOrders);
     }
   };
 
-  // Optimistic Order Delete
-  const handleDeleteOrder = async (orderId) => {
-    if (!confirm('Apakah Anda yakin ingin menghapus pesanan ini secara permanen?')) return;
+  // Single Order Delete Confirmation
+  const handleDeleteOrderSingle = (orderId, ign) => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'Hapus Pesanan',
+      message: `Apakah Anda yakin ingin menghapus pesanan dari player "${ign}"?`,
+      count: 1,
+      onConfirm: async () => {
+        setConfirmModal(prev => ({ ...prev, loading: true }));
+        const previousOrders = [...orders];
+        setOrders(prev => prev.filter(o => o.id !== orderId));
+        if (selectedOrder?.id === orderId) setSelectedOrder(null);
+        setSelectedIds(prev => prev.filter(i => i !== orderId));
 
-    const previousOrders = [...orders];
-
-    // 1. Instant Optimistic State Update (0ms)
-    setOrders(prev => prev.filter(o => o.id !== orderId));
-    if (selectedOrder?.id === orderId) setSelectedOrder(null);
-
-    try {
-      const res = await fetch(`/api/orders/${orderId}`, {
-        method: 'DELETE'
-      });
-
-      if (!res.ok) {
-        alert('Gagal menghapus pesanan.');
-        setOrders(previousOrders); // Revert
+        try {
+          const res = await fetch(`/api/orders/${orderId}`, { method: 'DELETE' });
+          if (res.ok) {
+            showToast('Pesanan berhasil dihapus!');
+          } else {
+            showToast('Gagal menghapus pesanan.', 'error');
+            setOrders(previousOrders);
+          }
+        } catch (error) {
+          showToast('Terjadi kesalahan jaringan saat menghapus.', 'error');
+          setOrders(previousOrders);
+        } finally {
+          setConfirmModal({ isOpen: false });
+        }
       }
-    } catch (error) {
-      console.error('Error deleting order:', error);
-      alert('Terjadi kesalahan saat menghapus.');
-      setOrders(previousOrders); // Revert
-    }
+    });
   };
 
-  const formatPrice = (price) => {
-    return (price || 0).toLocaleString('id-ID');
+  // Bulk Delete Confirmation
+  const handleBulkDelete = () => {
+    if (selectedIds.length === 0) return;
+
+    setConfirmModal({
+      isOpen: true,
+      title: 'Hapus Pesanan Terpilih',
+      message: `Apakah Anda yakin ingin menghapus ${selectedIds.length} pesanan yang dipilih secara permanen?`,
+      count: selectedIds.length,
+      onConfirm: async () => {
+        setConfirmModal(prev => ({ ...prev, loading: true }));
+        const idsToDelete = [...selectedIds];
+        const previousOrders = [...orders];
+
+        setOrders(prev => prev.filter(o => !idsToDelete.includes(o.id)));
+        setSelectedIds([]);
+
+        try {
+          const res = await fetch('/api/orders', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ids: idsToDelete })
+          });
+
+          if (res.ok) {
+            showToast(`${idsToDelete.length} pesanan berhasil dihapus!`);
+          } else {
+            showToast('Gagal menghapus beberapa pesanan.', 'error');
+            setOrders(previousOrders);
+          }
+        } catch (err) {
+          showToast('Terjadi kesalahan jaringan.', 'error');
+          setOrders(previousOrders);
+        } finally {
+          setConfirmModal({ isOpen: false });
+        }
+      }
+    });
   };
+
+  const formatPrice = (price) => (price || 0).toLocaleString('id-ID');
 
   // Calculations
   const paidOrders = orders.filter(o => o.status === 'PAID');
@@ -113,20 +208,22 @@ export default function AdminDashboard() {
   const totalRevenue = paidOrders.reduce((acc, curr) => acc + (curr.totalAmount || 0), 0);
   const potentialRevenue = pendingOrders.reduce((acc, curr) => acc + (curr.totalAmount || 0), 0);
 
-  // Filtered list
-  const filteredOrders = orders.filter(order => {
-    const matchesSearch = 
-      (order.user?.ign || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (order.user?.whatsapp || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-      order.id.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    const matchesStatus = statusFilter === 'ALL' || order.status === statusFilter;
-
-    return matchesSearch && matchesStatus;
-  });
+  const allSelected = filteredOrders.length > 0 && selectedIds.length === filteredOrders.length;
 
   return (
-    <div className="space-y-8 pb-10">
+    <div className="space-y-8 pb-20 relative">
+      {/* Toast & Confirmation Modal */}
+      <Toast toast={toast} onClose={() => setToast(null)} />
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        count={confirmModal.count}
+        loading={confirmModal.loading}
+        onConfirm={confirmModal.onConfirm}
+        onCancel={() => setConfirmModal({ isOpen: false })}
+      />
+
       {/* Header Banner */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-cyan-950/40 via-blue-950/20 to-slate-900/60 p-6 md:p-8 rounded-3xl border border-cyan-500/20 backdrop-blur-xl relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl -z-10 pointer-events-none" />
@@ -300,7 +397,16 @@ export default function AdminDashboard() {
             <table className="w-full text-left border-collapse min-w-[900px]">
               <thead>
                 <tr className="bg-slate-900/60 text-slate-400 text-xs font-bold uppercase tracking-wider border-b border-slate-800">
-                  <th className="p-4 pl-6">Tanggal & ID</th>
+                  <th className="p-4 pl-6 w-12">
+                    <button onClick={toggleSelectAll} className="flex items-center">
+                      {allSelected ? (
+                        <CheckSquare className="w-5 h-5 text-cyan-400" />
+                      ) : (
+                        <Square className="w-5 h-5 text-slate-600" />
+                      )}
+                    </button>
+                  </th>
+                  <th className="p-4">Tanggal & ID</th>
                   <th className="p-4">Pemain (IGN)</th>
                   <th className="p-4">Kontak WhatsApp</th>
                   <th className="p-4">Ringkasan Item</th>
@@ -310,109 +416,156 @@ export default function AdminDashboard() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60 text-sm">
-                {filteredOrders.map((order) => (
-                  <tr key={order.id} className="hover:bg-slate-800/30 transition-colors group">
-                    <td className="p-4 pl-6 font-mono text-xs">
-                      <p className="text-slate-200 font-semibold">
-                        {new Date(order.createdAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}
-                      </p>
-                      <p className="text-slate-400 text-[11px] font-normal truncate max-w-[120px]">
-                        ID: #{order.id.slice(0, 8)}
-                      </p>
-                    </td>
+                {filteredOrders.map((order) => {
+                  const isSelected = selectedIds.includes(order.id);
+                  return (
+                    <tr 
+                      key={order.id} 
+                      onClick={() => toggleSelect(order.id)}
+                      className={`hover:bg-slate-800/30 transition-colors group cursor-pointer ${
+                        isSelected ? 'bg-cyan-950/30' : ''
+                      }`}
+                    >
+                      <td className="p-4 pl-6" onClick={(e) => e.stopPropagation()}>
+                        <button onClick={() => toggleSelect(order.id)}>
+                          {isSelected ? (
+                            <CheckSquare className="w-5 h-5 text-cyan-400" />
+                          ) : (
+                            <Square className="w-5 h-5 text-slate-600" />
+                          )}
+                        </button>
+                      </td>
 
-                    <td className="p-4">
-                      <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 flex items-center justify-center font-bold text-cyan-300 text-xs">
-                          {(order.user?.ign || 'P')[0].toUpperCase()}
-                        </div>
-                        <span className="font-bold text-white group-hover:text-cyan-300 transition-colors">
-                          {order.user?.ign || 'Anonim'}
-                        </span>
-                      </div>
-                    </td>
+                      <td className="p-4 font-mono text-xs">
+                        <p className="text-slate-200 font-semibold">
+                          {new Date(order.createdAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}
+                        </p>
+                        <p className="text-slate-400 text-[11px] font-normal truncate max-w-[120px]">
+                          ID: #{order.id.slice(0, 8)}
+                        </p>
+                      </td>
 
-                    <td className="p-4">
-                      {order.user?.whatsapp ? (
-                        <a
-                          href={`https://wa.me/${order.user.whatsapp.replace(/[^0-9]/g, '')}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-lg hover:bg-emerald-500/20 transition-colors font-medium"
-                        >
-                          <MessageCircle className="w-3.5 h-3.5" />
-                          {order.user.whatsapp}
-                        </a>
-                      ) : (
-                        <span className="text-slate-500 text-xs">-</span>
-                      )}
-                    </td>
-
-                    <td className="p-4 max-w-[220px]">
-                      <div className="space-y-1">
-                        {(order.items || []).slice(0, 2).map((item, idx) => (
-                          <div key={idx} className="text-xs text-slate-300 flex items-center justify-between">
-                            <span className="truncate max-w-[140px] font-medium">
-                              {item.quantity}x {item.product?.name || 'Custom Rank'}
-                            </span>
-                            <span className="text-[10px] text-slate-400 font-mono">({item.duration})</span>
+                      <td className="p-4">
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 flex items-center justify-center font-bold text-cyan-300 text-xs">
+                            {(order.user?.ign || 'P')[0].toUpperCase()}
                           </div>
-                        ))}
-                        {(order.items || []).length > 2 && (
-                          <span className="text-[11px] text-cyan-400 font-medium">
-                            +{(order.items || []).length - 2} item lainnya
+                          <span className="font-bold text-white group-hover:text-cyan-300 transition-colors">
+                            {order.user?.ign || 'Anonim'}
                           </span>
+                        </div>
+                      </td>
+
+                      <td className="p-4" onClick={(e) => e.stopPropagation()}>
+                        {order.user?.whatsapp ? (
+                          <a
+                            href={`https://wa.me/${order.user.whatsapp.replace(/[^0-9]/g, '')}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-lg hover:bg-emerald-500/20 transition-colors font-medium"
+                          >
+                            <MessageCircle className="w-3.5 h-3.5" />
+                            {order.user.whatsapp}
+                          </a>
+                        ) : (
+                          <span className="text-slate-500 text-xs">-</span>
                         )}
-                      </div>
-                    </td>
+                      </td>
 
-                    <td className="p-4 font-bold text-emerald-400 font-mono">
-                      Rp {formatPrice(order.totalAmount)}
-                    </td>
+                      <td className="p-4 max-w-[220px]">
+                        <div className="space-y-1">
+                          {(order.items || []).slice(0, 2).map((item, idx) => (
+                            <div key={idx} className="text-xs text-slate-300 flex items-center justify-between">
+                              <span className="truncate max-w-[140px] font-medium">
+                                {item.quantity}x {item.product?.name || 'Custom Rank'}
+                              </span>
+                              <span className="text-[10px] text-slate-400 font-mono">({item.duration})</span>
+                            </div>
+                          ))}
+                          {(order.items || []).length > 2 && (
+                            <span className="text-[11px] text-cyan-400 font-medium">
+                              +{(order.items || []).length - 2} item lainnya
+                            </span>
+                          )}
+                        </div>
+                      </td>
 
-                    <td className="p-4">
-                      <select
-                        value={order.status}
-                        onChange={(e) => handleUpdateStatus(order.id, e.target.value)}
-                        className={`text-xs font-bold rounded-xl px-3 py-1.5 border focus:outline-none transition-all cursor-pointer ${
-                          order.status === 'PAID'
-                            ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20'
-                            : order.status === 'PENDING'
-                            ? 'bg-amber-500/10 text-amber-400 border-amber-500/30 hover:bg-amber-500/20'
-                            : 'bg-rose-500/10 text-rose-400 border-rose-500/30 hover:bg-rose-500/20'
-                        }`}
-                      >
-                        <option value="PENDING" className="bg-slate-900 text-amber-400">PENDING</option>
-                        <option value="PAID" className="bg-slate-900 text-emerald-400">PAID</option>
-                        <option value="CANCELLED" className="bg-slate-900 text-rose-400">CANCELLED</option>
-                      </select>
-                    </td>
+                      <td className="p-4 font-bold text-emerald-400 font-mono">
+                        Rp {formatPrice(order.totalAmount)}
+                      </td>
 
-                    <td className="p-4 pr-6 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => setSelectedOrder(order)}
-                          className="p-2 rounded-xl text-slate-300 hover:text-cyan-300 hover:bg-cyan-500/10 border border-slate-700/60 hover:border-cyan-500/30 transition-all"
-                          title="Lihat Detail Pesanan"
+                      <td className="p-4" onClick={(e) => e.stopPropagation()}>
+                        <select
+                          value={order.status}
+                          onChange={(e) => handleUpdateStatus(order.id, e.target.value)}
+                          className={`text-xs font-bold rounded-xl px-3 py-1.5 border focus:outline-none transition-all cursor-pointer ${
+                            order.status === 'PAID'
+                              ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20'
+                              : order.status === 'PENDING'
+                              ? 'bg-amber-500/10 text-amber-400 border-amber-500/30 hover:bg-amber-500/20'
+                              : 'bg-rose-500/10 text-rose-400 border-rose-500/30 hover:bg-rose-500/20'
+                          }`}
                         >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteOrder(order.id)}
-                          className="p-2 rounded-xl text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 border border-slate-700/60 hover:border-rose-500/30 transition-all"
-                          title="Hapus Pesanan"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                          <option value="PENDING" className="bg-slate-900 text-amber-400">PENDING</option>
+                          <option value="PAID" className="bg-slate-900 text-emerald-400">PAID</option>
+                          <option value="CANCELLED" className="bg-slate-900 text-rose-400">CANCELLED</option>
+                        </select>
+                      </td>
+
+                      <td className="p-4 pr-6 text-right" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => setSelectedOrder(order)}
+                            className="p-2 rounded-xl text-slate-300 hover:text-cyan-300 hover:bg-cyan-500/10 border border-slate-700/60 hover:border-cyan-500/30 transition-all"
+                            title="Lihat Detail Pesanan"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteOrderSingle(order.id, order.user?.ign || 'Anonim')}
+                            className="p-2 rounded-xl text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 border border-slate-700/60 hover:border-rose-500/30 transition-all"
+                            title="Hapus Pesanan"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           )}
         </div>
       </div>
+
+      {/* Floating Bulk Action Bar */}
+      {selectedIds.length > 0 && (
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-40 bg-[#0b101d]/95 border border-cyan-500/40 p-4 rounded-2xl backdrop-blur-2xl shadow-2xl shadow-cyan-500/10 flex items-center gap-6 animate-in slide-in-from-bottom-5 duration-200">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-cyan-500/20 text-cyan-400 font-bold flex items-center justify-center text-sm border border-cyan-500/30">
+              {selectedIds.length}
+            </div>
+            <span className="text-xs font-bold text-white">Pesanan Terpilih</span>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setSelectedIds([])}
+              className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold"
+            >
+              Batal
+            </button>
+            <button
+              onClick={handleBulkDelete}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 text-white text-xs font-bold shadow-lg shadow-rose-600/20 transition-all active:scale-95"
+            >
+              <Trash2 className="w-4 h-4" />
+              Hapus ({selectedIds.length}) Terpilih
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Modal Detail Pesanan */}
       {selectedOrder && (

@@ -143,3 +143,28 @@ export async function POST(request) {
     return NextResponse.json({ error: 'Failed to create order', details: error.message }, { status: 500 });
   }
 }
+
+export async function DELETE(request) {
+  try {
+    const { ids } = await request.json();
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return NextResponse.json({ error: 'IDs array required' }, { status: 400 });
+    }
+
+    // Delete OrderItems first
+    await supabaseAdmin.from('OrderItem').delete().in('orderId', ids);
+
+    // Delete Orders
+    const { error } = await supabaseAdmin.from('Order').delete().in('id', ids);
+
+    if (error) {
+      console.error('Supabase error batch deleting orders:', error);
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json({ message: `${ids.length} orders deleted successfully` });
+  } catch (error) {
+    console.error('Error batch deleting orders:', error);
+    return NextResponse.json({ error: 'Failed to batch delete orders' }, { status: 500 });
+  }
+}
