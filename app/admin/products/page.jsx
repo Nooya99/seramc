@@ -10,8 +10,7 @@ import {
   RefreshCw, 
   Sparkles,
   CheckSquare,
-  Square,
-  X
+  Square
 } from 'lucide-react';
 import { ConfirmModal, Toast } from '@/components/admin/NotificationModal';
 
@@ -73,17 +72,30 @@ export default function AdminProductsPage() {
     }
   };
 
+  // Click Trash Icon on Card -> Activates Select Mode & selects this product
+  const handleTrashClick = (id) => {
+    if (!selectMode) {
+      setSelectMode(true);
+      setSelectedIds([id]);
+    } else {
+      toggleSelect(id);
+    }
+  };
+
   // Toggle single product selection
   const toggleSelect = (id) => {
-    setSelectedIds(prev => 
-      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
-    );
+    setSelectedIds(prev => {
+      const next = prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id];
+      if (next.length === 0) setSelectMode(false); // Auto exit select mode if all unselected
+      return next;
+    });
   };
 
   // Toggle select all
   const toggleSelectAll = () => {
     if (selectedIds.length === products.length) {
       setSelectedIds([]);
+      setSelectMode(false);
     } else {
       setSelectedIds(products.map(p => p.id));
     }
@@ -175,46 +187,21 @@ export default function AdminProductsPage() {
     }
   };
 
-  // Single Delete Confirmation
-  const handleDeleteSingle = (id, name) => {
-    setConfirmModal({
-      isOpen: true,
-      title: 'Hapus Produk',
-      message: `Apakah Anda yakin ingin menghapus produk "${name}"?`,
-      count: 1,
-      onConfirm: async () => {
-        setConfirmModal(prev => ({ ...prev, loading: true }));
-        const previousProducts = [...products];
-        setProducts(prev => prev.filter(p => p.id !== id));
-        setSelectedIds(prev => prev.filter(i => i !== id));
-
-        try {
-          const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
-          if (res.ok) {
-            showToast('Produk berhasil dihapus!');
-          } else {
-            showToast('Gagal menghapus produk.', 'error');
-            setProducts(previousProducts);
-          }
-        } catch (err) {
-          showToast('Terjadi kesalahan jaringan.', 'error');
-          setProducts(previousProducts);
-        } finally {
-          setConfirmModal({ isOpen: false });
-        }
-      }
-    });
-  };
-
-  // Bulk Delete Confirmation
+  // Bulk / Selected Delete Confirmation
   const handleBulkDelete = () => {
     if (selectedIds.length === 0) return;
 
+    const count = selectedIds.length;
+    const isSingle = count === 1;
+    const singleProduct = isSingle ? products.find(p => p.id === selectedIds[0]) : null;
+
     setConfirmModal({
       isOpen: true,
-      title: 'Hapus Produk Terpilih',
-      message: `Apakah Anda yakin ingin menghapus ${selectedIds.length} produk yang dipilih secara masal?`,
-      count: selectedIds.length,
+      title: isSingle ? 'Hapus Produk' : 'Hapus Produk Terpilih',
+      message: isSingle 
+        ? `Apakah Anda yakin ingin menghapus produk "${singleProduct?.name || 'ini'}"?`
+        : `Apakah Anda yakin ingin menghapus ${count} produk yang dipilih secara masal?`,
+      count,
       onConfirm: async () => {
         setConfirmModal(prev => ({ ...prev, loading: true }));
         const idsToDelete = [...selectedIds];
@@ -232,9 +219,9 @@ export default function AdminProductsPage() {
           });
 
           if (res.ok) {
-            showToast(`${idsToDelete.length} produk berhasil dihapus secara bersamaan!`);
+            showToast(isSingle ? 'Produk berhasil dihapus!' : `${count} produk berhasil dihapus secara bersamaan!`);
           } else {
-            showToast('Gagal menghapus beberapa produk.', 'error');
+            showToast('Gagal menghapus produk.', 'error');
             setProducts(previousProducts);
           }
         } catch (err) {
@@ -247,7 +234,7 @@ export default function AdminProductsPage() {
     });
   };
 
-  // Generate All Default Shop Items (21 Items: Ranks, Keys, & Others)
+  // Generate All Default Shop Items (21 Items)
   const seedDefaultShopItems = async () => {
     setConfirmModal({
       isOpen: true,
@@ -314,7 +301,7 @@ export default function AdminProductsPage() {
   const allSelected = products.length > 0 && selectedIds.length === products.length;
 
   return (
-    <div className="space-y-8 pb-20 relative">
+    <div className="space-y-8 pb-24 relative">
       {/* Toast & Confirmation Modal */}
       <Toast toast={toast} onClose={() => setToast(null)} />
       <ConfirmModal
@@ -340,23 +327,6 @@ export default function AdminProductsPage() {
         </div>
 
         <div className="flex flex-wrap gap-3">
-          {/* Toggle Select / Delete Mode Trash Button */}
-          <button
-            onClick={() => {
-              setSelectMode(!selectMode);
-              if (selectMode) setSelectedIds([]);
-            }}
-            className={`flex items-center gap-2 px-4 py-3 rounded-2xl text-sm font-bold border transition-colors ${
-              selectMode 
-                ? 'bg-rose-500/20 text-rose-300 border-rose-500/40' 
-                : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700'
-            }`}
-            title="Klik untuk memilih & menghapus banyak item"
-          >
-            <Trash2 className="w-4 h-4 text-rose-400" />
-            <span>{selectMode ? 'Batal Select' : 'Pilih & Hapus Masal'}</span>
-          </button>
-
           <button
             onClick={seedDefaultShopItems}
             disabled={saving}
@@ -375,38 +345,6 @@ export default function AdminProductsPage() {
           </button>
         </div>
       </div>
-
-      {/* Multi-Select Toolbar (Only shown when selectMode === true) */}
-      {selectMode && products.length > 0 && (
-        <div className="flex items-center justify-between bg-rose-950/20 p-4 rounded-2xl border border-rose-500/30 animate-in fade-in duration-200">
-          <button
-            onClick={toggleSelectAll}
-            className="flex items-center gap-2 text-sm font-bold text-slate-300 hover:text-white transition-colors"
-          >
-            {allSelected ? (
-              <CheckSquare className="w-5 h-5 text-cyan-400" />
-            ) : (
-              <Square className="w-5 h-5 text-slate-500" />
-            )}
-            <span>{allSelected ? 'Batal Select Semua' : 'Select All (' + products.length + ' Produk)'}</span>
-          </button>
-
-          {selectedIds.length > 0 && (
-            <div className="flex items-center gap-3">
-              <span className="text-xs text-slate-400 font-medium">
-                <strong className="text-cyan-400 font-bold">{selectedIds.length}</strong> produk dipilih
-              </span>
-              <button
-                onClick={handleBulkDelete}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold shadow-lg shadow-rose-600/20 transition-all active:scale-95"
-              >
-                <Trash2 className="w-4 h-4" />
-                Hapus ({selectedIds.length}) Terpilih
-              </button>
-            </div>
-          )}
-        </div>
-      )}
 
       {/* Product List Grid */}
       {loading ? (
@@ -488,10 +426,16 @@ export default function AdminProductsPage() {
                     >
                       <Edit3 className="w-4 h-4" />
                     </button>
+
+                    {/* RED TRASH CAN ICON: Activates select mode & selects this item! */}
                     <button
-                      onClick={() => handleDeleteSingle(product.id, product.name)}
-                      className="p-2.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 transition-colors"
-                      title="Hapus Produk"
+                      onClick={() => handleTrashClick(product.id)}
+                      className={`p-2.5 rounded-xl transition-all ${
+                        isSelected 
+                          ? 'bg-rose-600 text-white shadow-lg shadow-rose-600/30' 
+                          : 'bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20'
+                      }`}
+                      title="Klik untuk memilih & hapus item"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -503,17 +447,24 @@ export default function AdminProductsPage() {
         </div>
       )}
 
-      {/* Floating Bulk Action Bar (Only shown when selectMode is ON and items are selected) */}
+      {/* Floating Bulk Action Bar (Appears when red trash icon is clicked and item(s) selected) */}
       {selectMode && selectedIds.length > 0 && (
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-40 bg-[#0b101d]/95 border border-cyan-500/40 p-4 rounded-2xl backdrop-blur-2xl shadow-2xl shadow-cyan-500/10 flex items-center gap-6 animate-in slide-in-from-bottom-5 duration-200">
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-40 bg-[#0b101d]/95 border border-cyan-500/40 p-4 rounded-2xl backdrop-blur-2xl shadow-2xl shadow-cyan-500/10 flex items-center gap-4 sm:gap-6 animate-in slide-in-from-bottom-5 duration-200">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-cyan-500/20 text-cyan-400 font-bold flex items-center justify-center text-sm border border-cyan-500/30">
               {selectedIds.length}
             </div>
-            <span className="text-xs font-bold text-white">Produk Terpilih</span>
+            <span className="text-xs font-bold text-white whitespace-nowrap">Produk Terpilih</span>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <button
+              onClick={toggleSelectAll}
+              className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 text-xs font-bold border border-slate-700 whitespace-nowrap"
+            >
+              {allSelected ? 'Unselect All' : 'Select All (' + products.length + ')'}
+            </button>
+
             <button
               onClick={() => {
                 setSelectedIds([]);
@@ -523,9 +474,10 @@ export default function AdminProductsPage() {
             >
               Batal
             </button>
+
             <button
               onClick={handleBulkDelete}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 text-white text-xs font-bold shadow-lg shadow-rose-600/20 transition-all active:scale-95"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 text-white text-xs font-bold shadow-lg shadow-rose-600/20 transition-all active:scale-95 whitespace-nowrap"
             >
               <Trash2 className="w-4 h-4" />
               Hapus ({selectedIds.length}) Terpilih

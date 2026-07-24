@@ -66,17 +66,30 @@ export default function AdminOrdersPage() {
     return matchSearch && matchStatus;
   });
 
+  // Click Trash Icon on row -> Activates select mode & selects this order
+  const handleTrashClick = (id) => {
+    if (!selectMode) {
+      setSelectMode(true);
+      setSelectedIds([id]);
+    } else {
+      toggleSelect(id);
+    }
+  };
+
   // Toggle single selection
   const toggleSelect = (id) => {
-    setSelectedIds(prev => 
-      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
-    );
+    setSelectedIds(prev => {
+      const next = prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id];
+      if (next.length === 0) setSelectMode(false);
+      return next;
+    });
   };
 
   // Toggle select all
   const toggleSelectAll = () => {
     if (selectedIds.length === filtered.length) {
       setSelectedIds([]);
+      setSelectMode(false);
     } else {
       setSelectedIds(filtered.map(o => o.id));
     }
@@ -107,46 +120,21 @@ export default function AdminOrdersPage() {
     }
   };
 
-  // Single Delete
-  const handleDeleteSingle = (id, ign) => {
-    setConfirmModal({
-      isOpen: true,
-      title: 'Hapus Pesanan',
-      message: `Apakah Anda yakin ingin menghapus pesanan dari player "${ign}"?`,
-      count: 1,
-      onConfirm: async () => {
-        setConfirmModal(prev => ({ ...prev, loading: true }));
-        const previousOrders = [...orders];
-        setOrders(prev => prev.filter(o => o.id !== id));
-        setSelectedIds(prev => prev.filter(i => i !== id));
-
-        try {
-          const res = await fetch(`/api/orders/${id}`, { method: 'DELETE' });
-          if (res.ok) {
-            showToast('Pesanan berhasil dihapus!');
-          } else {
-            showToast('Gagal menghapus pesanan.', 'error');
-            setOrders(previousOrders);
-          }
-        } catch (err) {
-          showToast('Terjadi kesalahan jaringan.', 'error');
-          setOrders(previousOrders);
-        } finally {
-          setConfirmModal({ isOpen: false });
-        }
-      }
-    });
-  };
-
-  // Bulk Delete
+  // Bulk / Selected Delete
   const handleBulkDelete = () => {
     if (selectedIds.length === 0) return;
 
+    const count = selectedIds.length;
+    const isSingle = count === 1;
+    const singleOrder = isSingle ? orders.find(o => o.id === selectedIds[0]) : null;
+
     setConfirmModal({
       isOpen: true,
-      title: 'Hapus Pesanan Terpilih',
-      message: `Apakah Anda yakin ingin menghapus ${selectedIds.length} pesanan yang dipilih secara permanen?`,
-      count: selectedIds.length,
+      title: isSingle ? 'Hapus Pesanan' : 'Hapus Pesanan Terpilih',
+      message: isSingle
+        ? `Apakah Anda yakin ingin menghapus pesanan dari player "${singleOrder?.user?.ign || 'Unknown'}"?`
+        : `Apakah Anda yakin ingin menghapus ${count} pesanan yang dipilih secara permanen?`,
+      count,
       onConfirm: async () => {
         setConfirmModal(prev => ({ ...prev, loading: true }));
         const idsToDelete = [...selectedIds];
@@ -164,7 +152,7 @@ export default function AdminOrdersPage() {
           });
 
           if (res.ok) {
-            showToast(`${idsToDelete.length} pesanan berhasil dihapus!`);
+            showToast(isSingle ? 'Pesanan berhasil dihapus!' : `${count} pesanan berhasil dihapus!`);
           } else {
             showToast('Gagal menghapus beberapa pesanan.', 'error');
             setOrders(previousOrders);
@@ -182,7 +170,7 @@ export default function AdminOrdersPage() {
   const allSelected = filtered.length > 0 && selectedIds.length === filtered.length;
 
   return (
-    <div className="space-y-6 pb-20 relative">
+    <div className="space-y-6 pb-24 relative">
       {/* Toast & Confirmation Modal */}
       <Toast toast={toast} onClose={() => setToast(null)} />
       <ConfirmModal
@@ -207,32 +195,14 @@ export default function AdminOrdersPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => {
-              setSelectMode(!selectMode);
-              if (selectMode) setSelectedIds([]);
-            }}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold border transition-colors ${
-              selectMode 
-                ? 'bg-rose-500/20 text-rose-300 border-rose-500/40' 
-                : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700'
-            }`}
-            title="Klik untuk memilih & menghapus banyak pesanan"
-          >
-            <Trash2 className="w-4 h-4 text-rose-400" />
-            <span>{selectMode ? 'Batal Select' : 'Pilih & Hapus Masal'}</span>
-          </button>
-
-          <button
-            onClick={fetchOrders}
-            disabled={loading}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-semibold border border-slate-700 transition-colors"
-          >
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-            Refresh
-          </button>
-        </div>
+        <button
+          onClick={fetchOrders}
+          disabled={loading}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-semibold border border-slate-700 transition-colors"
+        >
+          <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+          Refresh
+        </button>
       </div>
 
       {/* Filter Bar */}
@@ -359,8 +329,13 @@ export default function AdminOrdersPage() {
                       </td>
                       <td className="p-4 pr-6 text-right" onClick={(e) => e.stopPropagation()}>
                         <button
-                          onClick={() => handleDeleteSingle(order.id, order.user?.ign || 'Unknown')}
-                          className="p-2 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors"
+                          onClick={() => handleTrashClick(order.id)}
+                          className={`p-2 rounded-lg transition-colors ${
+                            isSelected 
+                              ? 'bg-rose-600 text-white' 
+                              : 'text-slate-400 hover:text-rose-400 hover:bg-rose-500/10'
+                          }`}
+                          title="Klik untuk memilih & hapus pesanan"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -376,15 +351,22 @@ export default function AdminOrdersPage() {
 
       {/* Floating Bulk Action Bar */}
       {selectMode && selectedIds.length > 0 && (
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-40 bg-[#0b101d]/95 border border-cyan-500/40 p-4 rounded-2xl backdrop-blur-2xl shadow-2xl shadow-cyan-500/10 flex items-center gap-6 animate-in slide-in-from-bottom-5 duration-200">
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-40 bg-[#0b101d]/95 border border-cyan-500/40 p-4 rounded-2xl backdrop-blur-2xl shadow-2xl shadow-cyan-500/10 flex items-center gap-4 sm:gap-6 animate-in slide-in-from-bottom-5 duration-200">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-cyan-500/20 text-cyan-400 font-bold flex items-center justify-center text-sm border border-cyan-500/30">
               {selectedIds.length}
             </div>
-            <span className="text-xs font-bold text-white">Pesanan Terpilih</span>
+            <span className="text-xs font-bold text-white whitespace-nowrap">Pesanan Terpilih</span>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <button
+              onClick={toggleSelectAll}
+              className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 text-xs font-bold border border-slate-700 whitespace-nowrap"
+            >
+              {allSelected ? 'Unselect All' : 'Select All (' + filtered.length + ')'}
+            </button>
+
             <button
               onClick={() => {
                 setSelectedIds([]);
@@ -394,9 +376,10 @@ export default function AdminOrdersPage() {
             >
               Batal
             </button>
+
             <button
               onClick={handleBulkDelete}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 text-white text-xs font-bold shadow-lg shadow-rose-600/20 transition-all active:scale-95"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 text-white text-xs font-bold shadow-lg shadow-rose-600/20 transition-all active:scale-95 whitespace-nowrap"
             >
               <Trash2 className="w-4 h-4" />
               Hapus ({selectedIds.length}) Terpilih
