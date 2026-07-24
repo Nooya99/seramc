@@ -46,6 +46,15 @@ export default function Navbar({ onOpenModal }) {
             <PixelIcon name="shopping-cart" className="w-4 h-4 md:w-5 md:h-5" /> 
             <span>Shop</span>
           </button>
+          
+          <button 
+            onClick={() => onOpenModal('status')} 
+            className="flex items-center gap-1.5 neo-button-light px-3 md:px-4 py-2 md:py-2.5 text-[13px] md:text-[15px]"
+          >
+            <PixelIcon name="search" className="w-4 h-4 md:w-5 md:h-5" /> 
+            <span className="hidden md:inline">Cek Pesanan</span>
+            <span className="md:hidden">Status</span>
+          </button>
 
           <a href="#reviews" className="hidden lg:block nav-link text-gray-300 hover:text-white transition-colors px-2 py-1">Reviews</a>
           <a href="#faq" className="hidden lg:block nav-link text-gray-300 hover:text-white transition-colors px-2 py-1">FAQ</a>

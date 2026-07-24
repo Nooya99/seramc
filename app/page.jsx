@@ -23,6 +23,7 @@ import ShopModal from '@/components/modals/ShopModal';
 import CartModal from '@/components/modals/CartModal';
 import CheckoutModal from '@/components/modals/CheckoutModal';
 import PlayerLoginModal from '@/components/modals/PlayerLoginModal';
+import OrderStatusModal from '@/components/modals/OrderStatusModal';
 
 export default function Home() {
   const [activeModal, setActiveModal] = useState(null);
@@ -223,6 +224,11 @@ export default function Home() {
           }
           setPendingModal(null);
         }}
+      />
+      <OrderStatusModal
+        isOpen={activeModal === 'status'}
+        onClose={handleCloseModal}
+        playerContext={playerContext}
       />
 
       {/* TOAST NOTIFICATIONS */}
