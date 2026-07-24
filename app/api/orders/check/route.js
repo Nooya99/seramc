@@ -6,34 +6,17 @@ export const dynamic = 'force-dynamic';
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
-    const ign = searchParams.get('ign');
+    const orderId = searchParams.get('orderId');
 
-    if (!ign) {
-      return NextResponse.json({ error: 'IGN parameter is required' }, { status: 400 });
+    if (!orderId) {
+      return NextResponse.json({ error: 'Order ID parameter is required' }, { status: 400 });
     }
 
-    // 1. Cari user berdasarkan IGN
-    const { data: user, error: userError } = await supabaseAdmin
-      .from('User')
-      .select('id')
-      .ilike('ign', ign)
-      .single();
-
-    if (userError && userError.code !== 'PGRST116') {
-      console.error('Supabase error fetching user for order check:', userError);
-      return NextResponse.json({ error: userError.message }, { status: 500 });
-    }
-
-    // Jika user tidak ditemukan, berarti belum ada order sama sekali
-    if (!user) {
-      return NextResponse.json([]);
-    }
-
-    // 2. Ambil riwayat order milik user ini beserta detail itemnya
+    // Ambil order berdasarkan ID (atau awalan ID jika user menggunakan ID singkat)
     const { data: orders, error: orderError } = await supabaseAdmin
       .from('Order')
       .select('*, items:OrderItem(*, product:Product(*))')
-      .eq('userId', user.id)
+      .ilike('id', `${orderId}%`)
       .order('createdAt', { ascending: false });
 
     if (orderError) {

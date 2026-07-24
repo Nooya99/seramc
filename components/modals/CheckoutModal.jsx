@@ -13,10 +13,14 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
   const [checkoutMessage, setCheckoutMessage] = useState('');
 
   useEffect(() => {
-    if (playerContext?.nickname) {
-      setIgn(playerContext.nickname);
+    if (isOpen) {
+      if (playerContext?.nickname) {
+        setIgn(playerContext.nickname);
+      }
+      setCheckoutStatus(null);
+      setCheckoutMessage('');
     }
-  }, [playerContext]);
+  }, [isOpen, playerContext]);
 
   if (!isOpen) return null;
 
@@ -56,11 +60,24 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
         paymentMethod
       };
 
-      await fetch('/api/orders', {
+      const res = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orderData)
       });
+      
+      if (res.ok) {
+        const data = await res.json();
+        // Extract the short order ID (first segment of UUID)
+        const shortOrderId = data.id ? data.id.split('-')[0].toUpperCase() : null;
+        if (shortOrderId) {
+          setCheckoutMessage(`PESANAN ANDA SEDANG DI PROSES. ID Pesanan Anda: ${shortOrderId}`);
+        } else {
+          setCheckoutMessage('PESANAN ANDA SEDANG DI PROSES');
+        }
+      } else {
+        setCheckoutMessage('PESANAN ANDA SEDANG DI PROSES');
+      }
     } catch (error) {
       console.error('Failed to save order to database', error);
       // We continue to WhatsApp even if DB fails so user can still order
@@ -78,7 +95,8 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
     
     setTimeout(() => {
       setCheckoutStatus('success');
-      setCheckoutMessage('PESANAN ANDA SEDANG DI PROSES');
+      // checkoutMessage is already set in the try-catch block, so we don't overwrite it here
+      if (!checkoutMessage) setCheckoutMessage('PESANAN ANDA SEDANG DI PROSES');
     }, 500);
   };
 

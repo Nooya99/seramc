@@ -4,18 +4,17 @@ import { useState, useEffect } from 'react';
 import PixelIcon from '@/components/PixelIcon';
 
 export default function OrderStatusModal({ isOpen, onClose, playerContext }) {
-  const [ign, setIgn] = useState('');
+  const [orderId, setOrderId] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [orders, setOrders] = useState([]);
   const [hasSearched, setHasSearched] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
-      if (playerContext?.nickname) {
-        setIgn(playerContext.nickname);
-      } else {
-        setIgn('');
-      }
+      setOrderId('');
+      setOrders([]);
+      setHasSearched(false);
+    }
       setOrders([]);
       setHasSearched(false);
     }
@@ -25,13 +24,13 @@ export default function OrderStatusModal({ isOpen, onClose, playerContext }) {
 
   const handleSearch = async (e) => {
     e.preventDefault();
-    if (!ign.trim()) return;
+    if (!orderId.trim()) return;
 
     setIsLoading(true);
     setHasSearched(true);
     
     try {
-      const res = await fetch(`/api/orders/check?ign=${encodeURIComponent(ign.trim())}`);
+      const res = await fetch(`/api/orders/check?orderId=${encodeURIComponent(orderId.trim())}`);
       if (res.ok) {
         const data = await res.json();
         setOrders(data);
@@ -78,14 +77,14 @@ export default function OrderStatusModal({ isOpen, onClose, playerContext }) {
         </button>
 
         <h2 className="text-xl md:text-2xl font-bold text-white mb-2 font-poppins text-center">Cek Status Pesanan</h2>
-        <p className="text-gray-400 text-sm text-center mb-6">Masukkan In-Game Name Anda untuk melihat riwayat pesanan.</p>
+        <p className="text-gray-400 text-sm text-center mb-6">Masukkan ID Pesanan Anda untuk melihat status pesanan.</p>
 
         <form onSubmit={handleSearch} className="flex gap-3 mb-6 shrink-0 relative z-10">
           <input 
             type="text" 
-            value={ign}
-            onChange={(e) => setIgn(e.target.value)}
-            placeholder="In-Game Name (IGN)"
+            value={orderId}
+            onChange={(e) => setOrderId(e.target.value)}
+            placeholder="ID Pesanan (Contoh: A1B2C3D4...)"
             className="flex-1 neo-inset px-4 py-3 placeholder-gray-500 focus:outline-none focus:neo-glow transition-all"
             required
           />
@@ -117,7 +116,7 @@ export default function OrderStatusModal({ isOpen, onClose, playerContext }) {
           ) : orders.length === 0 ? (
             <div className="h-40 flex flex-col items-center justify-center text-gray-500 bg-[#0b1120] rounded-2xl border border-white/5">
               <PixelIcon name="close" className="w-10 h-10 mb-2 opacity-30 text-red-400" />
-              <p>Tidak ada pesanan ditemukan untuk IGN tersebut.</p>
+              <p>Tidak ada pesanan ditemukan dengan ID tersebut.</p>
             </div>
           ) : (
             <div className="space-y-4">
