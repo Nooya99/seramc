@@ -185,6 +185,7 @@ export default function Home() {
         }}
         onAddToCart={handleAddToCart}
         onViewCart={() => setActiveModal('cart')}
+        onViewStatus={() => setActiveModal('status')}
       />
       <CartModal
         isOpen={activeModal === 'cart'}

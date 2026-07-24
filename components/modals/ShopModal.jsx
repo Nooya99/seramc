@@ -391,7 +391,7 @@ const initialOthersData = [
   }
 ];
 
-export default function ShopModal({ isOpen, onClose, cart = [], playerContext, onLoginClick, onAddToCart, onViewCart }) {
+export default function ShopModal({ isOpen, onClose, cart = [], playerContext, onLoginClick, onAddToCart, onViewCart, onViewStatus }) {
   const [ranks, setRanks] = useState(initialRanks);
   const [keysData, setKeysData] = useState(initialKeysData);
   const [othersData, setOthersData] = useState(initialOthersData);
@@ -565,12 +565,23 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
             />
           </div>
 
-          <button 
-            onClick={onClose}
-            className="absolute top-1/2 -translate-y-1/2 right-4 md:right-6 text-gray-400 hover:text-white bg-black/20 hover:bg-black/40 rounded-full p-2 md:p-2.5 transition-all duration-300 backdrop-blur-sm z-50 hover:scale-110 active:scale-95"
-          >
-            <PixelIcon name="close" className="w-5 h-5 md:w-6 md:h-6" />
-          </button>
+          <div className="absolute top-1/2 -translate-y-1/2 right-4 md:right-6 flex items-center gap-2 z-50">
+            <button 
+              onClick={() => {
+                if (onViewStatus) onViewStatus();
+              }}
+              className="flex items-center gap-1.5 text-gray-400 hover:text-white bg-black/20 hover:bg-black/40 rounded-full px-3 py-2 md:px-4 md:py-2 transition-all duration-300 backdrop-blur-sm hover:scale-105 active:scale-95"
+            >
+              <PixelIcon name="search" className="w-4 h-4 md:w-5 md:h-5" />
+              <span className="hidden md:inline font-bold text-sm">Cek Pesanan</span>
+            </button>
+            <button 
+              onClick={onClose}
+              className="text-gray-400 hover:text-white bg-black/20 hover:bg-black/40 rounded-full p-2 md:p-2.5 transition-all duration-300 backdrop-blur-sm hover:scale-110 active:scale-95"
+            >
+              <PixelIcon name="close" className="w-5 h-5 md:w-6 md:h-6" />
+            </button>
+          </div>
         </div>
 
         <div className="w-full flex-1 overflow-y-auto custom-scrollbar p-6 md:p-8 rounded-b-3xl">
