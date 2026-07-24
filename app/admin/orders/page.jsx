@@ -18,7 +18,8 @@ export default function AdminOrdersPage() {
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [updatingId, setUpdatingId] = useState(null);
 
-  // Selection state
+  // Select / Delete Mode state (OFF by default)
+  const [selectMode, setSelectMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
 
   // Modal & Toast states
@@ -153,6 +154,7 @@ export default function AdminOrdersPage() {
 
         setOrders(prev => prev.filter(o => !idsToDelete.includes(o.id)));
         setSelectedIds([]);
+        setSelectMode(false);
 
         try {
           const res = await fetch('/api/orders', {
@@ -205,17 +207,35 @@ export default function AdminOrdersPage() {
           </p>
         </div>
 
-        <button
-          onClick={fetchOrders}
-          disabled={loading}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-semibold border border-slate-700 transition-colors"
-        >
-          <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-          Refresh
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => {
+              setSelectMode(!selectMode);
+              if (selectMode) setSelectedIds([]);
+            }}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold border transition-colors ${
+              selectMode 
+                ? 'bg-rose-500/20 text-rose-300 border-rose-500/40' 
+                : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700'
+            }`}
+            title="Klik untuk memilih & menghapus banyak pesanan"
+          >
+            <Trash2 className="w-4 h-4 text-rose-400" />
+            <span>{selectMode ? 'Batal Select' : 'Pilih & Hapus Masal'}</span>
+          </button>
+
+          <button
+            onClick={fetchOrders}
+            disabled={loading}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-semibold border border-slate-700 transition-colors"
+          >
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+            Refresh
+          </button>
+        </div>
       </div>
 
-      {/* Filter & Multi-Select Toolbar */}
+      {/* Filter Bar */}
       <div className="flex flex-col sm:flex-row gap-4 justify-between items-center bg-[#0b101d] p-4 rounded-2xl border border-slate-800">
         <div className="relative w-full sm:w-80">
           <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -251,16 +271,18 @@ export default function AdminOrdersPage() {
           <table className="w-full text-left border-collapse min-w-[850px]">
             <thead>
               <tr className="bg-slate-900/80 text-slate-400 text-xs uppercase tracking-wider border-b border-slate-800">
-                <th className="p-4 pl-6 w-12">
-                  <button onClick={toggleSelectAll} className="flex items-center">
-                    {allSelected ? (
-                      <CheckSquare className="w-5 h-5 text-cyan-400" />
-                    ) : (
-                      <Square className="w-5 h-5 text-slate-600" />
-                    )}
-                  </button>
-                </th>
-                <th className="p-4">IGN Player</th>
+                {selectMode && (
+                  <th className="p-4 pl-6 w-12">
+                    <button onClick={toggleSelectAll} className="flex items-center">
+                      {allSelected ? (
+                        <CheckSquare className="w-5 h-5 text-cyan-400" />
+                      ) : (
+                        <Square className="w-5 h-5 text-slate-600" />
+                      )}
+                    </button>
+                  </th>
+                )}
+                <th className={`p-4 ${selectMode ? '' : 'pl-6'}`}>IGN Player</th>
                 <th className="p-4">WhatsApp</th>
                 <th className="p-4">Pesanan Item</th>
                 <th className="p-4">Total</th>
@@ -272,11 +294,11 @@ export default function AdminOrdersPage() {
             <tbody className="divide-y divide-slate-800/60 text-sm">
               {loading ? (
                 <tr>
-                  <td colSpan="8" className="p-12 text-center text-slate-400">Loading pesanan...</td>
+                  <td colSpan={selectMode ? 8 : 7} className="p-12 text-center text-slate-400">Loading pesanan...</td>
                 </tr>
               ) : filtered.length === 0 ? (
                 <tr>
-                  <td colSpan="8" className="p-12 text-center text-slate-400">Belum ada data pesanan.</td>
+                  <td colSpan={selectMode ? 8 : 7} className="p-12 text-center text-slate-400">Belum ada data pesanan.</td>
                 </tr>
               ) : (
                 filtered.map((order) => {
@@ -284,21 +306,25 @@ export default function AdminOrdersPage() {
                   return (
                     <tr 
                       key={order.id} 
-                      onClick={() => toggleSelect(order.id)}
-                      className={`hover:bg-slate-800/40 transition-colors cursor-pointer ${
-                        isSelected ? 'bg-cyan-950/30' : ''
-                      }`}
+                      onClick={() => {
+                        if (selectMode) toggleSelect(order.id);
+                      }}
+                      className={`hover:bg-slate-800/40 transition-colors ${
+                        selectMode ? 'cursor-pointer' : ''
+                      } ${isSelected ? 'bg-cyan-950/30' : ''}`}
                     >
-                      <td className="p-4 pl-6" onClick={(e) => e.stopPropagation()}>
-                        <button onClick={() => toggleSelect(order.id)}>
-                          {isSelected ? (
-                            <CheckSquare className="w-5 h-5 text-cyan-400" />
-                          ) : (
-                            <Square className="w-5 h-5 text-slate-600" />
-                          )}
-                        </button>
-                      </td>
-                      <td className="p-4 font-bold text-white">
+                      {selectMode && (
+                        <td className="p-4 pl-6" onClick={(e) => e.stopPropagation()}>
+                          <button onClick={() => toggleSelect(order.id)}>
+                            {isSelected ? (
+                              <CheckSquare className="w-5 h-5 text-cyan-400" />
+                            ) : (
+                              <Square className="w-5 h-5 text-slate-600" />
+                            )}
+                          </button>
+                        </td>
+                      )}
+                      <td className={`p-4 font-bold text-white ${selectMode ? '' : 'pl-6'}`}>
                         {order.user?.ign || 'Unknown'}
                       </td>
                       <td className="p-4 text-xs text-slate-300">
@@ -349,7 +375,7 @@ export default function AdminOrdersPage() {
       </div>
 
       {/* Floating Bulk Action Bar */}
-      {selectedIds.length > 0 && (
+      {selectMode && selectedIds.length > 0 && (
         <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-40 bg-[#0b101d]/95 border border-cyan-500/40 p-4 rounded-2xl backdrop-blur-2xl shadow-2xl shadow-cyan-500/10 flex items-center gap-6 animate-in slide-in-from-bottom-5 duration-200">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-cyan-500/20 text-cyan-400 font-bold flex items-center justify-center text-sm border border-cyan-500/30">
@@ -360,7 +386,10 @@ export default function AdminOrdersPage() {
 
           <div className="flex items-center gap-3">
             <button
-              onClick={() => setSelectedIds([])}
+              onClick={() => {
+                setSelectedIds([]);
+                setSelectMode(false);
+              }}
               className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold"
             >
               Batal

@@ -28,7 +28,8 @@ export default function AdminDashboard() {
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [selectedOrder, setSelectedOrder] = useState(null);
 
-  // Multi-select & Batch action state
+  // Multi-select & Batch action state (OFF by default)
+  const [selectMode, setSelectMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
 
   // Confirm Modal state
@@ -175,6 +176,7 @@ export default function AdminDashboard() {
 
         setOrders(prev => prev.filter(o => !idsToDelete.includes(o.id)));
         setSelectedIds([]);
+        setSelectMode(false);
 
         try {
           const res = await fetch('/api/orders', {
@@ -242,14 +244,32 @@ export default function AdminDashboard() {
           </p>
         </div>
 
-        <button
-          onClick={fetchOrders}
-          disabled={loading}
-          className="flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 font-semibold text-sm border border-cyan-500/30 transition-all duration-200 shadow-lg shadow-cyan-500/5 active:scale-95 disabled:opacity-50"
-        >
-          <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-          <span>Refresh Data</span>
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => {
+              setSelectMode(!selectMode);
+              if (selectMode) setSelectedIds([]);
+            }}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-sm font-bold border transition-colors ${
+              selectMode 
+                ? 'bg-rose-500/20 text-rose-300 border-rose-500/40' 
+                : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700'
+            }`}
+            title="Klik untuk memilih & menghapus banyak pesanan"
+          >
+            <Trash2 className="w-4 h-4 text-rose-400" />
+            <span>{selectMode ? 'Batal Select' : 'Pilih & Hapus Masal'}</span>
+          </button>
+
+          <button
+            onClick={fetchOrders}
+            disabled={loading}
+            className="flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 font-semibold text-sm border border-cyan-500/30 transition-all duration-200 shadow-lg shadow-cyan-500/5 active:scale-95 disabled:opacity-50"
+          >
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+            <span>Refresh Data</span>
+          </button>
+        </div>
       </div>
 
       {/* Metric Cards Grid */}
@@ -397,16 +417,18 @@ export default function AdminDashboard() {
             <table className="w-full text-left border-collapse min-w-[900px]">
               <thead>
                 <tr className="bg-slate-900/60 text-slate-400 text-xs font-bold uppercase tracking-wider border-b border-slate-800">
-                  <th className="p-4 pl-6 w-12">
-                    <button onClick={toggleSelectAll} className="flex items-center">
-                      {allSelected ? (
-                        <CheckSquare className="w-5 h-5 text-cyan-400" />
-                      ) : (
-                        <Square className="w-5 h-5 text-slate-600" />
-                      )}
-                    </button>
-                  </th>
-                  <th className="p-4">Tanggal & ID</th>
+                  {selectMode && (
+                    <th className="p-4 pl-6 w-12">
+                      <button onClick={toggleSelectAll} className="flex items-center">
+                        {allSelected ? (
+                          <CheckSquare className="w-5 h-5 text-cyan-400" />
+                        ) : (
+                          <Square className="w-5 h-5 text-slate-600" />
+                        )}
+                      </button>
+                    </th>
+                  )}
+                  <th className={`p-4 ${selectMode ? '' : 'pl-6'}`}>Tanggal & ID</th>
                   <th className="p-4">Pemain (IGN)</th>
                   <th className="p-4">Kontak WhatsApp</th>
                   <th className="p-4">Ringkasan Item</th>
@@ -421,22 +443,26 @@ export default function AdminDashboard() {
                   return (
                     <tr 
                       key={order.id} 
-                      onClick={() => toggleSelect(order.id)}
-                      className={`hover:bg-slate-800/30 transition-colors group cursor-pointer ${
-                        isSelected ? 'bg-cyan-950/30' : ''
-                      }`}
+                      onClick={() => {
+                        if (selectMode) toggleSelect(order.id);
+                      }}
+                      className={`hover:bg-slate-800/30 transition-colors group ${
+                        selectMode ? 'cursor-pointer' : ''
+                      } ${isSelected ? 'bg-cyan-950/30' : ''}`}
                     >
-                      <td className="p-4 pl-6" onClick={(e) => e.stopPropagation()}>
-                        <button onClick={() => toggleSelect(order.id)}>
-                          {isSelected ? (
-                            <CheckSquare className="w-5 h-5 text-cyan-400" />
-                          ) : (
-                            <Square className="w-5 h-5 text-slate-600" />
-                          )}
-                        </button>
-                      </td>
+                      {selectMode && (
+                        <td className="p-4 pl-6" onClick={(e) => e.stopPropagation()}>
+                          <button onClick={() => toggleSelect(order.id)}>
+                            {isSelected ? (
+                              <CheckSquare className="w-5 h-5 text-cyan-400" />
+                            ) : (
+                              <Square className="w-5 h-5 text-slate-600" />
+                            )}
+                          </button>
+                        </td>
+                      )}
 
-                      <td className="p-4 font-mono text-xs">
+                      <td className={`p-4 font-mono text-xs ${selectMode ? '' : 'pl-6'}`}>
                         <p className="text-slate-200 font-semibold">
                           {new Date(order.createdAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}
                         </p>
@@ -540,7 +566,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Floating Bulk Action Bar */}
-      {selectedIds.length > 0 && (
+      {selectMode && selectedIds.length > 0 && (
         <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-40 bg-[#0b101d]/95 border border-cyan-500/40 p-4 rounded-2xl backdrop-blur-2xl shadow-2xl shadow-cyan-500/10 flex items-center gap-6 animate-in slide-in-from-bottom-5 duration-200">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-cyan-500/20 text-cyan-400 font-bold flex items-center justify-center text-sm border border-cyan-500/30">
@@ -551,7 +577,10 @@ export default function AdminDashboard() {
 
           <div className="flex items-center gap-3">
             <button
-              onClick={() => setSelectedIds([])}
+              onClick={() => {
+                setSelectedIds([]);
+                setSelectMode(false);
+              }}
               className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold"
             >
               Batal

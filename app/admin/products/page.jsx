@@ -10,7 +10,8 @@ import {
   RefreshCw, 
   Sparkles,
   CheckSquare,
-  Square
+  Square,
+  X
 } from 'lucide-react';
 import { ConfirmModal, Toast } from '@/components/admin/NotificationModal';
 
@@ -21,7 +22,8 @@ export default function AdminProductsPage() {
   const [editingProduct, setEditingProduct] = useState(null);
   const [saving, setSaving] = useState(false);
 
-  // Selection state
+  // Select / Delete Mode state (OFF by default)
+  const [selectMode, setSelectMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
 
   // Confirm Modal state
@@ -220,6 +222,7 @@ export default function AdminProductsPage() {
 
         setProducts(prev => prev.filter(p => !idsToDelete.includes(p.id)));
         setSelectedIds([]);
+        setSelectMode(false);
 
         try {
           const res = await fetch('/api/products', {
@@ -244,7 +247,7 @@ export default function AdminProductsPage() {
     });
   };
 
-  // Generate All Default Shop Items (21 Items: Ranks, Keys, & Others) in 1 Batch Request
+  // Generate All Default Shop Items (21 Items: Ranks, Keys, & Others)
   const seedDefaultShopItems = async () => {
     setConfirmModal({
       isOpen: true,
@@ -337,6 +340,23 @@ export default function AdminProductsPage() {
         </div>
 
         <div className="flex flex-wrap gap-3">
+          {/* Toggle Select / Delete Mode Trash Button */}
+          <button
+            onClick={() => {
+              setSelectMode(!selectMode);
+              if (selectMode) setSelectedIds([]);
+            }}
+            className={`flex items-center gap-2 px-4 py-3 rounded-2xl text-sm font-bold border transition-colors ${
+              selectMode 
+                ? 'bg-rose-500/20 text-rose-300 border-rose-500/40' 
+                : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700'
+            }`}
+            title="Klik untuk memilih & menghapus banyak item"
+          >
+            <Trash2 className="w-4 h-4 text-rose-400" />
+            <span>{selectMode ? 'Batal Select' : 'Pilih & Hapus Masal'}</span>
+          </button>
+
           <button
             onClick={seedDefaultShopItems}
             disabled={saving}
@@ -356,9 +376,9 @@ export default function AdminProductsPage() {
         </div>
       </div>
 
-      {/* Multi-Select Toolbar */}
-      {products.length > 0 && (
-        <div className="flex items-center justify-between bg-[#0b101d]/90 p-4 rounded-2xl border border-slate-800">
+      {/* Multi-Select Toolbar (Only shown when selectMode === true) */}
+      {selectMode && products.length > 0 && (
+        <div className="flex items-center justify-between bg-rose-950/20 p-4 rounded-2xl border border-rose-500/30 animate-in fade-in duration-200">
           <button
             onClick={toggleSelectAll}
             className="flex items-center gap-2 text-sm font-bold text-slate-300 hover:text-white transition-colors"
@@ -409,21 +429,27 @@ export default function AdminProductsPage() {
             return (
               <div
                 key={product.id}
-                onClick={() => toggleSelect(product.id)}
-                className={`bg-[#0b101d] border rounded-3xl p-6 relative overflow-hidden flex flex-col justify-between group transition-all duration-300 shadow-xl cursor-pointer ${
+                onClick={() => {
+                  if (selectMode) toggleSelect(product.id);
+                }}
+                className={`bg-[#0b101d] border rounded-3xl p-6 relative overflow-hidden flex flex-col justify-between group transition-all duration-300 shadow-xl ${
+                  selectMode ? 'cursor-pointer' : ''
+                } ${
                   isSelected 
                     ? 'border-cyan-500 ring-2 ring-cyan-500/20 bg-cyan-950/20' 
                     : 'border-slate-800 hover:border-slate-700'
                 }`}
               >
-                {/* Select Checkbox */}
-                <div className="absolute top-4 left-4 z-10">
-                  {isSelected ? (
-                    <CheckSquare className="w-6 h-6 text-cyan-400 fill-cyan-500/20" />
-                  ) : (
-                    <Square className="w-6 h-6 text-slate-600 group-hover:text-slate-400" />
-                  )}
-                </div>
+                {/* Select Checkbox (Shown ONLY when selectMode === true) */}
+                {selectMode && (
+                  <div className="absolute top-4 left-4 z-10">
+                    {isSelected ? (
+                      <CheckSquare className="w-6 h-6 text-cyan-400 fill-cyan-500/20" />
+                    ) : (
+                      <Square className="w-6 h-6 text-slate-600 group-hover:text-slate-400" />
+                    )}
+                  </div>
+                )}
 
                 {product.isPopular && (
                   <div className="absolute top-4 right-4 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 px-3 py-1 rounded-full text-xs font-black flex items-center gap-1 shadow-lg shadow-amber-500/20">
@@ -432,7 +458,7 @@ export default function AdminProductsPage() {
                   </div>
                 )}
 
-                <div className="space-y-3 pt-6">
+                <div className={`space-y-3 ${selectMode ? 'pt-6' : ''}`}>
                   <span className="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-slate-900 text-slate-400 border border-slate-800 inline-block">
                     {product.category || 'Rank'}
                   </span>
@@ -477,8 +503,8 @@ export default function AdminProductsPage() {
         </div>
       )}
 
-      {/* Floating Bulk Action Bar */}
-      {selectedIds.length > 0 && (
+      {/* Floating Bulk Action Bar (Only shown when selectMode is ON and items are selected) */}
+      {selectMode && selectedIds.length > 0 && (
         <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-40 bg-[#0b101d]/95 border border-cyan-500/40 p-4 rounded-2xl backdrop-blur-2xl shadow-2xl shadow-cyan-500/10 flex items-center gap-6 animate-in slide-in-from-bottom-5 duration-200">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-cyan-500/20 text-cyan-400 font-bold flex items-center justify-center text-sm border border-cyan-500/30">
@@ -489,7 +515,10 @@ export default function AdminProductsPage() {
 
           <div className="flex items-center gap-3">
             <button
-              onClick={() => setSelectedIds([])}
+              onClick={() => {
+                setSelectedIds([]);
+                setSelectMode(false);
+              }}
               className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold"
             >
               Batal
