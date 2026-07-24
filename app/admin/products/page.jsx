@@ -42,7 +42,7 @@ export default function AdminProductsPage() {
       }
     } catch (err) {
       console.error('Failed to fetch products:', err);
-    } fontally: {
+    } finally {
       setLoading(false);
     }
   };
@@ -96,7 +96,7 @@ export default function AdminProductsPage() {
       updatedAt: new Date().toISOString()
     };
 
-    // 1. Instant Optimistic State Update
+    // Instant Optimistic Update
     const previousProducts = [...products];
     if (editingProduct) {
       setProducts(prev => prev.map(p => p.id === editingProduct.id ? optimisticProduct : p));
@@ -119,16 +119,15 @@ export default function AdminProductsPage() {
 
       if (res.ok) {
         const savedProduct = await res.json();
-        // Replace temp item with real saved product
         setProducts(prev => prev.map(p => p.id === tempId || p.id === editingProduct?.id ? savedProduct : p));
       } else {
         const errData = await res.json();
         alert('Gagal menyimpan produk: ' + (errData.error || 'Unknown error'));
-        setProducts(previousProducts); // Revert state on error
+        setProducts(previousProducts);
       }
     } catch (err) {
       alert('Terjadi kesalahan jaringan.');
-      setProducts(previousProducts); // Revert state
+      setProducts(previousProducts);
     } finally {
       setSaving(false);
     }
@@ -139,32 +138,55 @@ export default function AdminProductsPage() {
     if (!confirm('Apakah Anda yakin ingin menghapus produk ini?')) return;
 
     const previousProducts = [...products];
-    // 1. Instant Optimistic State Update
     setProducts(prev => prev.filter(p => p.id !== id));
 
     try {
       const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
       if (!res.ok) {
         alert('Gagal menghapus produk dari database.');
-        setProducts(previousProducts); // Revert
+        setProducts(previousProducts);
       }
     } catch (err) {
       alert('Terjadi kesalahan jaringan saat menghapus.');
-      setProducts(previousProducts); // Revert
+      setProducts(previousProducts);
     }
   };
 
-  const seedDefaultRanks = async () => {
-    if (!confirm('Tambahkan rank default SERA MC (VIP, MVP, MVP+, VIP LORD) ke Supabase?')) return;
+  // Generate All Default Shop Items (Ranks, Keys, & Others)
+  const seedDefaultShopItems = async () => {
+    if (!confirm('Tambahkan seluruh item default Toko SERA MC (Ranks, Keys, & Others) ke Database Supabase?')) return;
     setSaving(true);
-    const defaultRanks = [
-      { name: 'VIP Rank', category: 'Rank', price: 15000, duration: 'Permanen', description: 'Prefix [VIP], Kit VIP, Fly di Lobby', isPopular: false },
-      { name: 'MVP Rank', category: 'Rank', price: 35000, duration: 'Permanen', description: 'Prefix [MVP], Kit MVP, Fly Survival, 2 Home', isPopular: true },
-      { name: 'MVP+ Rank', category: 'Rank', price: 60000, duration: 'Permanen', description: 'Prefix [MVP+], Kit MVP+, Multi Home, Access Disguise', isPopular: false },
-      { name: 'VIP LORD', category: 'Rank', price: 100000, duration: 'Permanen', description: 'Rank Kasta Tertinggi! Fitur Penuh, Custom Title & Glow', isPopular: true }
+
+    const defaultShopItems = [
+      // Ranks
+      { name: 'LUX Rank (1 Bulan)', category: 'Rank', price: 25000, duration: '1 Bulan', description: 'Prefix [LUX] 1 Bulan, Akses fitur khusus', isPopular: false },
+      { name: 'LUX Rank (Permanen)', category: 'Rank', price: 45000, duration: 'Permanen', description: 'Prefix [LUX] Permanen, Akses fitur khusus', isPopular: false },
+      { name: 'VEIL Rank (1 Bulan)', category: 'Rank', price: 40000, duration: '1 Bulan', description: 'Prefix [VEIL] 1 Bulan, Kit & Perks VEIL', isPopular: false },
+      { name: 'VEIL Rank (Permanen)', category: 'Rank', price: 65000, duration: 'Permanen', description: 'Prefix [VEIL] Permanen, Kit & Perks VEIL', isPopular: false },
+      { name: 'RIFT Rank (1 Bulan)', category: 'Rank', price: 65000, duration: '1 Bulan', description: 'Prefix [RIFT] 1 Bulan, Multi-home & Fly', isPopular: false },
+      { name: 'RIFT Rank (Permanen)', category: 'Rank', price: 90000, duration: 'Permanen', description: 'Prefix [RIFT] Permanen, Multi-home & Fly', isPopular: false },
+      { name: 'CORE Rank (1 Bulan)', category: 'Rank', price: 90000, duration: '1 Bulan', description: 'Prefix [CORE] 1 Bulan, Akses Komando Ekstra', isPopular: true },
+      { name: 'CORE Rank (Permanen)', category: 'Rank', price: 120000, duration: 'Permanen', description: 'Prefix [CORE] Permanen, Akses Komando Ekstra', isPopular: true },
+      { name: 'ARCH Rank (1 Bulan)', category: 'Rank', price: 120000, duration: '1 Bulan', description: 'Prefix [ARCH] 1 Bulan, Kasta Elit Server', isPopular: false },
+      { name: 'ARCH Rank (Permanen)', category: 'Rank', price: 160000, duration: 'Permanen', description: 'Prefix [ARCH] Permanen, Kasta Elit Server', isPopular: false },
+      { name: 'CUSTOM Rank (1 Bulan)', category: 'Rank', price: 300000, duration: '1 Bulan', description: 'Custom Title Teks Biasa 1 Bulan', isPopular: true },
+      { name: 'CUSTOM Rank (Permanen)', category: 'Rank', price: 450000, duration: 'Permanen', description: 'Custom Font & Title Permanen', isPopular: true },
+
+      // Keys & Crates
+      { name: 'PEASANT Key', category: 'Key / Crate', price: 13000, duration: '5 Key', description: 'Paket 5 Key Peasant Crate', isPopular: false },
+      { name: 'NOBLE Key', category: 'Key / Crate', price: 20000, duration: '5 Key', description: 'Paket 5 Key Noble Crate', isPopular: false },
+      { name: 'IMPERIAL Key', category: 'Key / Crate', price: 24000, duration: '5 Key', description: 'Paket 5 Key Imperial Crate', isPopular: false },
+      { name: 'SERA Key', category: 'Key / Crate', price: 28000, duration: '5 Key', description: 'Paket 5 Key SERA Special Crate', isPopular: true },
+      { name: 'ULTIMATE Key', category: 'Key / Crate', price: 45000, duration: '9 Key', description: 'Paket 9 Key Ultimate Crate', isPopular: true },
+
+      // Others
+      { name: 'Unlimited Claim', category: 'Others', price: 35000, duration: 'Permanen', description: 'Fitur Unlimited Claim Land Permanen', isPopular: false },
+      { name: 'Monthly Premium Pass', category: 'Others', price: 30000, duration: '1 Bulan', description: 'Pass Bulanan dengan Hadiah Spesial', isPopular: true },
+      { name: 'Skills All Max 100', category: 'Others', price: 300000, duration: 'Per Season', description: 'Boost Seluruh Level Skill Ke 100 Max', isPopular: false },
+      { name: 'Coin Bundle', category: 'Others', price: 1000, duration: '35 Coin', description: 'Bundle 35 Coin Server', isPopular: false }
     ];
 
-    for (const item of defaultRanks) {
+    for (const item of defaultShopItems) {
       await fetch('/api/products', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -187,21 +209,19 @@ export default function AdminProductsPage() {
             Kelola Produk & Rank Toko
           </h1>
           <p className="text-sm text-slate-400 mt-1">
-            Tambah, edit harga, atau sesuaikan item rank yang dijual di toko SERA MC.
+            Tambah, edit harga, atau sesuaikan item toko (Rank, Key, Others) di toko SERA MC.
           </p>
         </div>
 
         <div className="flex flex-wrap gap-3">
-          {products.length === 0 && (
-            <button
-              onClick={seedDefaultRanks}
-              disabled={saving}
-              className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-sm font-bold border border-amber-500/30 transition-colors"
-            >
-              <Sparkles className="w-4 h-4" />
-              Generate Default Ranks
-            </button>
-          )}
+          <button
+            onClick={seedDefaultShopItems}
+            disabled={saving}
+            className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-sm font-bold border border-amber-500/30 transition-colors"
+          >
+            <Sparkles className="w-4 h-4" />
+            Generate All Shop Items
+          </button>
 
           <button
             onClick={() => handleOpenModal()}
@@ -224,7 +244,7 @@ export default function AdminProductsPage() {
           <Package className="w-12 h-12 text-slate-600 mx-auto" />
           <h3 className="text-lg font-bold text-white">Belum Ada Produk Terdaftar</h3>
           <p className="text-sm text-slate-400 max-w-md mx-auto">
-            Klik &quot;Generate Default Ranks&quot; untuk mengisi otomatis atau tambahkan produk baru secara manual.
+            Klik &quot;Generate All Shop Items&quot; untuk mengisi otomatis seluruh Ranks, Keys, dan Others ke Database Supabase.
           </p>
         </div>
       ) : (
@@ -257,7 +277,7 @@ export default function AdminProductsPage() {
 
               <div className="pt-6 mt-6 border-t border-slate-800/80 flex items-center justify-between">
                 <div>
-                  <p className="text-[11px] text-slate-500 font-medium">Durasi: {product.duration}</p>
+                  <p className="text-[11px] text-slate-500 font-medium">Durasi / Item: {product.duration}</p>
                   <p className="text-2xl font-black text-emerald-400 font-mono">
                     Rp {formatPrice(product.price)}
                   </p>
@@ -308,7 +328,7 @@ export default function AdminProductsPage() {
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="Misal: VIP Rank, Custom Race..."
+                  placeholder="Misal: VIP Rank, SERA Key, Unlimited Claim..."
                   className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-cyan-500"
                   required
                 />
@@ -328,12 +348,12 @@ export default function AdminProductsPage() {
                 </div>
 
                 <div>
-                  <label className="text-xs font-bold uppercase text-slate-400 mb-1 block">Durasi</label>
+                  <label className="text-xs font-bold uppercase text-slate-400 mb-1 block">Durasi / Jumlah</label>
                   <input
                     type="text"
                     value={formData.duration}
                     onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
-                    placeholder="Permanen / 30 Hari"
+                    placeholder="Permanen / 5 Key / 1 Bulan"
                     className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-cyan-500"
                   />
                 </div>
@@ -347,9 +367,9 @@ export default function AdminProductsPage() {
                   className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-cyan-500"
                 >
                   <option value="Rank">Rank</option>
-                  <option value="Race">Race</option>
                   <option value="Key / Crate">Key / Crate</option>
-                  <option value="Lainnya">Lainnya</option>
+                  <option value="Others">Others</option>
+                  <option value="Race">Race</option>
                 </select>
               </div>
 
