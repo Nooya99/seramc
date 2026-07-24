@@ -15,9 +15,6 @@ export default function OrderStatusModal({ isOpen, onClose, playerContext }) {
       setOrders([]);
       setHasSearched(false);
     }
-      setOrders([]);
-      setHasSearched(false);
-    }
   }, [isOpen, playerContext]);
 
   if (!isOpen) return null;
