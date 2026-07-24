@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
+import crypto from 'crypto';
 
 // GET: Fetch all products from Supabase
 export async function GET() {
@@ -44,6 +45,7 @@ export async function POST(request) {
       }
 
       const formattedPayload = newItems.map(item => ({
+        id: crypto.randomUUID(),
         name: item.name.trim(),
         category: item.category || 'Rank',
         price: parseInt(item.price) || 0,
@@ -80,6 +82,7 @@ export async function POST(request) {
     }
 
     const payload = {
+      id: crypto.randomUUID(),
       name: body.name.trim(),
       category: body.category || 'Rank',
       price: parseInt(body.price) || 0,
