@@ -565,15 +565,15 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
             />
           </div>
 
-          <div className="absolute top-1/2 -translate-y-1/2 right-4 md:right-6 flex items-center gap-2 z-50">
+          <div className="absolute top-1/2 -translate-y-1/2 right-4 md:right-6 flex items-center gap-3 z-50">
             <button 
               onClick={() => {
                 if (onViewStatus) onViewStatus();
               }}
-              className="flex items-center gap-1.5 text-gray-400 hover:text-white bg-black/20 hover:bg-black/40 rounded-full px-3 py-2 md:px-4 md:py-2 transition-all duration-300 backdrop-blur-sm hover:scale-105 active:scale-95"
+              className="flex items-center gap-1.5 bg-[#f2e28a]/10 text-[#f2e28a] border border-[#f2e28a]/30 hover:bg-[#f2e28a]/20 hover:text-white rounded-full px-3 py-1.5 md:px-4 md:py-2 transition-all duration-300 backdrop-blur-sm hover:scale-105 active:scale-95 shadow-[0_0_10px_rgba(242,226,138,0.1)]"
             >
-              <PixelIcon name="search" className="w-4 h-4 md:w-5 md:h-5" />
-              <span className="hidden md:inline font-bold text-sm">Cek Pesanan</span>
+              <PixelIcon name="script" className="w-4 h-4 md:w-5 md:h-5" />
+              <span className="hidden md:inline font-bold text-xs md:text-sm tracking-wide">Cek Pesanan</span>
             </button>
             <button 
               onClick={onClose}

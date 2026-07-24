@@ -74,7 +74,7 @@ export default function OrderStatusModal({ isOpen, onClose, playerContext }) {
           onClick={onClose} 
           className="absolute top-4 md:top-5 right-4 md:right-5 text-gray-400 hover:text-white glass-pill w-10 h-10 flex items-center justify-center text-xl cursor-pointer transition-all duration-300 ease-in-out active:scale-95 z-40"
         >
-          <PixelIcon name="close" className="w-5 h-5" />
+          <PixelIcon name="arrow-left" className="w-5 h-5" />
         </button>
 
         <h2 className="text-xl md:text-2xl font-bold text-white mb-2 font-poppins text-center">Cek Status Pesanan</h2>

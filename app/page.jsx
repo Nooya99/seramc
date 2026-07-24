@@ -228,7 +228,7 @@ export default function Home() {
       />
       <OrderStatusModal
         isOpen={activeModal === 'status'}
-        onClose={handleCloseModal}
+        onClose={() => setActiveModal('shop')}
         playerContext={playerContext}
       />
 
