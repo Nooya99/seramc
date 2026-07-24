@@ -85,6 +85,65 @@ const initialRanks = [
   }
 ];
 
+const getRankStyle = (name) => {
+  const upper = name.toUpperCase();
+  if (upper.includes('LUX')) {
+    return {
+      iconName: 'star',
+      badge: 'LUX',
+      bgClass: 'bg-orange-500/20 text-orange-400 border-orange-400/40',
+      btnClass: 'bg-orange-500/20 hover:bg-orange-500/80 text-orange-200 border-orange-500/30'
+    };
+  }
+  if (upper.includes('VEIL')) {
+    return {
+      iconName: 'shield',
+      badge: 'VEIL',
+      bgClass: 'bg-gray-400/20 text-gray-300 border-gray-300/40',
+      btnClass: 'bg-gray-400/20 hover:bg-gray-400/80 text-gray-200 border-gray-400/30'
+    };
+  }
+  if (upper.includes('RIFT')) {
+    return {
+      iconName: 'trophy',
+      badge: 'RIFT',
+      bgClass: 'bg-yellow-400/20 text-yellow-400 border-yellow-400/40',
+      btnClass: 'bg-yellow-400/20 hover:bg-yellow-500/80 text-yellow-200 border-yellow-400/30'
+    };
+  }
+  if (upper.includes('CORE')) {
+    return {
+      iconName: 'diamond-gem',
+      badge: 'CORE',
+      bgClass: 'bg-cyan-400/20 text-cyan-400 border-cyan-400/40',
+      btnClass: 'bg-cyan-500/20 hover:bg-cyan-500/80 text-cyan-200 border-cyan-500/30'
+    };
+  }
+  if (upper.includes('ARCH')) {
+    return {
+      iconName: 'crown',
+      badge: 'ARCH',
+      bgClass: 'bg-purple-500/20 text-purple-400 border-purple-500/40',
+      btnClass: 'bg-purple-500/20 hover:bg-purple-500/80 text-purple-200 border-purple-500/30'
+    };
+  }
+  if (upper.includes('CUSTOM')) {
+    return {
+      iconName: 'fire',
+      badge: 'CUSTOM',
+      isSpecial: true,
+      bgClass: 'bg-pink-500/20 text-pink-400 border-pink-400/40',
+      btnClass: 'bg-[#f2e28a] hover:bg-[#e6d680] text-gray-900 shadow-lg'
+    };
+  }
+  return {
+    iconName: 'star',
+    badge: name,
+    bgClass: 'bg-cyan-500/20 text-cyan-400 border-cyan-400/40',
+    btnClass: 'bg-cyan-500/20 hover:bg-cyan-500/80 text-cyan-200 border-cyan-500/30'
+  };
+};
+
 export default function ShopCoverflow({ onOpenModal }) {
   const [ranks, setRanks] = useState(initialRanks);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -101,20 +160,32 @@ export default function ShopCoverflow({ onOpenModal }) {
         if (dbProducts && dbProducts.length > 0) {
           const rankItems = dbProducts.filter(p => (p.category || '').toLowerCase() === 'rank');
           if (rankItems.length > 0) {
-            const updated = initialRanks.map(rank => {
-              const matchedFromDb = rankItems.filter(p => p.name.toUpperCase().includes(rank.name));
-              if (matchedFromDb.length > 0) {
-                return {
-                  ...rank,
-                  prices: matchedFromDb.map(p => ({
-                    duration: p.duration || 'Permanen',
-                    price: p.price ? p.price.toLocaleString('id-ID') : p.price
-                  }))
-                };
+            const groupedRanks = {};
+            rankItems.forEach(p => {
+              const baseName = p.name.split('(')[0].replace(/rank/i, '').trim();
+              if (!groupedRanks[baseName]) {
+                groupedRanks[baseName] = [];
               }
-              return rank;
+              groupedRanks[baseName].push(p);
+            });
+
+            const updated = Object.keys(groupedRanks).map(baseName => {
+              const items = groupedRanks[baseName];
+              const style = getRankStyle(baseName);
+              const sortedPrices = items.sort((a, b) => a.price - b.price).map(p => ({
+                duration: p.duration || 'Permanen',
+                price: p.price ? p.price.toLocaleString('id-ID') : '0'
+              }));
+
+              return {
+                name: baseName,
+                ...style,
+                prices: sortedPrices
+              };
             });
             setRanks(updated);
+          } else {
+            setRanks(initialRanks);
           }
         }
       }
