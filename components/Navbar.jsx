@@ -18,10 +18,10 @@ export default function Navbar({ onOpenModal }) {
   return (
     <div className="fixed top-4 md:top-6 left-1/2 transform -translate-x-1/2 w-[95%] max-w-[1000px] z-50 transition-all duration-500">
       <nav 
-        className="glass-pill px-4 md:px-6 py-2 md:py-2.5 flex justify-between items-center shadow-2xl transition-all duration-300"
+        className="neo-glass !rounded-full px-4 md:px-6 py-2 md:py-2.5 flex justify-between items-center shadow-2xl transition-all duration-300"
         style={{
-          background: isScrolled ? 'rgba(11,17,33,0.85)' : 'rgba(11,17,33,0.5)',
-          border: isScrolled ? '1px solid rgba(255,255,255,0.3)' : '1px solid rgba(255,255,255,0.15)'
+          background: isScrolled ? 'rgba(16, 24, 39, 0.75)' : 'rgba(16, 24, 39, 0.45)',
+          border: isScrolled ? '1px solid rgba(255,255,255,0.3)' : '1px solid rgba(255,255,255,0.1)'
         }}
       >
         <a href="#" className="relative flex items-center hover:opacity-80 transition-opacity active:scale-95 mr-16 lg:mr-28">
@@ -41,7 +41,7 @@ export default function Navbar({ onOpenModal }) {
           
           <button 
             onClick={() => onOpenModal('shop')} 
-            className="flex items-center gap-1.5 bg-black/40 hover:bg-[#f2e28a]/20 border border-white/10 hover:border-[#f2e28a]/50 text-gray-300 hover:text-[#f2e28a] font-bold px-3 md:px-4 py-2 md:py-2.5 rounded-full text-[13px] md:text-[15px] transition-all duration-300 ease-in-out hover:scale-105 active:scale-95"
+            className="flex items-center gap-1.5 neo-button-light px-3 md:px-4 py-2 md:py-2.5 text-[13px] md:text-[15px]"
           >
             <PixelIcon name="shopping-cart" className="w-4 h-4 md:w-5 md:h-5" /> 
             <span>Shop</span>
@@ -59,7 +59,7 @@ export default function Navbar({ onOpenModal }) {
 
         <button 
           onClick={() => onOpenModal('ip')} 
-          className="bg-[#f2e28a] hover:bg-[#e6d680] text-gray-900 font-bold px-5 py-2 md:px-6 md:py-2.5 rounded-full text-[13px] md:text-[15px] shadow-lg transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 shrink-0"
+          className="neo-button-primary font-bold px-5 py-2 md:px-6 md:py-2.5 text-[13px] md:text-[15px] shrink-0"
         >
           Play with us
         </button>

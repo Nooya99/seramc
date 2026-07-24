@@ -88,8 +88,7 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
       onClick={(e) => { if (e.target === e.currentTarget && !checkoutStatus) onClose(); }}
     >
       <div 
-        className="modal-content bubble-glass w-full max-w-lg rounded-[2rem] p-6 md:p-8 relative overflow-hidden"
-        style={{ background: 'rgba(11,17,33,0.95)', border: '1px solid rgba(255,255,255,0.2)' }}
+        className="modal-content neo-glass w-full max-w-lg p-6 md:p-8 relative overflow-hidden"
       >
         {checkoutStatus && (
           <div className="absolute inset-0 bg-[#0b1120]/95 backdrop-blur-xl z-50 flex flex-col items-center justify-center p-8 text-center" style={{ animation: 'fadeIn 0.3s ease-out forwards' }}>
@@ -118,7 +117,7 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
                   else onClose();
                 }
               }}
-              className="w-full max-w-[200px] bg-[#f2e28a] hover:bg-[#e6d680] text-gray-900 font-bold py-3.5 rounded-xl transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-lg active:scale-95"
+              className="neo-button-primary w-full max-w-[200px] font-bold py-3.5 transition-all duration-300 ease-in-out"
               style={{ animation: 'slideUp 0.5s ease-out 0.4s both' }}
             >
               Oke
@@ -139,7 +138,7 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
           <div>
             <label className="block text-gray-300 text-sm font-bold mb-2">In-Game Name (IGN)</label>
             {playerContext ? (
-              <div className="flex items-center gap-3 bg-black/40 border border-white/10 rounded-xl px-4 py-3">
+              <div className="flex items-center gap-3 neo-inset px-4 py-3">
                 <div className="w-8 h-8 md:w-10 md:h-10 rounded-full overflow-hidden border-2 border-[#f2e28a] shrink-0 bg-[#0b1120]">
                   <img src={playerContext.avatarUrl} alt={playerContext.nickname} className="w-full h-full object-cover rendering-pixelated" style={{ imageRendering: 'pixelated' }} />
                 </div>
@@ -153,7 +152,7 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
                 value={ign}
                 onChange={(e) => setIgn(e.target.value)}
                 placeholder="Contoh: Steve_Minecraft"
-                className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-[#f2e28a] focus:ring-1 focus:ring-[#f2e28a] transition-all"
+                className="w-full neo-inset px-4 py-3 placeholder-gray-500 focus:outline-none focus:neo-glow transition-all"
                 required
               />
             )}
@@ -166,14 +165,14 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
               value={whatsapp}
               onChange={(e) => setWhatsapp(e.target.value)}
               placeholder="Contoh: 085161516730"
-              className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-[#f2e28a] focus:ring-1 focus:ring-[#f2e28a] transition-all"
+              className="w-full neo-inset px-4 py-3 placeholder-gray-500 focus:outline-none focus:neo-glow transition-all"
               required
             />
           </div>
 
           <div>
             <label className="block text-gray-300 text-sm font-bold mb-2">Ringkasan Pesanan</label>
-            <div className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white">
+            <div className="w-full neo-inset px-4 py-3">
               <div className="flex justify-between items-center text-[10px] md:text-xs text-gray-500 font-bold mb-3 pb-2 border-b border-white/20 uppercase tracking-widest">
                 <span>Item</span>
                 <span>Total</span>
@@ -201,15 +200,15 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
             <select 
               value={paymentMethod}
               onChange={(e) => setPaymentMethod(e.target.value)}
-              className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#f2e28a] focus:ring-1 focus:ring-[#f2e28a] transition-all cursor-pointer appearance-none"
+              className="w-full neo-inset px-4 py-3 focus:outline-none focus:neo-glow transition-all cursor-pointer appearance-none"
             >
-              <option value="QRIS" className="bg-[#0b1121]">QRIS</option>
+              <option value="QRIS" className="bg-[#0f172a]">QRIS</option>
             </select>
           </div>
 
           <button 
             type="submit"
-            className="w-full bg-[#f2e28a] hover:bg-[#e6d680] text-gray-900 font-bold py-3.5 rounded-xl transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-lg mt-4"
+            className="neo-button-primary w-full font-bold py-3.5 mt-4"
           >
             Lanjutkan Pembayaran
           </button>

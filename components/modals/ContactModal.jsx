@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import PixelIcon from '@/components/PixelIcon';
+import { Icon } from '@iconify/react';
 
 const admins = [
   { name: 'Admin 1 (Owner)', phone: '6285161516730' },
@@ -41,8 +42,7 @@ export default function ContactModal({ isOpen, onClose, cart = [] }) {
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div 
-        className="modal-content bubble-glass w-full max-w-lg rounded-[2rem] p-6 md:p-8 relative text-center"
-        style={{ background: 'rgba(11,17,33,0.95)', border: '1px solid rgba(255,255,255,0.2)' }}
+        className="modal-content neo-glass w-full max-w-lg p-6 md:p-8 relative text-center"
       >
         <button 
           onClick={onClose} 
@@ -69,10 +69,10 @@ export default function ContactModal({ isOpen, onClose, cart = [] }) {
               href={`https://wa.me/${admin.phone}?text=${encodedText}`} 
               target="_blank" 
               rel="noopener noreferrer"
-              className="w-full flex items-center gap-4 bg-black/40 hover:bg-[#25D366]/10 border border-white/10 hover:border-[#25D366]/50 rounded-full p-2 pr-6 transition-all duration-300 ease-in-out group cursor-pointer active:scale-95"
+              className="w-full flex items-center gap-4 neo-inset p-2 pr-6 transition-all duration-300 ease-in-out group cursor-pointer active:scale-95 hover:neo-glow"
             >
               <div className="w-10 h-10 bg-[#25D366]/20 text-[#25D366] rounded-full flex items-center justify-center text-lg flex-shrink-0 group-hover:scale-110 transition-transform">
-                <PixelIcon name="phone" className="w-5 h-5" />
+                <Icon icon="simple-icons:whatsapp" className="w-5 h-5" />
               </div>
               <div className="text-left">
                 <h4 className="font-bold text-white text-[13px] md:text-sm leading-tight">{admin.name}</h4>
@@ -88,10 +88,10 @@ export default function ContactModal({ isOpen, onClose, cart = [] }) {
           <a 
             href="#" 
             onClick={(e) => e.preventDefault()}
-            className="bg-[#131826] border border-white/5 hover:border-[#5865F2]/50 rounded-2xl p-4 flex items-center gap-4 transition-all duration-300 ease-in-out group hover:-translate-y-1 hover:shadow-[0_5px_15px_rgba(88,101,242,0.2)] active:scale-98"
+            className="neo-inset p-4 flex items-center gap-4 transition-all duration-300 ease-in-out group hover:-translate-y-1 hover:neo-glow active:scale-98"
           >
             <div className="w-11 h-11 bg-[#5865F2]/10 text-[#5865F2] rounded-full flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-110 transition-transform">
-              <PixelIcon name="message" className="w-5 h-5" />
+              <Icon icon="simple-icons:discord" className="w-5 h-5" />
             </div>
             <div className="text-left">
               <h4 className="font-bold text-white text-[13px] md:text-sm leading-tight">Discord Server</h4>
@@ -102,10 +102,10 @@ export default function ContactModal({ isOpen, onClose, cart = [] }) {
           <a 
             href="#" 
             onClick={(e) => e.preventDefault()}
-            className="bg-[#131826] border border-white/5 hover:border-[#25D366]/50 rounded-2xl p-4 flex items-center gap-4 transition-all duration-300 ease-in-out group hover:-translate-y-1 hover:shadow-[0_5px_15px_rgba(37,211,102,0.2)] active:scale-98"
+            className="neo-inset p-4 flex items-center gap-4 transition-all duration-300 ease-in-out group hover:-translate-y-1 hover:neo-glow active:scale-98"
           >
             <div className="w-11 h-11 bg-[#25D366]/10 text-[#25D366] rounded-full flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-110 transition-transform">
-              <PixelIcon name="phone" className="w-5 h-5" />
+              <Icon icon="simple-icons:whatsapp" className="w-5 h-5" />
             </div>
             <div className="text-left">
               <h4 className="font-bold text-white text-[13px] md:text-sm leading-tight">WhatsApp Group</h4>
@@ -116,10 +116,10 @@ export default function ContactModal({ isOpen, onClose, cart = [] }) {
           <a 
             href="#" 
             onClick={(e) => e.preventDefault()}
-            className="bg-[#131826] border border-white/5 hover:border-[#ff0050]/50 rounded-2xl p-4 flex items-center gap-4 transition-all duration-300 ease-in-out group hover:-translate-y-1 hover:shadow-[0_5px_15px_rgba(255,0,80,0.2)] active:scale-98"
+            className="neo-inset p-4 flex items-center gap-4 transition-all duration-300 ease-in-out group hover:-translate-y-1 hover:neo-glow active:scale-98"
           >
             <div className="w-11 h-11 bg-white/5 text-white group-hover:text-[#ff0050] rounded-full flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-110 transition-transform">
-              <PixelIcon name="video" className="w-5 h-5" />
+              <Icon icon="simple-icons:tiktok" className="w-5 h-5" />
             </div>
             <div className="text-left">
               <h4 className="font-bold text-white text-[13px] md:text-sm leading-tight">TikTok Resmi</h4>
@@ -130,7 +130,7 @@ export default function ContactModal({ isOpen, onClose, cart = [] }) {
           <a 
             href="#" 
             onClick={(e) => e.preventDefault()}
-            className="bg-[#131826] border border-white/5 hover:border-[#f2e28a]/50 rounded-2xl p-4 flex items-center gap-4 transition-all duration-300 ease-in-out group hover:-translate-y-1 hover:shadow-[0_5px_15px_rgba(242,226,138,0.2)] active:scale-98"
+            className="neo-inset p-4 flex items-center gap-4 transition-all duration-300 ease-in-out group hover:-translate-y-1 hover:neo-glow active:scale-98"
           >
             <div className="w-11 h-11 bg-[#f2e28a]/10 text-[#f2e28a] rounded-full flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-110 transition-transform">
               <PixelIcon name="checkbox-on" className="w-5 h-5" />
