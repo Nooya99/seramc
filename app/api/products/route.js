@@ -15,6 +15,15 @@ export async function GET() {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
+    if (data) {
+      const now = new Date().getTime();
+      data.forEach(p => {
+        if (p.discountExpiresAt && new Date(p.discountExpiresAt).getTime() <= now) {
+          p.discount = 0;
+        }
+      });
+    }
+
     return NextResponse.json(data || []);
   } catch (error) {
     console.error('API GET products error:', error);

@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { ConfirmModal, Toast } from '@/components/admin/NotificationModal';
 import AdminVoucherModal from '@/components/modals/AdminVoucherModal';
+import AdminDiscountModal from '@/components/modals/AdminDiscountModal';
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState([]);
@@ -398,6 +399,11 @@ export default function AdminProductsPage() {
     } finally {
       setUpdatingDiscount(false);
     }
+  };
+
+  const handleDiscountSuccess = (message) => {
+    showToast(message);
+    fetchProducts();
   };
 
   const formatPrice = (p) => (p || 0).toLocaleString('id-ID');
@@ -803,90 +809,13 @@ export default function AdminProductsPage() {
         selectedIds={selectedIds}
       />
 
-      {/* Confirmation Modal */}
-      {showDiscountModal && (
-        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-[#0b101d] border border-slate-800 rounded-3xl max-w-sm w-full p-6 sm:p-8 space-y-6 shadow-2xl animate-in fade-in zoom-in duration-200">
-            <div className="flex justify-between items-center border-b border-slate-800 pb-4">
-              <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                <Percent className="w-5 h-5 text-cyan-400" /> Atur Diskon Global
-              </h3>
-              <button
-                onClick={() => setShowDiscountModal(false)}
-                className="text-slate-400 hover:text-white"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <label className="text-xs font-bold uppercase text-slate-400 mb-1 block">Target Diskon</label>
-                <select
-                  value={discountTarget}
-                  onChange={(e) => setDiscountTarget(e.target.value)}
-                  className={`w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-cyan-500 ${discountTarget === 'CATEGORY' ? 'mb-3' : ''}`}
-                >
-                  <option value="ALL">Semua Produk</option>
-                  <option value="CATEGORY">Berdasarkan Kategori</option>
-                  <option value="SELECTED" disabled={selectedIds.length === 0}>
-                    Hanya Produk Terpilih ({selectedIds.length} item)
-                  </option>
-                </select>
-
-                {discountTarget === 'CATEGORY' && (
-                  <select
-                    value={discountCategory}
-                    onChange={(e) => setDiscountCategory(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-cyan-500"
-                  >
-                    <option value="Rank">Rank</option>
-                    <option value="Key / Crate">Key / Crate</option>
-                    <option value="Others">Others</option>
-                    <option value="Race">Race</option>
-                  </select>
-                )}
-              </div>
-
-              <div>
-                <label className="text-xs font-bold uppercase text-slate-400 mb-1 block">Persentase Diskon (%)</label>
-                <input
-                  type="number"
-                  min="0"
-                  max="100"
-                  placeholder="Contoh: 15"
-                  value={globalDiscount}
-                  onChange={(e) => setGlobalDiscount(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-cyan-500"
-                />
-              </div>
-
-              <div className="flex flex-col gap-3 pt-4 border-t border-slate-800">
-                <button
-                  onClick={() => {
-                    handleApplyDiscount(false);
-                    setShowDiscountModal(false);
-                  }}
-                  disabled={updatingDiscount || !globalDiscount}
-                  className="w-full py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-sm font-bold rounded-xl disabled:opacity-50 transition-colors"
-                >
-                  {updatingDiscount ? 'Menerapkan...' : 'Terapkan Diskon'}
-                </button>
-                <button
-                  onClick={() => {
-                    handleApplyDiscount(true);
-                    setShowDiscountModal(false);
-                  }}
-                  disabled={updatingDiscount}
-                  className="w-full py-3 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 text-rose-400 text-sm font-bold rounded-xl transition-colors disabled:opacity-50"
-                >
-                  Reset Diskon (0%)
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <AdminDiscountModal 
+        isOpen={showDiscountModal}
+        onClose={() => setShowDiscountModal(false)}
+        selectedIds={selectedIds}
+        defaultTarget={discountTarget}
+        onSuccess={handleDiscountSuccess}
+      />
 
       {/* Add / Edit Modal */}
       {showModal && (

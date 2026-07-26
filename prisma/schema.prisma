@@ -32,6 +32,7 @@ model Product {
   duration    String
   image       String?
   isPopular   Boolean  @default(false)
+  discountExpiresAt DateTime?
   orderItems  OrderItem[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
