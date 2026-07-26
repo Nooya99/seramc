@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Ticket, X, Plus, Trash2, CheckCircle2, RefreshCw, Clock, Timer, ArrowLeft, Pencil, Copy, Check } from 'lucide-react';
+import { ConfirmModal } from '@/components/admin/NotificationModal';
 
 const CountdownTimer = ({ expiresAt }) => {
   const [timeLeft, setTimeLeft] = useState('');
@@ -117,6 +118,7 @@ export default function AdminVoucherModal({ isOpen, onClose, selectedIds = [] })
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [copiedId, setCopiedId] = useState(null);
+  const [confirmModal, setConfirmModal] = useState({ isOpen: false });
 
   const handleCopyCode = (voucher) => {
     navigator.clipboard.writeText(voucher.code);
@@ -227,20 +229,30 @@ export default function AdminVoucherModal({ isOpen, onClose, selectedIds = [] })
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm('Hapus voucher ini?')) return;
-    try {
-      const res = await fetch('/api/vouchers', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id })
-      });
-      if (res.ok) {
-        fetchVouchers();
+  const handleDelete = (id) => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'Hapus Voucher',
+      message: 'Apakah Anda yakin ingin menghapus voucher ini? Tindakan ini tidak dapat dibatalkan.',
+      loading: false,
+      onConfirm: async () => {
+        setConfirmModal(prev => ({ ...prev, loading: true }));
+        try {
+          const res = await fetch('/api/vouchers', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id })
+          });
+          if (res.ok) {
+            fetchVouchers();
+          }
+        } catch (error) {
+          console.error('Failed to delete voucher', error);
+        } finally {
+          setConfirmModal({ isOpen: false });
+        }
       }
-    } catch (error) {
-      console.error('Failed to delete voucher', error);
-    }
+    });
   };
 
   const handleEditClick = (voucher) => {
@@ -583,6 +595,15 @@ export default function AdminVoucherModal({ isOpen, onClose, selectedIds = [] })
           background: rgba(6, 182, 212, 0.4);
         }
       `}</style>
+
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        loading={confirmModal.loading}
+        onConfirm={confirmModal.onConfirm}
+        onCancel={() => setConfirmModal({ isOpen: false })}
+      />
     </div>
   );
 }
