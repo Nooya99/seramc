@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 import crypto from 'crypto';
 
 export const dynamic = 'force-dynamic';
@@ -34,7 +37,7 @@ export async function GET() {
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { ign, whatsapp, items, totalAmount, paymentMethod } = body;
+    const { ign, whatsapp, items, totalAmount, paymentMethod, voucherCode } = body;
 
     if (!ign || !items || items.length === 0) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -135,6 +138,19 @@ export async function POST(request) {
 
     if (orderItemsData.length > 0) {
       await supabaseAdmin.from('OrderItem').insert(orderItemsData);
+    }
+
+    // 5. Process Voucher if provided
+    if (voucherCode) {
+      const voucher = await prisma.voucher.findUnique({ where: { code: voucherCode } });
+      if (voucher && voucher.isActive) {
+        if (voucher.maxUses === null || voucher.usedCount < voucher.maxUses) {
+          await prisma.voucher.update({
+            where: { id: voucher.id },
+            data: { usedCount: { increment: 1 } }
+          });
+        }
+      }
     }
 
     return NextResponse.json(order, { status: 201 });

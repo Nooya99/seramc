@@ -12,6 +12,12 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
   const [checkoutStatus, setCheckoutStatus] = useState(null);
   const [checkoutMessage, setCheckoutMessage] = useState('');
 
+  // Voucher State
+  const [voucherCode, setVoucherCode] = useState('');
+  const [appliedVoucher, setAppliedVoucher] = useState(null);
+  const [voucherError, setVoucherError] = useState('');
+  const [validatingVoucher, setValidatingVoucher] = useState(false);
+
   useEffect(() => {
     if (isOpen) {
       if (playerContext?.nickname) {
@@ -19,6 +25,9 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
       }
       setCheckoutStatus(null);
       setCheckoutMessage('');
+      setVoucherCode('');
+      setAppliedVoucher(null);
+      setVoucherError('');
     }
   }, [isOpen, playerContext]);
 
@@ -35,10 +44,45 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
     return price.toLocaleString('id-ID');
   };
 
-  const calculateTotal = () => {
+  const calculateSubtotal = () => {
     return cart.reduce((total, item) => {
       return total + parsePrice(item.price) * (item.quantity || 1);
     }, 0);
+  };
+
+  const calculateTotal = () => {
+    const subtotal = calculateSubtotal();
+    if (appliedVoucher) {
+      return subtotal - (subtotal * appliedVoucher.discount / 100);
+    }
+    return subtotal;
+  };
+
+  const handleApplyVoucher = async (e) => {
+    e.preventDefault(); // Prevent form submission
+    if (!voucherCode.trim()) return;
+    setValidatingVoucher(true);
+    setVoucherError('');
+    try {
+      const res = await fetch('/api/vouchers/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: voucherCode.trim().toUpperCase() })
+      });
+      const data = await res.json();
+      if (res.ok && data.valid) {
+        setAppliedVoucher(data);
+        setVoucherError('');
+      } else {
+        setVoucherError(data.error || 'Voucher tidak valid');
+        setAppliedVoucher(null);
+      }
+    } catch (err) {
+      setVoucherError('Gagal memvalidasi voucher');
+      setAppliedVoucher(null);
+    } finally {
+      setValidatingVoucher(false);
+    }
   };
 
   const handleCheckout = async (e) => {
@@ -60,7 +104,8 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
         whatsapp,
         items: cart,
         totalAmount: calculateTotal(),
-        paymentMethod
+        paymentMethod,
+        voucherCode: appliedVoucher?.code || null
       };
 
       const res = await fetch('/api/orders', {
@@ -94,7 +139,7 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
       return `${i + 1}. ${item.quantity || 1}x ${item.name} (${item.duration}) - ${formatPrice(itemTotal)}`;
     }).join('\n');
     
-    const purchaseMsg = `*PESANAN BARU - SERA MC*\n\n*In-Game Name:* ${ign}\n*No. WhatsApp:* ${whatsapp}${shortOrderId ? `\n*ID Pesanan:* ${shortOrderId}` : ''}\n\n*Pesanan:*\n${itemsList}\n*Total Harga:* ${formatPrice(calculateTotal())}\n\n*Metode Pembayaran:* ${paymentMethod}\n\nMohon info untuk proses pembayarannya. Terima kasih!`;
+    const purchaseMsg = `*PESANAN BARU - SERA MC*\n\n*In-Game Name:* ${ign}\n*No. WhatsApp:* ${whatsapp}${shortOrderId ? `\n*ID Pesanan:* ${shortOrderId}` : ''}\n\n*Pesanan:*\n${itemsList}${appliedVoucher ? `\n*Voucher:* ${appliedVoucher.code} (-${appliedVoucher.discount}%)` : ''}\n*Total Harga:* ${formatPrice(calculateTotal())}\n\n*Metode Pembayaran:* ${paymentMethod}\n\nMohon info untuk proses pembayarannya. Terima kasih!`;
     
     const encodedText = encodeURIComponent(purchaseMsg);
     window.open(`https://wa.me/${targetAdmin}?text=${encodedText}`, '_blank');
@@ -212,11 +257,55 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
                   );
                 })}
               </div>
+              {appliedVoucher && (
+                <div className="flex justify-between items-center mt-2 text-emerald-400">
+                  <span className="text-xs">Diskon Voucher ({appliedVoucher.discount}%)</span>
+                  <span className="font-bold">- {formatPrice(calculateSubtotal() * appliedVoucher.discount / 100)}</span>
+                </div>
+              )}
               <div className="flex justify-between items-center mt-3 pt-3 border-t border-white/20">
                 <span className="font-bold text-white uppercase text-xs tracking-wider">TOTAL</span>
                 <span className="text-[#f2e28a] font-bold text-lg">{formatPrice(calculateTotal())}</span>
               </div>
             </div>
+          </div>
+
+          {/* Voucher Input */}
+          <div>
+            <label className="block text-gray-300 text-sm font-bold mb-2">Kode Voucher <span className="text-gray-500 font-normal text-xs">(Opsional)</span></label>
+            <div className="flex gap-2">
+              <input 
+                type="text" 
+                value={voucherCode}
+                onChange={(e) => setVoucherCode(e.target.value.toUpperCase())}
+                placeholder="Masukkan kode voucher"
+                disabled={appliedVoucher !== null}
+                className="flex-1 neo-inset px-4 py-3 placeholder-gray-500 focus:outline-none focus:neo-glow transition-all disabled:opacity-50"
+              />
+              {appliedVoucher ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAppliedVoucher(null);
+                    setVoucherCode('');
+                  }}
+                  className="px-4 py-2 rounded-xl bg-rose-500/20 text-rose-400 font-bold text-sm border border-rose-500/30 hover:bg-rose-500/30 transition-all"
+                >
+                  Batal
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleApplyVoucher}
+                  disabled={validatingVoucher || !voucherCode.trim()}
+                  className="px-4 py-2 rounded-xl bg-emerald-500/20 text-emerald-400 font-bold text-sm border border-emerald-500/30 hover:bg-emerald-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {validatingVoucher ? 'Cek...' : 'Pakai'}
+                </button>
+              )}
+            </div>
+            {voucherError && <p className="text-rose-400 text-xs mt-1.5">{voucherError}</p>}
+            {appliedVoucher && <p className="text-emerald-400 text-xs mt-1.5 flex items-center gap-1">Voucher berhasil diterapkan! (-{appliedVoucher.discount}%)</p>}
           </div>
 
           <div>

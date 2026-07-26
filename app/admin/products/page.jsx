@@ -17,9 +17,13 @@ import {
   Layers,
   Grid,
   CheckCircle2,
-  Percent
+  Percent,
+  Ticket
 } from 'lucide-react';
 import { ConfirmModal, Toast } from '@/components/admin/NotificationModal';
+import ProductModal from '@/components/modals/ProductModal';
+import AdminDiscountModal from '@/components/modals/AdminDiscountModal';
+import AdminVoucherModal from '@/components/modals/AdminVoucherModal';
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState([]);
@@ -28,10 +32,13 @@ export default function AdminProductsPage() {
   const [editingProduct, setEditingProduct] = useState(null);
   const [saving, setSaving] = useState(false);
 
-  // Discount state
+  // Discount/Modal states
+  const [showProductModal, setShowProductModal] = useState(false);
+  const [showDiscountModal, setShowDiscountModal] = useState(false);
+  const [showVoucherModal, setShowVoucherModal] = useState(false);
+  
   const [globalDiscount, setGlobalDiscount] = useState('');
   const [updatingDiscount, setUpdatingDiscount] = useState(false);
-  const [showDiscountModal, setShowDiscountModal] = useState(false);
   const [discountTarget, setDiscountTarget] = useState('ALL');
   const [discountCategory, setDiscountCategory] = useState('Rank');
 
@@ -118,14 +125,12 @@ export default function AdminProductsPage() {
     }
   };
 
-  // Check how many default items already exist in current products list
   const existingDefaultCount = defaultShopItems.filter(d => 
     products.some(p => p.name.trim().toLowerCase() === d.name.trim().toLowerCase())
   ).length;
 
   const isAllDefaultGenerated = existingDefaultCount === defaultShopItems.length;
 
-  // Click Trash Icon on Card -> Deletes single product directly
   const handleSingleDelete = (product) => {
     setConfirmModal({
       isOpen: true,
@@ -160,16 +165,14 @@ export default function AdminProductsPage() {
     });
   };
 
-  // Toggle single product selection
   const toggleSelect = (id) => {
     setSelectedIds(prev => {
       const next = prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id];
-      if (next.length === 0) setSelectMode(false); // Auto exit select mode if all unselected
+      if (next.length === 0) setSelectMode(false);
       return next;
     });
   };
 
-  // Toggle select all
   const toggleSelectAll = () => {
     if (selectedIds.length === products.length) {
       setSelectedIds([]);
@@ -206,7 +209,6 @@ export default function AdminProductsPage() {
     setShowModal(true);
   };
 
-  // Optimistic Product Save
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name || !formData.price) {
@@ -270,7 +272,6 @@ export default function AdminProductsPage() {
     }
   };
 
-  // Bulk / Selected Delete Confirmation
   const handleBulkDelete = () => {
     if (selectedIds.length === 0) return;
 
@@ -317,7 +318,6 @@ export default function AdminProductsPage() {
     });
   };
 
-  // Generate All Default Shop Items (Only inserts missing items, prevents duplicates)
   const seedDefaultShopItems = async () => {
     if (isAllDefaultGenerated) {
       showToast('Seluruh 21 item default toko sudah ter-generate!', 'error');
@@ -359,33 +359,6 @@ export default function AdminProductsPage() {
       }
     });
   };
-
-  const handleApplyDiscount = async (reset = false) => {
-    const discountValue = reset ? 0 : parseInt(globalDiscount);
-    if (!reset && (isNaN(discountValue) || discountValue < 0 || discountValue > 100)) {
-      showToast('Masukkan diskon antara 0 - 100', 'error');
-      return;
-    }
-
-    if (discountTarget === 'SELECTED' && selectedIds.length === 0) {
-      showToast('Pilih setidaknya 1 produk terlebih dahulu', 'error');
-      return;
-    }
-
-    setUpdatingDiscount(true);
-    try {
-      const payload = { 
-        discount: discountValue,
-        target: discountTarget,
-        category: discountCategory,
-        productIds: selectedIds
-      };
-
-      const res = await fetch('/api/products/discount', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
 
       if (res.ok) {
         showToast(reset ? 'Diskon berhasil direset!' : `Diskon ${discountValue}% berhasil diterapkan!`);
@@ -614,9 +587,21 @@ export default function AdminProductsPage() {
             <CheckSquare className="w-5 h-5" />
           </button>
 
+          {/* Voucher Circular Button */}
+          <button
+            onClick={() => setShowVoucherModal(true)}
+            className="w-10 h-10 shrink-0 flex items-center justify-center rounded-full bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 border border-indigo-500/30 transition-all hover:scale-105 active:scale-95"
+            title="Kelola Voucher"
+          >
+            <Ticket className="w-5 h-5" />
+          </button>
+
           {/* Discount Circular Button */}
           <button
-            onClick={() => setShowDiscountModal(true)}
+            onClick={() => {
+              setDiscountTarget('ALL');
+              setShowDiscountModal(true);
+            }}
             className="w-10 h-10 shrink-0 flex items-center justify-center rounded-full bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 border border-cyan-500/30 transition-all hover:scale-105 active:scale-95"
             title="Atur Diskon"
           >
@@ -774,7 +759,12 @@ export default function AdminProductsPage() {
         </div>
       )}
 
-      {/* Discount Modal */}
+      <AdminVoucherModal 
+        isOpen={showVoucherModal}
+        onClose={() => setShowVoucherModal(false)}
+      />
+
+      {/* Confirmation Modal */}
       {showDiscountModal && (
         <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
           <div className="bg-[#0b101d] border border-slate-800 rounded-3xl max-w-sm w-full p-6 sm:p-8 space-y-6 shadow-2xl animate-in fade-in zoom-in duration-200">
