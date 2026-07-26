@@ -735,6 +735,11 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
                   </div>
                 )}
                 <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
+                  {item.isPopular && (
+                    <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 p-1.5 md:p-2 rounded-full shadow-lg shadow-amber-500/20" title="Populer">
+                      <PixelIcon name="fire" className="w-3 h-3 md:w-4 md:h-4 text-slate-950" />
+                    </div>
+                  )}
                   <button
                     onClick={() => setSelectedInfo({ name: item.badge, description: p.description })}
                     className="bg-blue-500/20 text-blue-400 p-1.5 md:p-2 rounded-full shadow-lg shadow-blue-500/10 hover:scale-110 hover:bg-blue-500/30 transition-all border border-blue-500/30"
@@ -742,11 +747,6 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
                   >
                     <PixelIcon name="article" className="w-3 h-3 md:w-4 md:h-4" />
                   </button>
-                  {item.isPopular && (
-                    <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 p-1.5 md:p-2 rounded-full shadow-lg shadow-amber-500/20" title="Populer">
-                      <PixelIcon name="fire" className="w-3 h-3 md:w-4 md:h-4 text-slate-950" />
-                    </div>
-                  )}
                 </div>
                 {/* Icon */}
                 <div className={`w-14 h-14 rounded-full flex items-center justify-center mb-6 border ${item.bgClass}`}>
@@ -817,6 +817,11 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
                   </div>
                 )}
                 <div className="absolute top-3 right-3 flex items-center gap-1.5 z-10">
+                  {item.isPopular && (
+                    <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 p-1.5 xl:p-2 rounded-full shadow-lg shadow-amber-500/20" title="Populer">
+                      <PixelIcon name="fire" className="w-2.5 h-2.5 xl:w-3 xl:h-3 text-slate-950" />
+                    </div>
+                  )}
                   <button
                     onClick={() => setSelectedInfo({ name: item.badge, description: item.description })}
                     className="bg-blue-500/20 text-blue-400 p-1.5 xl:p-2 rounded-full shadow-lg shadow-blue-500/10 hover:scale-110 hover:bg-blue-500/30 transition-all border border-blue-500/30"
@@ -824,11 +829,6 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
                   >
                     <PixelIcon name="article" className="w-2.5 h-2.5 xl:w-3 xl:h-3" />
                   </button>
-                  {item.isPopular && (
-                    <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 p-1.5 xl:p-2 rounded-full shadow-lg shadow-amber-500/20" title="Populer">
-                      <PixelIcon name="fire" className="w-2.5 h-2.5 xl:w-3 xl:h-3 text-slate-950" />
-                    </div>
-                  )}
                 </div>
                 <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-5 border ${item.bgClass}`}>
                   <PixelIcon name={item.iconName} className="w-5 h-5" />
@@ -888,6 +888,11 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
                   </div>
                 )}
                 <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
+                  {item.isPopular && (
+                    <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 p-1.5 xl:p-2 rounded-full shadow-lg shadow-amber-500/20" title="Populer">
+                      <PixelIcon name="fire" className="w-3 h-3 xl:w-4 xl:h-4 text-slate-950" />
+                    </div>
+                  )}
                   <button
                     onClick={() => setSelectedInfo({ name: item.badge || item.name, description: item.description })}
                     className="bg-blue-500/20 text-blue-400 p-1.5 xl:p-2 rounded-full shadow-lg shadow-blue-500/10 hover:scale-110 hover:bg-blue-500/30 transition-all border border-blue-500/30"
@@ -895,11 +900,6 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
                   >
                     <PixelIcon name="article" className="w-3 h-3 xl:w-4 xl:h-4" />
                   </button>
-                  {item.isPopular && (
-                    <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 p-1.5 xl:p-2 rounded-full shadow-lg shadow-amber-500/20" title="Populer">
-                      <PixelIcon name="fire" className="w-3 h-3 xl:w-4 xl:h-4 text-slate-950" />
-                    </div>
-                  )}
                 </div>
                 <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-5 border ${item.bgClass}`}>
                   <PixelIcon name={item.iconName} className="w-5 h-5" />
@@ -956,6 +956,11 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
                       </div>
                     )}
                     <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
+                      {item.isPopular && (
+                        <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 p-1.5 md:p-2 rounded-full shadow-lg shadow-amber-500/20" title="Populer">
+                          <PixelIcon name="fire" className="w-3 h-3 md:w-4 md:h-4 text-slate-950" />
+                        </div>
+                      )}
                       <button
                         onClick={() => setSelectedInfo({ name: item.badge || item.name, description: item.description })}
                         className="bg-blue-500/20 text-blue-400 p-1.5 md:p-2 rounded-full shadow-lg shadow-blue-500/10 hover:scale-110 hover:bg-blue-500/30 transition-all border border-blue-500/30"
@@ -963,11 +968,6 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
                       >
                         <PixelIcon name="article" className="w-3 h-3 md:w-4 md:h-4" />
                       </button>
-                      {item.isPopular && (
-                        <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 p-1.5 md:p-2 rounded-full shadow-lg shadow-amber-500/20" title="Populer">
-                          <PixelIcon name="fire" className="w-3 h-3 md:w-4 md:h-4 text-slate-950" />
-                        </div>
-                      )}
                     </div>
                     <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-5 border ${item.bgClass}`}>
                       <PixelIcon name={item.iconName} className="w-5 h-5" />
