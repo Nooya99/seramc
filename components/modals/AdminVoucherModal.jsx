@@ -47,15 +47,14 @@ const CountdownTimer = ({ expiresAt }) => {
 };
 
 const SuccessCountdown = ({ expiresAt }) => {
-  const [timeLeft, setTimeLeft] = useState('');
-  const totalDuration = useRef(new Date(expiresAt).getTime() - new Date().getTime());
+  const [timeData, setTimeData] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0, isExpired: false });
 
   useEffect(() => {
     const calculate = () => {
       const now = new Date().getTime();
       const diff = new Date(expiresAt).getTime() - now;
       if (diff <= 0) {
-        setTimeLeft('00:00:00');
+        setTimeData({ days: 0, hours: 0, minutes: 0, seconds: 0, isExpired: true });
         return false;
       }
       
@@ -64,11 +63,7 @@ const SuccessCountdown = ({ expiresAt }) => {
       const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((diff % (1000 * 60)) / 1000);
       
-      const hh = hours.toString().padStart(2, '0');
-      const mm = minutes.toString().padStart(2, '0');
-      const ss = seconds.toString().padStart(2, '0');
-      
-      setTimeLeft(days > 0 ? `${days}:${hh}:${mm}:${ss}` : `${hh}:${mm}:${ss}`);
+      setTimeData({ days, hours, minutes, seconds, isExpired: false });
       return true;
     };
 
@@ -83,10 +78,36 @@ const SuccessCountdown = ({ expiresAt }) => {
 
   return (
     <div className="flex flex-col items-center justify-center space-y-6 my-4">
-      <div className="flex flex-col items-center justify-center text-center">
-        <span className="text-6xl font-bold text-white font-mono tracking-wider">{timeLeft || '00:00:00'}</span>
-        <span className="text-slate-400 text-base mt-4 flex items-center gap-1.5"><Clock className="w-5 h-5 text-emerald-400"/> Voucher Aktif</span>
+      <div className="flex items-center justify-center gap-2 md:gap-4 text-center">
+        {timeData.days > 0 && (
+          <>
+            <div className="flex flex-col items-center">
+              <span className="text-[10px] uppercase font-bold text-slate-500 mb-1 tracking-wider">Days</span>
+              <span className="text-5xl md:text-6xl font-bold text-white font-mono">{timeData.days.toString().padStart(2, '0')}</span>
+            </div>
+            <span className="text-4xl md:text-5xl font-bold text-slate-600 mt-4">:</span>
+          </>
+        )}
+        <div className="flex flex-col items-center">
+          <span className="text-[10px] uppercase font-bold text-slate-500 mb-1 tracking-wider">Hours</span>
+          <span className="text-5xl md:text-6xl font-bold text-white font-mono">{timeData.hours.toString().padStart(2, '0')}</span>
+        </div>
+        <span className="text-4xl md:text-5xl font-bold text-slate-600 mt-4">:</span>
+        <div className="flex flex-col items-center">
+          <span className="text-[10px] uppercase font-bold text-slate-500 mb-1 tracking-wider">Minutes</span>
+          <span className="text-5xl md:text-6xl font-bold text-white font-mono">{timeData.minutes.toString().padStart(2, '0')}</span>
+        </div>
+        <span className="text-4xl md:text-5xl font-bold text-slate-600 mt-4">:</span>
+        <div className="flex flex-col items-center">
+          <span className="text-[10px] uppercase font-bold text-slate-500 mb-1 tracking-wider">Seconds</span>
+          <span className="text-5xl md:text-6xl font-bold text-white font-mono">{timeData.seconds.toString().padStart(2, '0')}</span>
+        </div>
       </div>
+      {timeData.isExpired ? (
+        <span className="text-rose-500 text-base mt-4 flex items-center gap-1.5 font-semibold animate-pulse">• Expired</span>
+      ) : (
+        <span className="text-slate-400 text-base mt-4 flex items-center gap-1.5"><Clock className="w-5 h-5 text-emerald-400"/> Voucher Aktif</span>
+      )}
     </div>
   );
 };
