@@ -13,11 +13,14 @@ const CountdownTimer = ({ expiresAt }) => {
       
       const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
       const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const totalHours = days * 24 + hours;
       const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((diff % (1000 * 60)) / 1000);
       
-      return `${totalHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      const hh = hours.toString().padStart(2, '0');
+      const mm = minutes.toString().padStart(2, '0');
+      const ss = seconds.toString().padStart(2, '0');
+      
+      return days > 0 ? `${days}:${hh}:${mm}:${ss}` : `${hh}:${mm}:${ss}`;
     };
 
     setTimeLeft(calculateTimeLeft());
@@ -43,9 +46,8 @@ const CountdownTimer = ({ expiresAt }) => {
   );
 };
 
-const CircularCountdown = ({ expiresAt }) => {
+const SuccessCountdown = ({ expiresAt }) => {
   const [timeLeft, setTimeLeft] = useState('');
-  const [progress, setProgress] = useState(100);
   const totalDuration = useRef(new Date(expiresAt).getTime() - new Date().getTime());
 
   useEffect(() => {
@@ -54,18 +56,19 @@ const CircularCountdown = ({ expiresAt }) => {
       const diff = new Date(expiresAt).getTime() - now;
       if (diff <= 0) {
         setTimeLeft('00:00:00');
-        setProgress(0);
         return false;
       }
       
       const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
       const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const totalHours = days * 24 + hours;
       const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((diff % (1000 * 60)) / 1000);
       
-      setTimeLeft(`${totalHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
-      setProgress((diff / totalDuration.current) * 100);
+      const hh = hours.toString().padStart(2, '0');
+      const mm = minutes.toString().padStart(2, '0');
+      const ss = seconds.toString().padStart(2, '0');
+      
+      setTimeLeft(days > 0 ? `${days}:${hh}:${mm}:${ss}` : `${hh}:${mm}:${ss}`);
       return true;
     };
 
@@ -78,46 +81,11 @@ const CircularCountdown = ({ expiresAt }) => {
     return () => clearInterval(timer);
   }, [expiresAt]);
 
-  const radius = 110;
-  const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference - (progress / 100) * circumference;
-
   return (
     <div className="flex flex-col items-center justify-center space-y-6 my-4">
-      <div className="relative flex items-center justify-center" style={{ width: 260, height: 260 }}>
-        <svg className="w-full h-full transform -rotate-90 absolute">
-          <circle
-            cx="130"
-            cy="130"
-            r={radius}
-            stroke="currentColor"
-            strokeWidth="10"
-            fill="transparent"
-            className="text-slate-800"
-          />
-          <circle
-            cx="130"
-            cy="130"
-            r={radius}
-            stroke="url(#gradient)"
-            strokeWidth="10"
-            fill="transparent"
-            strokeDasharray={circumference}
-            strokeDashoffset={strokeDashoffset}
-            strokeLinecap="round"
-            className="transition-all duration-1000 ease-linear"
-          />
-          <defs>
-            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#8b5cf6" />
-              <stop offset="100%" stopColor="#3b82f6" />
-            </linearGradient>
-          </defs>
-        </svg>
-        <div className="absolute flex flex-col items-center justify-center text-center">
-          <span className="text-5xl font-bold text-white font-mono tracking-wider">{timeLeft || '00:00:00'}</span>
-          <span className="text-slate-400 text-sm mt-3 flex items-center gap-1.5"><Clock className="w-4 h-4 text-emerald-400"/> Voucher Aktif</span>
-        </div>
+      <div className="flex flex-col items-center justify-center text-center">
+        <span className="text-6xl font-bold text-white font-mono tracking-wider">{timeLeft || '00:00:00'}</span>
+        <span className="text-slate-400 text-base mt-4 flex items-center gap-1.5"><Clock className="w-5 h-5 text-emerald-400"/> Voucher Aktif</span>
       </div>
     </div>
   );
@@ -291,7 +259,7 @@ export default function AdminVoucherModal({ isOpen, onClose, selectedIds = [] })
           
           {viewState === 'countdown' ? (
              <div className="flex flex-col items-center justify-center py-4">
-                <CircularCountdown expiresAt={createdVoucherExpiry} />
+                <SuccessCountdown expiresAt={createdVoucherExpiry} />
                 <button
                   onClick={() => setViewState('list')}
                   className="mt-8 px-8 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold transition-all active:scale-95 border border-white/5"
