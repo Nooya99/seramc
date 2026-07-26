@@ -707,7 +707,18 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
                 key={item.name} 
                 className="bg-[#0f1422] rounded-[1.5rem] p-4 xl:p-5 flex flex-col relative overflow-hidden border border-white/5 shadow-xl transition-transform hover:-translate-y-1"
               >
-},{AllowMultiple:false,EndLine:689,ReplacementContent:
+                {item.discount > 0 && (
+                  <div className="absolute top-3 left-3 bg-gradient-to-r from-red-600 to-rose-500 text-white px-2 py-0.5 rounded-full text-[9px] xl:text-[10px] font-black flex items-center gap-1 shadow-lg shadow-red-500/20 z-10 border border-white/10">
+                    <PixelIcon name="tag" className="w-2.5 h-2.5" />
+                    -{item.discount}%
+                  </div>
+                )}
+                {item.isPopular && (
+                  <div className="absolute top-3 right-3 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 px-2 py-0.5 rounded-full text-[9px] xl:text-[10px] font-black flex items-center gap-1 shadow-lg shadow-amber-500/20 z-10">
+                    <PixelIcon name="fire" className="w-2.5 h-2.5 text-slate-950" />
+                    POPULER
+                  </div>
+                )}
                 <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-5 border ${item.bgClass}`}>
                   <PixelIcon name={item.iconName} className="w-5 h-5" />
                 </div>
