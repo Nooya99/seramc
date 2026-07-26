@@ -50,7 +50,7 @@ export async function POST(request) {
     return NextResponse.json(voucher);
   } catch (error) {
     console.error('Failed to create voucher:', error);
-    return NextResponse.json({ error: 'Failed to create voucher' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to create voucher: ' + error.message, stack: error.stack }, { status: 500 });
   }
 }
 
