@@ -67,6 +67,62 @@ export async function POST(request) {
   }
 }
 
+// PUT update an existing voucher
+export async function PUT(request) {
+  try {
+    const { id, discount, maxUses, durationDays, durationHours, durationMinutes } = await request.json();
+
+    if (!id || !discount) {
+      return NextResponse.json({ error: 'ID and discount are required' }, { status: 400 });
+    }
+
+    if (discount < 1 || discount > 100) {
+      return NextResponse.json({ error: 'Discount must be between 1 and 100' }, { status: 400 });
+    }
+
+    let expiresAt = undefined; // undefined means don't update this field in Prisma if we don't calculate a new one
+
+    // If any duration is provided, we reset the timer from NOW
+    if (durationDays !== null || durationHours !== null || durationMinutes !== null) {
+      const days = durationDays ? parseInt(durationDays) : 0;
+      const hrs = durationHours ? parseInt(durationHours) : 0;
+      const mins = durationMinutes ? parseInt(durationMinutes) : 0;
+      
+      if (days > 0 || hrs > 0 || mins > 0) {
+        expiresAt = new Date();
+        expiresAt.setDate(expiresAt.getDate() + days);
+        expiresAt.setHours(expiresAt.getHours() + hrs);
+        expiresAt.setMinutes(expiresAt.getMinutes() + mins);
+      } else {
+        // If they explicitly passed 0 for all, they want to remove the expiration?
+        // Let's assume if it's passed but 0, it means no expiry.
+        if (durationDays === 0 && durationHours === 0 && durationMinutes === 0) {
+          expiresAt = null;
+        }
+      }
+    }
+
+    const updateData = {
+      discount: parseInt(discount),
+      maxUses: maxUses ? parseInt(maxUses) : null,
+    };
+
+    if (expiresAt !== undefined) {
+      updateData.expiresAt = expiresAt;
+    }
+
+    const voucher = await prisma.voucher.update({
+      where: { id },
+      data: updateData
+    });
+
+    return NextResponse.json(voucher);
+  } catch (error) {
+    console.error('Failed to update voucher:', error);
+    return NextResponse.json({ error: 'Failed to update voucher: ' + error.message }, { status: 500 });
+  }
+}
+
 // DELETE a voucher
 export async function DELETE(request) {
   try {
@@ -86,3 +142,4 @@ export async function DELETE(request) {
     return NextResponse.json({ error: 'Failed to delete voucher' }, { status: 500 });
   }
 }
+

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Ticket, X, Plus, Trash2, CheckCircle2, RefreshCw, Clock, Timer, ArrowLeft } from 'lucide-react';
+import { Ticket, X, Plus, Trash2, CheckCircle2, RefreshCw, Clock, Timer, ArrowLeft, Pencil } from 'lucide-react';
 
 const CountdownTimer = ({ expiresAt }) => {
   const [timeLeft, setTimeLeft] = useState('');
@@ -120,6 +120,7 @@ export default function AdminVoucherModal({ isOpen, onClose, selectedIds = [] })
   // View state: 'list', 'timer', 'countdown'
   const [viewState, setViewState] = useState('list'); 
   const [createdVoucherExpiry, setCreatedVoucherExpiry] = useState(null);
+  const [editId, setEditId] = useState(null);
   
   // Basic Form State
   const [code, setCode] = useState('');
@@ -165,18 +166,27 @@ export default function AdminVoucherModal({ isOpen, onClose, selectedIds = [] })
   const handleCreate = async () => {
     setSaving(true);
     try {
-      const res = await fetch('/api/vouchers', {
-        method: 'POST',
+      const url = '/api/vouchers';
+      const method = editId ? 'PUT' : 'POST';
+      const body = {
+        discount: parseInt(discount),
+        maxUses: maxUses ? parseInt(maxUses) : null,
+        durationDays: durationDays ? parseInt(durationDays) : null,
+        durationHours: durationHours ? parseInt(durationHours) : null,
+        durationMinutes: durationMinutes ? parseInt(durationMinutes) : null,
+        applicableProductIds: selectedIds
+      };
+      
+      if (editId) {
+        body.id = editId;
+      } else {
+        body.code = code;
+      }
+
+      const res = await fetch(url, {
+        method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          code,
-          discount: parseInt(discount),
-          maxUses: maxUses ? parseInt(maxUses) : null,
-          durationDays: durationDays ? parseInt(durationDays) : null,
-          durationHours: durationHours ? parseInt(durationHours) : null,
-          durationMinutes: durationMinutes ? parseInt(durationMinutes) : null,
-          applicableProductIds: selectedIds
-        })
+        body: JSON.stringify(body)
       });
       if (res.ok) {
         const data = await res.json();
@@ -187,6 +197,7 @@ export default function AdminVoucherModal({ isOpen, onClose, selectedIds = [] })
         setDurationDays('');
         setDurationHours('');
         setDurationMinutes('');
+        setEditId(null);
         fetchVouchers();
         
         if (data.expiresAt) {
@@ -197,11 +208,11 @@ export default function AdminVoucherModal({ isOpen, onClose, selectedIds = [] })
         }
       } else {
         const err = await res.json();
-        alert(err.error || 'Gagal membuat voucher');
+        alert(err.error || `Gagal ${editId ? 'mengedit' : 'membuat'} voucher`);
         setViewState('list');
       }
     } catch (error) {
-      console.error('Failed to create voucher', error);
+      console.error('Failed to save voucher', error);
       alert('Terjadi kesalahan jaringan atau server');
       setViewState('list');
     } finally {
@@ -223,6 +234,40 @@ export default function AdminVoucherModal({ isOpen, onClose, selectedIds = [] })
     } catch (error) {
       console.error('Failed to delete voucher', error);
     }
+  };
+
+  const handleEditClick = (voucher) => {
+    setEditId(voucher.id);
+    setCode(voucher.code);
+    setDiscount(voucher.discount.toString());
+    setMaxUses(voucher.maxUses ? voucher.maxUses.toString() : '');
+    
+    setDurationDays('');
+    setDurationHours('');
+    setDurationMinutes('');
+    
+    if (voucher.expiresAt) {
+      const diff = new Date(voucher.expiresAt).getTime() - new Date().getTime();
+      if (diff > 0) {
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        
+        setDurationDays(days > 0 ? days.toString() : '');
+        setDurationHours(hours > 0 ? hours.toString() : '');
+        setDurationMinutes(minutes > 0 ? minutes.toString() : '');
+      }
+    }
+  };
+
+  const cancelEdit = () => {
+    setEditId(null);
+    setCode('');
+    setDiscount('');
+    setMaxUses('');
+    setDurationDays('');
+    setDurationHours('');
+    setDurationMinutes('');
   };
 
   const applyTemplate = (days, hours, minutes) => {
@@ -355,7 +400,7 @@ export default function AdminVoucherModal({ isOpen, onClose, selectedIds = [] })
                     disabled={saving || (!durationDays && !durationHours && !durationMinutes)}
                     className="w-full flex items-center justify-center gap-2 py-4 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-lg transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-900/20"
                   >
-                    {saving ? 'Creating...' : 'Start'}
+                    {saving ? (editId ? 'Saving...' : 'Creating...') : (editId ? 'Save' : 'Start')}
                   </button>
                 </div>
 
@@ -364,7 +409,14 @@ export default function AdminVoucherModal({ isOpen, onClose, selectedIds = [] })
             <>
               {/* Create Form */}
               <form onSubmit={(e) => { e.preventDefault(); setViewState('timer'); }} className="bg-slate-900/50 p-5 rounded-2xl border border-white/5 space-y-4">
-                <h3 className="text-sm font-bold text-slate-300 uppercase tracking-wider mb-2">Buat Voucher Baru</h3>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-sm font-bold text-slate-300 uppercase tracking-wider">{editId ? 'Edit Voucher' : 'Buat Voucher Baru'}</h3>
+                  {editId && (
+                    <button type="button" onClick={cancelEdit} className="text-xs text-rose-400 hover:text-rose-300 font-semibold px-2 py-1 rounded bg-rose-500/10 hover:bg-rose-500/20 transition-colors">
+                      Batal Edit
+                    </button>
+                  )}
+                </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
@@ -375,17 +427,20 @@ export default function AdminVoucherModal({ isOpen, onClose, selectedIds = [] })
                         value={code}
                         onChange={(e) => setCode(e.target.value.toUpperCase())}
                         placeholder="Contoh: SERA2024"
-                        className="flex-1 bg-[#0b101d] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-cyan-500/50 transition-colors"
+                        className={`flex-1 bg-[#0b101d] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-cyan-500/50 transition-colors ${editId ? 'opacity-50 cursor-not-allowed' : ''}`}
                         required
+                        disabled={!!editId}
                       />
-                      <button
-                        type="button"
-                        onClick={generateRandomCode}
-                        className="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors"
-                        title="Generate Random Code"
-                      >
-                        <RefreshCw className="w-4 h-4" />
-                      </button>
+                      {!editId && (
+                        <button
+                          type="button"
+                          onClick={generateRandomCode}
+                          className="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors"
+                          title="Generate Random Code"
+                        >
+                          <RefreshCw className="w-4 h-4" />
+                        </button>
+                      )}
                     </div>
                   </div>
                   
@@ -422,7 +477,7 @@ export default function AdminVoucherModal({ isOpen, onClose, selectedIds = [] })
                   className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-sm transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed mt-2"
                 >
                   <Timer className="w-4 h-4" />
-                  Set Durasi & Buat Voucher
+                  {editId ? 'Set Durasi & Simpan' : 'Set Durasi & Buat Voucher'}
                 </button>
               </form>
 
@@ -463,13 +518,22 @@ export default function AdminVoucherModal({ isOpen, onClose, selectedIds = [] })
                           </div>
                         </div>
                         
-                        <button
-                          onClick={() => handleDelete(voucher.id)}
-                          className="p-2 rounded-lg text-rose-400 hover:text-white hover:bg-rose-500/20 transition-colors"
-                          title="Hapus Voucher"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => handleEditClick(voucher)}
+                            className="p-2 rounded-lg text-blue-400 hover:text-white hover:bg-blue-500/20 transition-colors"
+                            title="Edit Voucher"
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(voucher.id)}
+                            className="p-2 rounded-lg text-rose-400 hover:text-white hover:bg-rose-500/20 transition-colors"
+                            title="Hapus Voucher"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>
