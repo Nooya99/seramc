@@ -859,13 +859,31 @@ export default function AdminProductsPage() {
         selectedIds={selectedIds}
       />
 
-      <AdminDiscountModal 
-        isOpen={showDiscountModal}
-        onClose={() => setShowDiscountModal(false)}
-        selectedIds={selectedIds}
-        defaultTarget={discountTarget}
-        onSuccess={handleDiscountSuccess}
-      />
+      {(() => {
+        let initialDiscount = '';
+        let initialExpiry = null;
+        if (discountTarget === 'ALL' && activeDiscountProduct) {
+          initialDiscount = activeDiscountProduct.discount;
+          initialExpiry = activeDiscountProduct.discountExpiresAt;
+        } else if (discountTarget === 'SELECTED' && selectedIds.length > 0) {
+          const firstSelected = products.find(p => p.id === selectedIds[0]);
+          if (firstSelected) {
+            initialDiscount = firstSelected.discount;
+            initialExpiry = firstSelected.discountExpiresAt;
+          }
+        }
+        return (
+          <AdminDiscountModal 
+            isOpen={showDiscountModal}
+            onClose={() => setShowDiscountModal(false)}
+            selectedIds={selectedIds}
+            defaultTarget={discountTarget}
+            initialDiscount={initialDiscount}
+            initialExpiry={initialExpiry}
+            onSuccess={handleDiscountSuccess}
+          />
+        );
+      })()}
 
       {/* Add / Edit Modal */}
       {showModal && (

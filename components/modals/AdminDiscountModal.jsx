@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Percent, X, CheckCircle2, Clock, Timer, ArrowLeft } from 'lucide-react';
 
-export default function AdminDiscountModal({ isOpen, onClose, selectedIds = [], defaultTarget = 'ALL', onSuccess }) {
+export default function AdminDiscountModal({ isOpen, onClose, selectedIds = [], defaultTarget = 'ALL', initialDiscount = '', initialExpiry = null, onSuccess }) {
   const [viewState, setViewState] = useState('form'); // form, timer, countdown
   const [saving, setSaving] = useState(false);
   
@@ -19,12 +19,33 @@ export default function AdminDiscountModal({ isOpen, onClose, selectedIds = [], 
 
   useEffect(() => {
     if (isOpen) {
-      setViewState('form');
-      setGlobalDiscount('');
+      setGlobalDiscount(initialDiscount ? initialDiscount.toString() : '');
       setDiscountTarget(defaultTarget);
-      setDurationDays('');
-      setDurationHours('');
-      setDurationMinutes('');
+      
+      if (initialExpiry) {
+        const diff = new Date(initialExpiry).getTime() - new Date().getTime();
+        if (diff > 0) {
+          const hoursTotal = Math.floor(diff / (1000 * 60 * 60));
+          const days = Math.floor(hoursTotal / 24);
+          const hours = hoursTotal % 24;
+          const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+          
+          setDurationDays(days > 0 ? days.toString() : '');
+          setDurationHours(hours > 0 ? hours.toString() : '');
+          setDurationMinutes(minutes > 0 ? minutes.toString() : '');
+          setViewState('timer'); // Start in timer view if editing active expiry
+        } else {
+          setDurationDays('');
+          setDurationHours('');
+          setDurationMinutes('');
+          setViewState('form');
+        }
+      } else {
+        setDurationDays('');
+        setDurationHours('');
+        setDurationMinutes('');
+        setViewState('form');
+      }
     }
   }, [isOpen, defaultTarget]);
 

@@ -3,6 +3,49 @@
 import { useEffect, useState } from 'react';
 import PixelIcon from '@/components/PixelIcon';
 
+const ShopCountdown = ({ expiresAt, className = '' }) => {
+  const [timeLeft, setTimeLeft] = useState('');
+
+  useEffect(() => {
+    if (!expiresAt) {
+      setTimeLeft('');
+      return;
+    }
+
+    const calculateTimeLeft = () => {
+      const diff = new Date(expiresAt).getTime() - new Date().getTime();
+      if (diff <= 0) return '';
+      
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      
+      const hh = hours.toString().padStart(2, '0');
+      const mm = minutes.toString().padStart(2, '0');
+      const ss = seconds.toString().padStart(2, '0');
+      
+      return days > 0 ? `${days}d ${hh}:${mm}:${ss}` : `${hh}:${mm}:${ss}`;
+    };
+
+    setTimeLeft(calculateTimeLeft());
+    
+    const timer = setInterval(() => {
+      setTimeLeft(calculateTimeLeft());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [expiresAt]);
+
+  if (!timeLeft) return null;
+
+  return (
+    <span className={`font-mono inline-block ${className}`}>
+      {timeLeft}
+    </span>
+  );
+};
+
 // Style helper for Ranks
 const getRankStyle = (name) => {
   const upper = name.toUpperCase();
@@ -397,6 +440,7 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
   const [othersData, setOthersData] = useState(initialOthersData);
   const [racesData, setRacesData] = useState([]);
   const [globalDiscount, setGlobalDiscount] = useState(0);
+  const [globalDiscountExpiry, setGlobalDiscountExpiry] = useState(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -416,12 +460,35 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
       if (res.ok) {
         const dbProducts = await res.json();
         if (dbProducts && dbProducts.length > 0) {
-          const maxDiscount = Math.max(...dbProducts.map(p => p.discount || 0));
-          const allHaveDiscount = maxDiscount > 0 && dbProducts.every(p => p.discount === maxDiscount);
+          const now = new Date().getTime();
+          // Filter out expired discounts
+          const activeProducts = dbProducts.map(p => {
+            if (p.discount > 0 && p.discountExpiresAt && new Date(p.discountExpiresAt).getTime() <= now) {
+              return { ...p, discount: 0, discountExpiresAt: null };
+            }
+            return p;
+          });
+
+          const maxDiscount = Math.max(...activeProducts.map(p => p.discount || 0));
+          const allHaveDiscount = maxDiscount > 0 && activeProducts.every(p => p.discount === maxDiscount);
+          
           setGlobalDiscount(allHaveDiscount ? maxDiscount : 0);
+          
+          if (allHaveDiscount) {
+            // Find if all have the same expiry, or take the max expiry
+            const expiries = activeProducts.map(p => p.discountExpiresAt).filter(Boolean);
+            if (expiries.length > 0) {
+              // Just pick one if they are part of global discount, usually they are set together
+              setGlobalDiscountExpiry(expiries[0]);
+            } else {
+              setGlobalDiscountExpiry(null);
+            }
+          } else {
+            setGlobalDiscountExpiry(null);
+          }
 
           // 1. Ranks Mapping (Grouped dynamically by base name)
-          const rankItems = dbProducts.filter(p => (p.category || '').toLowerCase() === 'rank');
+          const rankItems = activeProducts.filter(p => (p.category || '').toLowerCase() === 'rank');
           if (rankItems.length > 0) {
             const groupedRanks = {};
             rankItems.forEach(p => {
@@ -444,7 +511,8 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
                   price: finalPrice ? finalPrice.toLocaleString('id-ID') : '0',
                   numericPrice: finalPrice,
                   fullName: p.name,
-                  discount: p.discount
+                  discount: p.discount,
+                  discountExpiresAt: p.discountExpiresAt
                 };
               });
 
@@ -475,7 +543,8 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
                 numericPrice: finalPrice,
                 benefit: p.duration || 'Key',
                 isPopular: p.isPopular,
-                discount: p.discount
+                discount: p.discount,
+                discountExpiresAt: p.discountExpiresAt
               };
             });
             setKeysData(updatedKeys);
@@ -498,7 +567,8 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
                 numericPrice: finalPrice,
                 duration: p.duration || 'Permanen',
                 isPopular: p.isPopular,
-                discount: p.discount
+                discount: p.discount,
+                discountExpiresAt: p.discountExpiresAt
               };
             });
             setOthersData(updatedOthers);
@@ -520,7 +590,9 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
                 price: finalPrice ? finalPrice.toLocaleString('id-ID') : '0',
                 numericPrice: finalPrice,
                 duration: p.duration || 'Permanen',
-                isPopular: p.isPopular
+                isPopular: p.isPopular,
+                discount: p.discount,
+                discountExpiresAt: p.discountExpiresAt
               };
             });
             setRacesData(updatedRaces);
@@ -616,7 +688,15 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
           <div className="mb-8 p-4 md:p-6 rounded-3xl bg-gradient-to-r from-red-600/20 via-rose-500/20 to-red-600/20 border border-red-500/40 flex items-center justify-center gap-4 shadow-[0_0_30px_rgba(225,29,72,0.15)] relative overflow-hidden">
             <PixelIcon name="tag" className="w-8 h-8 md:w-12 md:h-12 text-red-400 drop-shadow-[0_0_10px_rgba(248,113,113,0.5)] z-10" />
             <div className="text-center z-10">
-              <h3 className="text-white font-black text-xl md:text-3xl font-poppins drop-shadow-md">GLOBAL DISCOUNT {globalDiscount}% OFF!</h3>
+              <h3 className="text-white font-black text-xl md:text-3xl font-poppins drop-shadow-md">
+                GLOBAL DISCOUNT {globalDiscount}% OFF!
+                {globalDiscountExpiry && (
+                  <span className="ml-3 inline-flex items-center gap-1.5 px-3 py-1 bg-black/40 rounded-full border border-red-500/30 text-red-200">
+                    <PixelIcon name="clock" className="w-4 h-4 md:w-5 md:h-5 text-red-400" />
+                    <ShopCountdown expiresAt={globalDiscountExpiry} />
+                  </span>
+                )}
+              </h3>
               <p className="text-red-200 text-xs md:text-sm font-medium mt-1">Semua item di shop sedang diskon besar-besaran!</p>
             </div>
             <PixelIcon name="tag" className="w-8 h-8 md:w-12 md:h-12 text-red-400 drop-shadow-[0_0_10px_rgba(248,113,113,0.5)] z-10" />
@@ -642,6 +722,11 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
                   <div className="absolute top-4 left-4 bg-gradient-to-r from-red-600 to-rose-500 text-white px-2 py-1 rounded-full text-[10px] md:text-xs font-black flex items-center gap-1 shadow-lg shadow-red-500/20 z-10 border border-white/10">
                     <PixelIcon name="tag" className="w-3 h-3" />
                     -{p.discount}%
+                    {p.discountExpiresAt && (
+                      <span className="ml-1 pl-1 border-l border-white/30 flex items-center gap-1 text-[9px] md:text-[10px]">
+                        <ShopCountdown expiresAt={p.discountExpiresAt} />
+                      </span>
+                    )}
                   </div>
                 )}
                 {item.isPopular && (
@@ -711,6 +796,11 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
                   <div className="absolute top-3 left-3 bg-gradient-to-r from-red-600 to-rose-500 text-white px-2 py-0.5 rounded-full text-[9px] xl:text-[10px] font-black flex items-center gap-1 shadow-lg shadow-red-500/20 z-10 border border-white/10">
                     <PixelIcon name="tag" className="w-2.5 h-2.5" />
                     -{item.discount}%
+                    {item.discountExpiresAt && (
+                      <span className="ml-1 pl-1 border-l border-white/30 flex items-center gap-1 text-[8px] xl:text-[9px]">
+                        <ShopCountdown expiresAt={item.discountExpiresAt} />
+                      </span>
+                    )}
                   </div>
                 )}
                 {item.isPopular && (
@@ -769,6 +859,11 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
                   <div className="absolute top-4 left-4 bg-gradient-to-r from-red-600 to-rose-500 text-white px-2 py-1 rounded-full text-[10px] font-black flex items-center gap-1 shadow-lg shadow-red-500/20 z-10 border border-white/10">
                     <PixelIcon name="tag" className="w-3 h-3" />
                     -{item.discount}%
+                    {item.discountExpiresAt && (
+                      <span className="ml-1 pl-1 border-l border-white/30 flex items-center gap-1 text-[9px]">
+                        <ShopCountdown expiresAt={item.discountExpiresAt} />
+                      </span>
+                    )}
                   </div>
                 )}
                 {item.isPopular && (
