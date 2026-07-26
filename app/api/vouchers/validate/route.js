@@ -31,7 +31,8 @@ export async function POST(request) {
     return NextResponse.json({
       valid: true,
       discount: voucher.discount,
-      code: voucher.code
+      code: voucher.code,
+      applicableProductIds: voucher.applicableProductIds
     });
   } catch (error) {
     console.error('Failed to validate voucher:', error);

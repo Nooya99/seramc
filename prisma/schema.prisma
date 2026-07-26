@@ -62,12 +62,13 @@ model OrderItem {
 }
 
 model Voucher {
-  id        String   @id @default(uuid())
-  code      String   @unique
-  discount  Int      // 1 to 100
-  maxUses   Int?     // null means no limit
-  usedCount Int      @default(0)
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                   String   @id @default(uuid())
+  code                 String   @unique
+  discount             Int      // 1 to 100
+  maxUses              Int?     // null means no limit
+  usedCount            Int      @default(0)
+  applicableProductIds String[] @default([]) // Array of product IDs this voucher applies to. Empty array means it applies to all.
+  isActive             Boolean  @default(true)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
 }

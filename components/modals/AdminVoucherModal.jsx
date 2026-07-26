@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Ticket, X, Plus, Trash2, CheckCircle2, RefreshCw } from 'lucide-react';
 
-export default function AdminVoucherModal({ isOpen, onClose }) {
+export default function AdminVoucherModal({ isOpen, onClose, selectedIds = [] }) {
   const [vouchers, setVouchers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -55,7 +55,8 @@ export default function AdminVoucherModal({ isOpen, onClose }) {
         body: JSON.stringify({
           code,
           discount: parseInt(discount),
-          maxUses: maxUses ? parseInt(maxUses) : null
+          maxUses: maxUses ? parseInt(maxUses) : null,
+          applicableProductIds: selectedIds
         })
       });
       if (res.ok) {
@@ -109,6 +110,12 @@ export default function AdminVoucherModal({ isOpen, onClose }) {
             <div>
               <h2 className="text-xl font-bold text-white">Kelola Voucher</h2>
               <p className="text-sm text-slate-400">Buat dan atur kode diskon untuk pembeli</p>
+              {selectedIds.length > 0 && (
+                <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-400 text-xs font-bold border border-emerald-500/20">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  Berlaku untuk {selectedIds.length} Produk Terpilih
+                </div>
+              )}
             </div>
           </div>
           <button 
@@ -211,6 +218,9 @@ export default function AdminVoucherModal({ isOpen, onClose }) {
                             <span>Terpakai {voucher.usedCount} / {voucher.maxUses}</span>
                           ) : (
                             <span>Terpakai {voucher.usedCount} (Tanpa Batas)</span>
+                          )}
+                          {voucher.applicableProductIds?.length > 0 && (
+                            <span className="ml-2 text-emerald-500 font-semibold">• {voucher.applicableProductIds.length} Item Khusus</span>
                           )}
                         </div>
                       </div>

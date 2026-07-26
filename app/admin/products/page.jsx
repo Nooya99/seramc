@@ -787,6 +787,7 @@ export default function AdminProductsPage() {
       <AdminVoucherModal 
         isOpen={showVoucherModal}
         onClose={() => setShowVoucherModal(false)}
+        selectedIds={selectedIds}
       />
 
       {/* Confirmation Modal */}

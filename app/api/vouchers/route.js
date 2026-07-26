@@ -19,7 +19,7 @@ export async function GET() {
 // POST create a new voucher
 export async function POST(request) {
   try {
-    const { code, discount, maxUses } = await request.json();
+    const { code, discount, maxUses, applicableProductIds } = await request.json();
 
     if (!code || !discount) {
       return NextResponse.json({ error: 'Code and discount are required' }, { status: 400 });
@@ -43,6 +43,7 @@ export async function POST(request) {
         code,
         discount: parseInt(discount),
         maxUses: maxUses ? parseInt(maxUses) : null,
+        applicableProductIds: applicableProductIds || [],
       }
     });
 

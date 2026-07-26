@@ -50,12 +50,28 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
     }, 0);
   };
 
+  const calculateDiscountValue = () => {
+    if (!appliedVoucher) return 0;
+    
+    // If the voucher has specific items, calculate subtotal only for those items
+    if (appliedVoucher.applicableProductIds && appliedVoucher.applicableProductIds.length > 0) {
+      const applicableSubtotal = cart.reduce((total, item) => {
+        if (appliedVoucher.applicableProductIds.includes(item.id)) {
+          return total + parsePrice(item.price) * (item.quantity || 1);
+        }
+        return total;
+      }, 0);
+      return applicableSubtotal * (appliedVoucher.discount / 100);
+    }
+    
+    // Otherwise, apply to the entire subtotal
+    const subtotal = calculateSubtotal();
+    return subtotal * (appliedVoucher.discount / 100);
+  };
+
   const calculateTotal = () => {
     const subtotal = calculateSubtotal();
-    if (appliedVoucher) {
-      return subtotal - (subtotal * appliedVoucher.discount / 100);
-    }
-    return subtotal;
+    return subtotal - calculateDiscountValue();
   };
 
   const handleApplyVoucher = async (e) => {
@@ -71,6 +87,16 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
       });
       const data = await res.json();
       if (res.ok && data.valid) {
+        // Check if the voucher applies to the current cart
+        if (data.applicableProductIds && data.applicableProductIds.length > 0) {
+          const hasApplicableItem = cart.some(item => data.applicableProductIds.includes(item.id));
+          if (!hasApplicableItem) {
+            setVoucherError('Voucher ini tidak berlaku untuk item di keranjang Anda');
+            setAppliedVoucher(null);
+            return;
+          }
+        }
+        
         setAppliedVoucher(data);
         setVoucherError('');
       } else {
@@ -259,8 +285,11 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
               </div>
               {appliedVoucher && (
                 <div className="flex justify-between items-center mt-2 text-emerald-400">
-                  <span className="text-xs">Diskon Voucher ({appliedVoucher.discount}%)</span>
-                  <span className="font-bold">- {formatPrice(calculateSubtotal() * appliedVoucher.discount / 100)}</span>
+                  <span className="text-xs">
+                    Diskon Voucher ({appliedVoucher.discount}%)
+                    {appliedVoucher.applicableProductIds?.length > 0 && " (Item Tertentu)"}
+                  </span>
+                  <span className="font-bold">- {formatPrice(calculateDiscountValue())}</span>
                 </div>
               )}
               <div className="flex justify-between items-center mt-3 pt-3 border-t border-white/20">
