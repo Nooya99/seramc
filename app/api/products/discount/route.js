@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase';
+import { prisma } from '@/lib/prisma';
 
 // PUT: Update discount for all products
 export async function PUT(request) {
@@ -22,33 +22,30 @@ export async function PUT(request) {
         discountExpiresAt.setDate(discountExpiresAt.getDate() + days);
         discountExpiresAt.setHours(discountExpiresAt.getHours() + hrs);
         discountExpiresAt.setMinutes(discountExpiresAt.getMinutes() + mins);
-        discountExpiresAt = discountExpiresAt.toISOString();
       }
     }
 
-    let query = supabaseAdmin.from('Product').update({ discount, discountExpiresAt });
+    let whereClause = {};
 
     if (target === 'SELECTED') {
       if (!Array.isArray(productIds) || productIds.length === 0) {
         return NextResponse.json({ error: 'No products selected' }, { status: 400 });
       }
-      query = query.in('id', productIds);
+      whereClause = { id: { in: productIds } };
     } else if (target === 'CATEGORY') {
       if (!category) {
         return NextResponse.json({ error: 'Category is required' }, { status: 400 });
       }
-      query = query.eq('category', category);
+      whereClause = { category };
     } else {
       // ALL
-      query = query.neq('id', '0');
+      whereClause = {};
     }
 
-    const { error } = await query;
-
-    if (error) {
-      console.error('Supabase bulk update discount error:', error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
+    await prisma.product.updateMany({
+      where: whereClause,
+      data: { discount, discountExpiresAt }
+    });
 
     return NextResponse.json({ success: true, discount, discountExpiresAt });
   } catch (error) {

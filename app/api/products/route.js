@@ -1,19 +1,16 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
+import { prisma } from '@/lib/prisma';
 import crypto from 'crypto';
 
-// GET: Fetch all products from Supabase
+export const dynamic = 'force-dynamic';
+
+// GET: Fetch all products
 export async function GET() {
   try {
-    const { data, error } = await supabaseAdmin
-      .from('Product')
-      .select('*')
-      .order('createdAt', { ascending: false });
-
-    if (error) {
-      console.error('Supabase GET products error:', error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
+    const data = await prisma.product.findMany({
+      orderBy: { createdAt: 'desc' }
+    });
 
     if (data) {
       const now = new Date().getTime();
