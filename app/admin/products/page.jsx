@@ -21,8 +21,6 @@ import {
   Ticket
 } from 'lucide-react';
 import { ConfirmModal, Toast } from '@/components/admin/NotificationModal';
-import ProductModal from '@/components/modals/ProductModal';
-import AdminDiscountModal from '@/components/modals/AdminDiscountModal';
 import AdminVoucherModal from '@/components/modals/AdminVoucherModal';
 
 export default function AdminProductsPage() {
