@@ -564,21 +564,6 @@ export default function AdminProductsPage() {
           </button>
 
           <button
-            onClick={() => {
-              setSelectMode(!selectMode);
-              if (selectMode) setSelectedIds([]);
-            }}
-            className={`flex items-center gap-2 px-4 py-3 rounded-2xl text-sm font-bold border transition-colors ${
-              selectMode 
-                ? 'bg-cyan-500 text-slate-950 border-cyan-500 shadow-lg shadow-cyan-500/20' 
-                : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700'
-            }`}
-          >
-            <CheckSquare className="w-4 h-4" />
-            {selectMode ? 'Selesai Pilih' : 'Pilih Produk'}
-          </button>
-
-          <button
             onClick={() => handleOpenModal()}
             className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-sm font-bold shadow-lg shadow-cyan-500/20 transition-all active:scale-95"
           >
@@ -612,14 +597,32 @@ export default function AdminProductsPage() {
           ))}
         </div>
 
-        {/* Discount Circular Button */}
-        <button
-          onClick={() => setShowDiscountModal(true)}
-          className="w-10 h-10 shrink-0 flex items-center justify-center rounded-full bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 border border-cyan-500/30 transition-all hover:scale-105 active:scale-95 mr-2"
-          title="Atur Diskon Global"
-        >
-          <Percent className="w-5 h-5" />
-        </button>
+        <div className="flex items-center gap-2 mr-2">
+          {/* Select Mode Toggle Button (Square) */}
+          <button
+            onClick={() => {
+              setSelectMode(!selectMode);
+              if (selectMode) setSelectedIds([]);
+            }}
+            className={`w-10 h-10 shrink-0 flex items-center justify-center rounded-xl border transition-all hover:scale-105 active:scale-95 ${
+              selectMode 
+                ? 'bg-cyan-500 text-slate-950 border-cyan-500 shadow-lg shadow-cyan-500/20'
+                : 'bg-slate-800/80 text-slate-400 hover:text-cyan-400 hover:bg-cyan-500/10 border-slate-700 hover:border-cyan-500/30'
+            }`}
+            title={selectMode ? "Selesai Pilih" : "Pilih Beberapa Produk"}
+          >
+            <CheckSquare className="w-5 h-5" />
+          </button>
+
+          {/* Discount Circular Button */}
+          <button
+            onClick={() => setShowDiscountModal(true)}
+            className="w-10 h-10 shrink-0 flex items-center justify-center rounded-full bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 border border-cyan-500/30 transition-all hover:scale-105 active:scale-95"
+            title="Atur Diskon"
+          >
+            <Percent className="w-5 h-5" />
+          </button>
+        </div>
       </div>
 
       {/* Select All Bar with Close (X) Button on Far Right */}
