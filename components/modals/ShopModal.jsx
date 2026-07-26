@@ -682,7 +682,7 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
 
                 {/* Purchase Button */}
                 <button 
-                  onClick={() => onAddToCart({ name: p.fullName || `${item.name} Rank (${p.duration})`, duration: p.duration, price: p.price })}
+                  onClick={() => onAddToCart({ name: p.fullName || `${item.name} Rank (${p.duration})`, duration: p.duration, price: p.price, category: 'rank' })}
                   className={`w-full font-bold py-3.5 rounded-2xl transition-all duration-300 ease-in-out text-[14px] md:text-[15px] active:scale-95 ${item.btnClass}`}
                 >
                   TAMBAH KE KERANJANG
@@ -740,7 +740,7 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
                   </div>
                 </div>
                 <button 
-                  onClick={() => onAddToCart({ name: item.name, duration: item.benefit, price: item.price })}
+                  onClick={() => onAddToCart({ name: item.name, duration: item.benefit, price: item.price, category: 'key' })}
                   className={`w-full font-bold py-3 rounded-xl transition-all duration-300 ease-in-out text-[11px] xl:text-[12px] whitespace-nowrap active:scale-95 ${item.btnClass}`}
                 >
                   TAMBAH KE KERANJANG
@@ -798,7 +798,7 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
                   </div>
                 </div>
                 <button 
-                  onClick={() => onAddToCart({ name: item.name, duration: item.duration || item.benefit, price: item.price })}
+                  onClick={() => onAddToCart({ name: item.name, duration: item.duration || item.benefit, price: item.price, category: 'other' })}
                   className={`w-full font-bold py-3 rounded-xl transition-all duration-300 ease-in-out text-sm active:scale-95 ${item.btnClass}`}
                 >
                   TAMBAH KE KERANJANG
@@ -858,7 +858,7 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
                       </div>
                     </div>
                     <button 
-                      onClick={() => onAddToCart({ name: item.name, duration: item.duration, price: item.price })}
+                      onClick={() => onAddToCart({ name: item.name, duration: item.duration, price: item.price, category: 'race' })}
                       className={`w-full font-bold py-3 rounded-xl transition-all duration-300 ease-in-out text-sm active:scale-95 ${item.btnClass}`}
                     >
                       TAMBAH KE KERANJANG

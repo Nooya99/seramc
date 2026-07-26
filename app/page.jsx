@@ -83,11 +83,25 @@ export default function Home() {
 
   const handleAddToCart = (item) => {
     setCart((prev) => {
+      if (item.category === 'rank') {
+        const hasRank = prev.some(cartItem => cartItem.category === 'rank');
+        if (hasRank) {
+          playSound('error');
+          addToast('Gagal Menambahkan', 'Anda hanya bisa membeli 1 jenis Rank dalam satu pesanan.', 'error');
+          return prev;
+        }
+      }
+
       const existingItemIndex = prev.findIndex(
         (cartItem) => cartItem.name === item.name && cartItem.duration === item.duration
       );
 
       if (existingItemIndex !== -1) {
+        if (item.category === 'rank') {
+          playSound('error');
+          addToast('Gagal Menambahkan', 'Maksimal 1 Rank per pesanan.', 'error');
+          return prev;
+        }
         if (item.duration && item.duration.includes('Permanen')) {
           playSound('error');
           addToast('Gagal Menambahkan', `Item ${item.name} (${item.duration}) maksimal 1 per akun.`, 'error');
@@ -117,6 +131,12 @@ export default function Home() {
       const newQuantity = (item.quantity || 1) + delta;
       
       if (newQuantity < 1) {
+        return prev;
+      }
+
+      if (item.category === 'rank' && newQuantity > 1) {
+        playSound('error');
+        addToast('Batas Maksimal', 'Maksimal 1 Rank per pesanan.', 'error');
         return prev;
       }
 
