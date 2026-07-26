@@ -125,14 +125,39 @@ export default function AdminProductsPage() {
 
   const isAllDefaultGenerated = existingDefaultCount === defaultShopItems.length;
 
-  // Click Trash Icon on Card -> Activates Select Mode & selects this product
-  const handleTrashClick = (id) => {
-    if (!selectMode) {
-      setSelectMode(true);
-      setSelectedIds([id]);
-    } else {
-      toggleSelect(id);
-    }
+  // Click Trash Icon on Card -> Deletes single product directly
+  const handleSingleDelete = (product) => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'Hapus Produk',
+      message: `Apakah Anda yakin ingin menghapus produk "${product.name}"?`,
+      count: 1,
+      onConfirm: async () => {
+        setConfirmModal(prev => ({ ...prev, loading: true }));
+        const previousProducts = [...products];
+        setProducts(prev => prev.filter(p => p.id !== product.id));
+
+        try {
+          const res = await fetch('/api/products', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ids: [product.id] })
+          });
+
+          if (res.ok) {
+            showToast('Produk berhasil dihapus!');
+          } else {
+            showToast('Gagal menghapus produk.', 'error');
+            setProducts(previousProducts);
+          }
+        } catch (err) {
+          showToast('Terjadi kesalahan jaringan.', 'error');
+          setProducts(previousProducts);
+        } finally {
+          setConfirmModal({ isOpen: false });
+        }
+      }
+    });
   };
 
   // Toggle single product selection
@@ -463,15 +488,21 @@ export default function AdminProductsPage() {
               <Edit3 className="w-4 h-4" />
             </button>
 
-            {/* RED TRASH CAN ICON: Activates select mode & selects this item! */}
+            {/* RED TRASH CAN ICON */}
             <button
-              onClick={() => handleTrashClick(product.id)}
+              onClick={() => {
+                if (selectMode) {
+                  toggleSelect(product.id);
+                } else {
+                  handleSingleDelete(product);
+                }
+              }}
               className={`p-2.5 rounded-xl transition-all ${
                 isSelected 
                   ? 'bg-rose-600 text-white shadow-lg shadow-rose-600/30' 
                   : 'bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20'
               }`}
-              title="Klik untuk memilih & hapus item"
+              title={selectMode ? "Pilih/Batal Pilih Item" : "Hapus Item"}
             >
               <Trash2 className="w-4 h-4" />
             </button>
@@ -522,14 +553,29 @@ export default function AdminProductsPage() {
             {isAllDefaultGenerated ? (
               <>
                 <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                Shop Items Complete (21/21)
+                <span className="hidden sm:inline">Shop Items Complete (21/21)</span>
               </>
             ) : (
               <>
                 <Sparkles className="w-4 h-4 text-amber-400" />
-                Generate All Shop Items ({existingDefaultCount}/21)
+                <span className="hidden sm:inline">Generate All Shop Items ({existingDefaultCount}/21)</span>
               </>
             )}
+          </button>
+
+          <button
+            onClick={() => {
+              setSelectMode(!selectMode);
+              if (selectMode) setSelectedIds([]);
+            }}
+            className={`flex items-center gap-2 px-4 py-3 rounded-2xl text-sm font-bold border transition-colors ${
+              selectMode 
+                ? 'bg-cyan-500 text-slate-950 border-cyan-500 shadow-lg shadow-cyan-500/20' 
+                : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700'
+            }`}
+          >
+            <CheckSquare className="w-4 h-4" />
+            {selectMode ? 'Selesai Pilih' : 'Pilih Produk'}
           </button>
 
           <button
@@ -704,11 +750,22 @@ export default function AdminProductsPage() {
             </button>
 
             <button
+              onClick={() => {
+                setDiscountTarget('SELECTED');
+                setShowDiscountModal(true);
+              }}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-cyan-500 text-slate-950 hover:bg-cyan-400 text-xs font-bold transition-all"
+            >
+              <Percent className="w-4 h-4" />
+              Diskon
+            </button>
+
+            <button
               onClick={handleBulkDelete}
               className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 text-white text-xs font-bold shadow-lg shadow-rose-600/20 transition-all active:scale-95 whitespace-nowrap"
             >
               <Trash2 className="w-4 h-4" />
-              Hapus ({selectedIds.length}) Terpilih
+              Hapus
             </button>
           </div>
         </div>
