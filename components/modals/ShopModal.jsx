@@ -441,6 +441,7 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
   const [racesData, setRacesData] = useState([]);
   const [globalDiscount, setGlobalDiscount] = useState(0);
   const [globalDiscountExpiry, setGlobalDiscountExpiry] = useState(null);
+  const [selectedInfo, setSelectedInfo] = useState(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -512,7 +513,8 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
                   numericPrice: finalPrice,
                   fullName: p.name,
                   discount: p.discount,
-                  discountExpiresAt: p.discountExpiresAt
+                  discountExpiresAt: p.discountExpiresAt,
+                  description: p.description
                 };
               });
 
@@ -544,7 +546,8 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
                 benefit: p.duration || 'Key',
                 isPopular: p.isPopular,
                 discount: p.discount,
-                discountExpiresAt: p.discountExpiresAt
+                discountExpiresAt: p.discountExpiresAt,
+                description: p.description
               };
             });
             setKeysData(updatedKeys);
@@ -568,7 +571,8 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
                 duration: p.duration || 'Permanen',
                 isPopular: p.isPopular,
                 discount: p.discount,
-                discountExpiresAt: p.discountExpiresAt
+                discountExpiresAt: p.discountExpiresAt,
+                description: p.description
               };
             });
             setOthersData(updatedOthers);
@@ -592,7 +596,8 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
                 duration: p.duration || 'Permanen',
                 isPopular: p.isPopular,
                 discount: p.discount,
-                discountExpiresAt: p.discountExpiresAt
+                discountExpiresAt: p.discountExpiresAt,
+                description: p.description
               };
             });
             setRacesData(updatedRaces);
@@ -729,11 +734,20 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
                     )}
                   </div>
                 )}
-                {item.isPopular && (
-                  <div className="absolute top-4 right-4 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 p-1.5 md:p-2 rounded-full shadow-lg shadow-amber-500/20 z-10" title="Populer">
-                    <PixelIcon name="fire" className="w-3 h-3 md:w-4 md:h-4 text-slate-950" />
-                  </div>
-                )}
+                <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
+                  <button
+                    onClick={() => setSelectedInfo({ name: item.badge, description: p.description })}
+                    className="bg-blue-500/20 text-blue-400 p-1.5 md:p-2 rounded-full shadow-lg shadow-blue-500/10 hover:scale-110 hover:bg-blue-500/30 transition-all border border-blue-500/30"
+                    title="Informasi Benefit"
+                  >
+                    <PixelIcon name="article" className="w-3 h-3 md:w-4 md:h-4" />
+                  </button>
+                  {item.isPopular && (
+                    <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 p-1.5 md:p-2 rounded-full shadow-lg shadow-amber-500/20" title="Populer">
+                      <PixelIcon name="fire" className="w-3 h-3 md:w-4 md:h-4 text-slate-950" />
+                    </div>
+                  )}
+                </div>
                 {/* Icon */}
                 <div className={`w-14 h-14 rounded-full flex items-center justify-center mb-6 border ${item.bgClass}`}>
                   <PixelIcon name={item.iconName} className="w-6 h-6" />
@@ -802,11 +816,20 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
                     )}
                   </div>
                 )}
-                {item.isPopular && (
-                  <div className="absolute top-3 right-3 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 p-1.5 xl:p-2 rounded-full shadow-lg shadow-amber-500/20 z-10" title="Populer">
-                    <PixelIcon name="fire" className="w-2.5 h-2.5 xl:w-3 xl:h-3 text-slate-950" />
-                  </div>
-                )}
+                <div className="absolute top-3 right-3 flex items-center gap-1.5 z-10">
+                  <button
+                    onClick={() => setSelectedInfo({ name: item.badge, description: item.description })}
+                    className="bg-blue-500/20 text-blue-400 p-1.5 xl:p-2 rounded-full shadow-lg shadow-blue-500/10 hover:scale-110 hover:bg-blue-500/30 transition-all border border-blue-500/30"
+                    title="Informasi Benefit"
+                  >
+                    <PixelIcon name="article" className="w-2.5 h-2.5 xl:w-3 xl:h-3" />
+                  </button>
+                  {item.isPopular && (
+                    <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 p-1.5 xl:p-2 rounded-full shadow-lg shadow-amber-500/20" title="Populer">
+                      <PixelIcon name="fire" className="w-2.5 h-2.5 xl:w-3 xl:h-3 text-slate-950" />
+                    </div>
+                  )}
+                </div>
                 <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-5 border ${item.bgClass}`}>
                   <PixelIcon name={item.iconName} className="w-5 h-5" />
                 </div>
@@ -864,11 +887,20 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
                     )}
                   </div>
                 )}
-                {item.isPopular && (
-                  <div className="absolute top-4 right-4 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 p-1.5 xl:p-2 rounded-full shadow-lg shadow-amber-500/20 z-10" title="Populer">
-                    <PixelIcon name="fire" className="w-3 h-3 xl:w-4 xl:h-4 text-slate-950" />
-                  </div>
-                )}
+                <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
+                  <button
+                    onClick={() => setSelectedInfo({ name: item.badge || item.name, description: item.description })}
+                    className="bg-blue-500/20 text-blue-400 p-1.5 xl:p-2 rounded-full shadow-lg shadow-blue-500/10 hover:scale-110 hover:bg-blue-500/30 transition-all border border-blue-500/30"
+                    title="Informasi Benefit"
+                  >
+                    <PixelIcon name="article" className="w-3 h-3 xl:w-4 xl:h-4" />
+                  </button>
+                  {item.isPopular && (
+                    <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 p-1.5 xl:p-2 rounded-full shadow-lg shadow-amber-500/20" title="Populer">
+                      <PixelIcon name="fire" className="w-3 h-3 xl:w-4 xl:h-4 text-slate-950" />
+                    </div>
+                  )}
+                </div>
                 <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-5 border ${item.bgClass}`}>
                   <PixelIcon name={item.iconName} className="w-5 h-5" />
                 </div>
@@ -923,12 +955,20 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
                         -{item.discount}%
                       </div>
                     )}
-                    {item.isPopular && (
-                      <div className="absolute top-4 right-4 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 px-2 py-1 rounded-full text-[10px] font-black flex items-center gap-1 shadow-lg shadow-amber-500/20 z-10">
-                        <PixelIcon name="fire" className="w-3 h-3 text-slate-950" />
-                        POPULER
-                      </div>
-                    )}
+                    <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
+                      <button
+                        onClick={() => setSelectedInfo({ name: item.badge || item.name, description: item.description })}
+                        className="bg-blue-500/20 text-blue-400 p-1.5 md:p-2 rounded-full shadow-lg shadow-blue-500/10 hover:scale-110 hover:bg-blue-500/30 transition-all border border-blue-500/30"
+                        title="Informasi Benefit"
+                      >
+                        <PixelIcon name="article" className="w-3 h-3 md:w-4 md:h-4" />
+                      </button>
+                      {item.isPopular && (
+                        <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 p-1.5 md:p-2 rounded-full shadow-lg shadow-amber-500/20" title="Populer">
+                          <PixelIcon name="fire" className="w-3 h-3 md:w-4 md:h-4 text-slate-950" />
+                        </div>
+                      )}
+                    </div>
                     <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-5 border ${item.bgClass}`}>
                       <PixelIcon name={item.iconName} className="w-5 h-5" />
                     </div>
@@ -962,6 +1002,31 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
           </>
         )}
 
+        {selectedInfo && (
+          <div className="fixed inset-0 z-[110] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="bg-[#0b101d] border border-blue-500/30 rounded-3xl max-w-sm w-full p-6 relative shadow-[0_0_40px_rgba(59,130,246,0.15)] animate-in zoom-in-95 duration-200">
+              <button 
+                onClick={() => setSelectedInfo(null)}
+                className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center bg-white/5 hover:bg-white/10 rounded-full text-slate-400 hover:text-white transition-colors"
+              >
+                <PixelIcon name="close" className="w-4 h-4" />
+              </button>
+              <div className="mb-4 pr-8">
+                <h3 className="font-black text-2xl text-white font-poppins">{selectedInfo.name}</h3>
+                <p className="text-blue-400 text-xs font-bold uppercase mt-1">Informasi & Benefit</p>
+              </div>
+              <div className="text-slate-300 text-sm whitespace-pre-wrap leading-relaxed max-h-[60vh] overflow-y-auto bg-black/40 p-4 rounded-2xl border border-white/5">
+                {selectedInfo.description || "Tidak ada informasi tambahan untuk item ini."}
+              </div>
+              <button 
+                onClick={() => setSelectedInfo(null)}
+                className="w-full mt-6 bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-xl transition-colors active:scale-95"
+              >
+                TUTUP
+              </button>
+            </div>
+          </div>
+        )}
         </div>
       </div>
 
