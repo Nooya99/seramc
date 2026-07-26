@@ -3,72 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { Percent, X, CheckCircle2, Clock, Timer, ArrowLeft } from 'lucide-react';
 
-const SuccessCountdown = ({ expiresAt }) => {
-  const [timeData, setTimeData] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0, isExpired: false });
-
-  useEffect(() => {
-    const calculate = () => {
-      const now = new Date().getTime();
-      const diff = new Date(expiresAt).getTime() - now;
-      if (diff <= 0) {
-        setTimeData({ days: 0, hours: 0, minutes: 0, seconds: 0, isExpired: true });
-        return false;
-      }
-      
-      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-      
-      setTimeData({ days, hours, minutes, seconds, isExpired: false });
-      return true;
-    };
-
-    calculate();
-    const timer = setInterval(() => {
-      const isRunning = calculate();
-      if (!isRunning) clearInterval(timer);
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [expiresAt]);
-
-  return (
-    <div className="flex flex-col items-center justify-center space-y-6 my-4">
-      <div className="flex items-center justify-center gap-2 md:gap-4 text-center">
-        {timeData.days > 0 && (
-          <>
-            <div className="flex flex-col items-center">
-              <span className="text-[10px] uppercase font-bold text-slate-500 mb-1 tracking-wider">Days</span>
-              <span className="text-5xl md:text-6xl font-bold text-white font-mono">{timeData.days.toString().padStart(2, '0')}</span>
-            </div>
-            <span className="text-4xl md:text-5xl font-bold text-slate-600 mt-4">:</span>
-          </>
-        )}
-        <div className="flex flex-col items-center">
-          <span className="text-[10px] uppercase font-bold text-slate-500 mb-1 tracking-wider">Hours</span>
-          <span className="text-5xl md:text-6xl font-bold text-white font-mono">{timeData.hours.toString().padStart(2, '0')}</span>
-        </div>
-        <span className="text-4xl md:text-5xl font-bold text-slate-600 mt-4">:</span>
-        <div className="flex flex-col items-center">
-          <span className="text-[10px] uppercase font-bold text-slate-500 mb-1 tracking-wider">Minutes</span>
-          <span className="text-5xl md:text-6xl font-bold text-white font-mono">{timeData.minutes.toString().padStart(2, '0')}</span>
-        </div>
-        <span className="text-4xl md:text-5xl font-bold text-slate-600 mt-4">:</span>
-        <div className="flex flex-col items-center">
-          <span className="text-[10px] uppercase font-bold text-slate-500 mb-1 tracking-wider">Seconds</span>
-          <span className="text-5xl md:text-6xl font-bold text-white font-mono">{timeData.seconds.toString().padStart(2, '0')}</span>
-        </div>
-      </div>
-      {timeData.isExpired ? (
-        <span className="text-rose-500 text-base mt-4 flex items-center gap-1.5 font-semibold animate-pulse">• Expired</span>
-      ) : (
-        <span className="text-slate-400 text-base mt-4 flex items-center gap-1.5"><Clock className="w-5 h-5 text-emerald-400"/> Diskon Aktif</span>
-      )}
-    </div>
-  );
-};
-
 export default function AdminDiscountModal({ isOpen, onClose, selectedIds = [], defaultTarget = 'ALL', onSuccess }) {
   const [viewState, setViewState] = useState('form'); // form, timer, countdown
   const [saving, setSaving] = useState(false);
@@ -125,15 +59,8 @@ export default function AdminDiscountModal({ isOpen, onClose, selectedIds = [], 
       });
 
       if (res.ok) {
-        const data = await res.json();
         onSuccess(reset ? 'Diskon berhasil direset!' : `Diskon ${discountValue}% berhasil diterapkan!`);
-        
-        if (data.discountExpiresAt && !reset) {
-           setCreatedDiscountExpiry(data.discountExpiresAt);
-           setViewState('countdown');
-        } else {
-           onClose();
-        }
+        onClose();
       } else {
         const errData = await res.json();
         alert('Gagal mengubah diskon: ' + (errData.error || 'Unknown error'));
@@ -172,15 +99,15 @@ export default function AdminDiscountModal({ isOpen, onClose, selectedIds = [], 
                 <ArrowLeft className="w-5 h-5" />
               </button>
             )}
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${viewState === 'countdown' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-cyan-500/20 text-cyan-400'}`}>
-              {viewState === 'countdown' ? <CheckCircle2 className="w-5 h-5" /> : <Percent className="w-5 h-5" />}
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center bg-cyan-500/20 text-cyan-400`}>
+              <Percent className="w-5 h-5" />
             </div>
             <div>
               <h2 className="text-xl font-bold text-white">
-                {viewState === 'timer' ? 'Set Durasi Diskon' : viewState === 'countdown' ? 'Diskon Berhasil Diterapkan!' : 'Atur Diskon Global'}
+                {viewState === 'timer' ? 'Set Durasi Diskon' : 'Atur Diskon Global'}
               </h2>
               <p className="text-sm text-slate-400">
-                 {viewState === 'timer' ? 'Tentukan masa berlaku diskon' : viewState === 'countdown' ? 'Diskon telah aktif dan siap digunakan' : 'Berikan diskon untuk produk'}
+                 {viewState === 'timer' ? 'Tentukan masa berlaku diskon' : 'Berikan diskon untuk produk'}
               </p>
               {discountTarget === 'SELECTED' && viewState === 'form' && (
                 <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-400 text-xs font-bold border border-emerald-500/20">
@@ -200,17 +127,7 @@ export default function AdminDiscountModal({ isOpen, onClose, selectedIds = [], 
 
         <div className="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar">
           
-          {viewState === 'countdown' ? (
-             <div className="flex flex-col items-center justify-center py-4">
-                <SuccessCountdown expiresAt={createdDiscountExpiry} />
-                <button
-                  onClick={onClose}
-                  className="mt-8 px-8 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold transition-all active:scale-95 border border-white/5"
-                >
-                  Selesai & Tutup
-                </button>
-             </div>
-          ) : viewState === 'timer' ? (
+          {viewState === 'timer' ? (
              <div className="flex flex-col items-center space-y-8 py-4">
                 
                 {/* Timer Inputs */}
