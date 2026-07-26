@@ -16,7 +16,8 @@ import {
   Key,
   Layers,
   Grid,
-  CheckCircle2
+  CheckCircle2,
+  Percent
 } from 'lucide-react';
 import { ConfirmModal, Toast } from '@/components/admin/NotificationModal';
 
@@ -30,6 +31,7 @@ export default function AdminProductsPage() {
   // Discount state
   const [globalDiscount, setGlobalDiscount] = useState('');
   const [updatingDiscount, setUpdatingDiscount] = useState(false);
+  const [showDiscountModal, setShowDiscountModal] = useState(false);
 
   // Category Filter state (Default: 'ALL')
   const [categoryFilter, setCategoryFilter] = useState('ALL');
@@ -492,33 +494,6 @@ export default function AdminProductsPage() {
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          {/* Global Discount Bar */}
-          <div className="flex items-center gap-2 bg-slate-900 border border-slate-700 rounded-2xl p-1.5">
-            <span className="text-xs font-bold text-slate-400 pl-2 hidden sm:inline-block">Diskon:</span>
-            <input
-              type="number"
-              min="0"
-              max="100"
-              placeholder="%"
-              value={globalDiscount}
-              onChange={(e) => setGlobalDiscount(e.target.value)}
-              className="w-16 bg-slate-800 border border-slate-700 rounded-xl px-2 py-1.5 text-sm text-center text-white focus:outline-none focus:border-cyan-500"
-            />
-            <button
-              onClick={() => handleApplyDiscount(false)}
-              disabled={updatingDiscount}
-              className="px-3 py-1.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-bold transition-all disabled:opacity-50"
-            >
-              Apply
-            </button>
-            <button
-              onClick={() => handleApplyDiscount(true)}
-              disabled={updatingDiscount}
-              className="px-3 py-1.5 rounded-xl bg-rose-500 hover:bg-rose-400 text-white text-xs font-bold transition-all disabled:opacity-50"
-            >
-              Reset
-            </button>
-          </div>
 
           {/* Generate All Button (Disabled if all 21 items generated) */}
           <button
@@ -554,26 +529,37 @@ export default function AdminProductsPage() {
       </div>
 
       {/* Category Selection Tabs Bar (Under Header) */}
-      <div className="flex items-center gap-2 p-2 bg-[#0b101d] border border-slate-800 rounded-2xl overflow-x-auto">
-        {categories.map((cat) => (
-          <button
-            key={cat.id}
-            onClick={() => setCategoryFilter(cat.id)}
-            className={`flex items-center gap-2.5 px-5 py-3 rounded-xl text-xs font-extrabold tracking-wider transition-all whitespace-nowrap ${
-              categoryFilter === cat.id
-                ? 'bg-cyan-500 text-slate-950 shadow-lg shadow-cyan-500/20'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800/60 border border-transparent'
-            }`}
-          >
-            {cat.icon}
-            <span>{cat.label}</span>
-            <span className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${
-              categoryFilter === cat.id ? 'bg-slate-950 text-cyan-300' : 'bg-slate-900 text-slate-400 border border-slate-800'
-            }`}>
-              {cat.count}
-            </span>
-          </button>
-        ))}
+      <div className="flex items-center justify-between p-2 bg-[#0b101d] border border-slate-800 rounded-2xl overflow-x-auto gap-4">
+        <div className="flex items-center gap-2">
+          {categories.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => setCategoryFilter(cat.id)}
+              className={`flex items-center gap-2.5 px-5 py-3 rounded-xl text-xs font-extrabold tracking-wider transition-all whitespace-nowrap ${
+                categoryFilter === cat.id
+                  ? 'bg-cyan-500 text-slate-950 shadow-lg shadow-cyan-500/20'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-800/60 border border-transparent'
+              }`}
+            >
+              {cat.icon}
+              <span>{cat.label}</span>
+              <span className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${
+                categoryFilter === cat.id ? 'bg-slate-950 text-cyan-300' : 'bg-slate-900 text-slate-400 border border-slate-800'
+              }`}>
+                {cat.count}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        {/* Discount Circular Button */}
+        <button
+          onClick={() => setShowDiscountModal(true)}
+          className="w-10 h-10 shrink-0 flex items-center justify-center rounded-full bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 border border-cyan-500/30 transition-all hover:scale-105 active:scale-95 mr-2"
+          title="Atur Diskon Global"
+        >
+          <Percent className="w-5 h-5" />
+        </button>
       </div>
 
       {/* Select All Bar with Close (X) Button on Far Right */}
@@ -710,6 +696,63 @@ export default function AdminProductsPage() {
               <Trash2 className="w-4 h-4" />
               Hapus ({selectedIds.length}) Terpilih
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Discount Modal */}
+      {showDiscountModal && (
+        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-[#0b101d] border border-slate-800 rounded-3xl max-w-sm w-full p-6 sm:p-8 space-y-6 shadow-2xl animate-in fade-in zoom-in duration-200">
+            <div className="flex justify-between items-center border-b border-slate-800 pb-4">
+              <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                <Percent className="w-5 h-5 text-cyan-400" /> Atur Diskon Global
+              </h3>
+              <button
+                onClick={() => setShowDiscountModal(false)}
+                className="text-slate-400 hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="text-xs font-bold uppercase text-slate-400 mb-1 block">Persentase Diskon (%)</label>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  placeholder="Contoh: 15"
+                  value={globalDiscount}
+                  onChange={(e) => setGlobalDiscount(e.target.value)}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-cyan-500"
+                />
+              </div>
+
+              <div className="flex flex-col gap-3 pt-4 border-t border-slate-800">
+                <button
+                  onClick={() => {
+                    handleApplyDiscount(false);
+                    setShowDiscountModal(false);
+                  }}
+                  disabled={updatingDiscount || !globalDiscount}
+                  className="w-full py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-sm font-bold rounded-xl disabled:opacity-50 transition-colors"
+                >
+                  {updatingDiscount ? 'Menerapkan...' : 'Terapkan Diskon'}
+                </button>
+                <button
+                  onClick={() => {
+                    handleApplyDiscount(true);
+                    setShowDiscountModal(false);
+                  }}
+                  disabled={updatingDiscount}
+                  className="w-full py-3 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 text-rose-400 text-sm font-bold rounded-xl transition-colors disabled:opacity-50"
+                >
+                  Reset Diskon (0%)
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
