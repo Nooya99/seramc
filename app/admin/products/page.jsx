@@ -32,6 +32,8 @@ export default function AdminProductsPage() {
   const [globalDiscount, setGlobalDiscount] = useState('');
   const [updatingDiscount, setUpdatingDiscount] = useState(false);
   const [showDiscountModal, setShowDiscountModal] = useState(false);
+  const [discountTarget, setDiscountTarget] = useState('ALL');
+  const [discountCategory, setDiscountCategory] = useState('Rank');
 
   // Category Filter state (Default: 'ALL')
   const [categoryFilter, setCategoryFilter] = useState('ALL');
@@ -340,12 +342,24 @@ export default function AdminProductsPage() {
       return;
     }
 
+    if (discountTarget === 'SELECTED' && selectedIds.length === 0) {
+      showToast('Pilih setidaknya 1 produk terlebih dahulu', 'error');
+      return;
+    }
+
     setUpdatingDiscount(true);
     try {
+      const payload = { 
+        discount: discountValue,
+        target: discountTarget,
+        category: discountCategory,
+        productIds: selectedIds
+      };
+
       const res = await fetch('/api/products/discount', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ discount: discountValue })
+        body: JSON.stringify(payload)
       });
 
       if (res.ok) {
@@ -717,6 +731,34 @@ export default function AdminProductsPage() {
             </div>
 
             <div className="space-y-4">
+              <div>
+                <label className="text-xs font-bold uppercase text-slate-400 mb-1 block">Target Diskon</label>
+                <select
+                  value={discountTarget}
+                  onChange={(e) => setDiscountTarget(e.target.value)}
+                  className={`w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-cyan-500 ${discountTarget === 'CATEGORY' ? 'mb-3' : ''}`}
+                >
+                  <option value="ALL">Semua Produk</option>
+                  <option value="CATEGORY">Berdasarkan Kategori</option>
+                  <option value="SELECTED" disabled={selectedIds.length === 0}>
+                    Hanya Produk Terpilih ({selectedIds.length} item)
+                  </option>
+                </select>
+
+                {discountTarget === 'CATEGORY' && (
+                  <select
+                    value={discountCategory}
+                    onChange={(e) => setDiscountCategory(e.target.value)}
+                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-cyan-500"
+                  >
+                    <option value="Rank">Rank</option>
+                    <option value="Key / Crate">Key / Crate</option>
+                    <option value="Others">Others</option>
+                    <option value="Race">Race</option>
+                  </select>
+                )}
+              </div>
+
               <div>
                 <label className="text-xs font-bold uppercase text-slate-400 mb-1 block">Persentase Diskon (%)</label>
                 <input

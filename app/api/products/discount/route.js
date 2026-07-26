@@ -4,18 +4,30 @@ import { supabaseAdmin } from '@/lib/supabase';
 // PUT: Update discount for all products
 export async function PUT(request) {
   try {
-    const { discount } = await request.json();
+    const { discount, target = 'ALL', category, productIds = [] } = await request.json();
 
     if (typeof discount !== 'number' || discount < 0 || discount > 100) {
       return NextResponse.json({ error: 'Discount must be a number between 0 and 100' }, { status: 400 });
     }
 
-    // Since Supabase doesn't easily support update all without a filter that matches everything, 
-    // we can use `.neq('id', '0')` which is always true.
-    const { error } = await supabaseAdmin
-      .from('Product')
-      .update({ discount })
-      .neq('id', '0');
+    let query = supabaseAdmin.from('Product').update({ discount });
+
+    if (target === 'SELECTED') {
+      if (!Array.isArray(productIds) || productIds.length === 0) {
+        return NextResponse.json({ error: 'No products selected' }, { status: 400 });
+      }
+      query = query.in('id', productIds);
+    } else if (target === 'CATEGORY') {
+      if (!category) {
+        return NextResponse.json({ error: 'Category is required' }, { status: 400 });
+      }
+      query = query.eq('category', category);
+    } else {
+      // ALL
+      query = query.neq('id', '0');
+    }
+
+    const { error } = await query;
 
     if (error) {
       console.error('Supabase bulk update discount error:', error);
