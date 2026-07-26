@@ -24,6 +24,56 @@ import { ConfirmModal, Toast } from '@/components/admin/NotificationModal';
 import AdminVoucherModal from '@/components/modals/AdminVoucherModal';
 import AdminDiscountModal from '@/components/modals/AdminDiscountModal';
 
+const DiscountCountdownButton = ({ expiresAt, onClick }) => {
+  const [timeLeft, setTimeLeft] = useState('');
+
+  useEffect(() => {
+    if (!expiresAt) {
+      setTimeLeft('');
+      return;
+    }
+
+    const calculateTimeLeft = () => {
+      const diff = new Date(expiresAt).getTime() - new Date().getTime();
+      if (diff <= 0) return '';
+      
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      
+      const hh = hours.toString().padStart(2, '0');
+      const mm = minutes.toString().padStart(2, '0');
+      const ss = seconds.toString().padStart(2, '0');
+      
+      return days > 0 ? `${days}d ${hh}:${mm}:${ss}` : `${hh}:${mm}:${ss}`;
+    };
+
+    setTimeLeft(calculateTimeLeft());
+    
+    const timer = setInterval(() => {
+      setTimeLeft(calculateTimeLeft());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [expiresAt]);
+
+  const isActive = !!timeLeft;
+
+  return (
+    <button
+      onClick={onClick}
+      className={`shrink-0 flex items-center justify-center rounded-full bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 border border-cyan-500/30 transition-all hover:scale-105 active:scale-95 ${isActive ? 'h-10 px-4 gap-2' : 'w-10 h-10'}`}
+      title="Atur Diskon"
+    >
+      <Percent className="w-5 h-5 shrink-0" />
+      {isActive && (
+        <span className="font-mono text-xs font-bold whitespace-nowrap">{timeLeft}</span>
+      )}
+    </button>
+  );
+};
+
 export default function AdminProductsPage() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -409,6 +459,9 @@ export default function AdminProductsPage() {
   const formatPrice = (p) => (p || 0).toLocaleString('id-ID');
   const allSelected = products.length > 0 && selectedIds.length === products.length;
 
+  const activeDiscountProduct = products.find(p => p.discountExpiresAt && new Date(p.discountExpiresAt).getTime() > new Date().getTime());
+  const globalExpiry = activeDiscountProduct ? activeDiscountProduct.discountExpiresAt : null;
+
   // Filter Categories logic
   const rankItems = products.filter(p => p.category === 'Rank');
   const keyItems = products.filter(p => p.category === 'Key / Crate');
@@ -627,17 +680,14 @@ export default function AdminProductsPage() {
             <Ticket className="w-5 h-5" />
           </button>
 
-          {/* Discount Circular Button */}
-          <button
+          {/* Discount Circular / Pill Button */}
+          <DiscountCountdownButton
+            expiresAt={globalExpiry}
             onClick={() => {
               setDiscountTarget('ALL');
               setShowDiscountModal(true);
             }}
-            className="w-10 h-10 shrink-0 flex items-center justify-center rounded-full bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 border border-cyan-500/30 transition-all hover:scale-105 active:scale-95"
-            title="Atur Diskon"
-          >
-            <Percent className="w-5 h-5" />
-          </button>
+          />
         </div>
       </div>
 
