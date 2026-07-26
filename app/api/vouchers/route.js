@@ -19,7 +19,7 @@ export async function GET() {
 // POST create a new voucher
 export async function POST(request) {
   try {
-    const { code, discount, maxUses, applicableProductIds, durationHours, durationMinutes } = await request.json();
+    const { code, discount, maxUses, applicableProductIds, durationDays, durationHours, durationMinutes } = await request.json();
 
     if (!code || !discount) {
       return NextResponse.json({ error: 'Code and discount are required' }, { status: 400 });
@@ -39,11 +39,13 @@ export async function POST(request) {
     }
 
     let expiresAt = null;
+    const days = durationDays ? parseInt(durationDays) : 0;
     const hrs = durationHours ? parseInt(durationHours) : 0;
     const mins = durationMinutes ? parseInt(durationMinutes) : 0;
     
-    if (hrs > 0 || mins > 0) {
+    if (days > 0 || hrs > 0 || mins > 0) {
       expiresAt = new Date();
+      expiresAt.setDate(expiresAt.getDate() + days);
       expiresAt.setHours(expiresAt.getHours() + hrs);
       expiresAt.setMinutes(expiresAt.getMinutes() + mins);
     }

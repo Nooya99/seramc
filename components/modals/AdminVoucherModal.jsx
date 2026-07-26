@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Ticket, X, Plus, Trash2, CheckCircle2, RefreshCw, Clock } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Ticket, X, Plus, Trash2, CheckCircle2, RefreshCw, Clock, Timer, ArrowLeft } from 'lucide-react';
 
 const CountdownTimer = ({ expiresAt }) => {
   const [timeLeft, setTimeLeft] = useState('');
@@ -43,22 +43,109 @@ const CountdownTimer = ({ expiresAt }) => {
   );
 };
 
+const CircularCountdown = ({ expiresAt }) => {
+  const [timeLeft, setTimeLeft] = useState('');
+  const [progress, setProgress] = useState(100);
+  const totalDuration = useRef(new Date(expiresAt).getTime() - new Date().getTime());
+
+  useEffect(() => {
+    const calculate = () => {
+      const now = new Date().getTime();
+      const diff = new Date(expiresAt).getTime() - now;
+      if (diff <= 0) {
+        setTimeLeft('00:00:00');
+        setProgress(0);
+        return false;
+      }
+      
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const totalHours = days * 24 + hours;
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      
+      setTimeLeft(`${totalHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
+      setProgress((diff / totalDuration.current) * 100);
+      return true;
+    };
+
+    calculate();
+    const timer = setInterval(() => {
+      const isRunning = calculate();
+      if (!isRunning) clearInterval(timer);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [expiresAt]);
+
+  const radius = 110;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference - (progress / 100) * circumference;
+
+  return (
+    <div className="flex flex-col items-center justify-center space-y-6 my-4">
+      <div className="relative flex items-center justify-center" style={{ width: 260, height: 260 }}>
+        <svg className="w-full h-full transform -rotate-90 absolute">
+          <circle
+            cx="130"
+            cy="130"
+            r={radius}
+            stroke="currentColor"
+            strokeWidth="10"
+            fill="transparent"
+            className="text-slate-800"
+          />
+          <circle
+            cx="130"
+            cy="130"
+            r={radius}
+            stroke="url(#gradient)"
+            strokeWidth="10"
+            fill="transparent"
+            strokeDasharray={circumference}
+            strokeDashoffset={strokeDashoffset}
+            strokeLinecap="round"
+            className="transition-all duration-1000 ease-linear"
+          />
+          <defs>
+            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#8b5cf6" />
+              <stop offset="100%" stopColor="#3b82f6" />
+            </linearGradient>
+          </defs>
+        </svg>
+        <div className="absolute flex flex-col items-center justify-center text-center">
+          <span className="text-5xl font-bold text-white font-mono tracking-wider">{timeLeft || '00:00:00'}</span>
+          <span className="text-slate-400 text-sm mt-3 flex items-center gap-1.5"><Clock className="w-4 h-4 text-emerald-400"/> Voucher Aktif</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default function AdminVoucherModal({ isOpen, onClose, selectedIds = [] }) {
   const [vouchers, setVouchers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [popupState, setPopupState] = useState({ show: false, type: 'success', message: '' });
 
-  // Form State
+  // View state: 'list', 'timer', 'countdown'
+  const [viewState, setViewState] = useState('list'); 
+  const [createdVoucherExpiry, setCreatedVoucherExpiry] = useState(null);
+  
+  // Basic Form State
   const [code, setCode] = useState('');
   const [discount, setDiscount] = useState('');
   const [maxUses, setMaxUses] = useState(''); // empty string means no limit
+  
+  // Timer State
+  const [durationDays, setDurationDays] = useState(''); 
   const [durationHours, setDurationHours] = useState(''); 
   const [durationMinutes, setDurationMinutes] = useState(''); 
 
   useEffect(() => {
     if (isOpen) {
       fetchVouchers();
+      setViewState('list');
     }
   }, [isOpen]);
 
@@ -86,10 +173,7 @@ export default function AdminVoucherModal({ isOpen, onClose, selectedIds = [] })
     setCode(result);
   };
 
-  const handleCreate = async (e) => {
-    e.preventDefault();
-    if (!code || !discount) return;
-
+  const handleCreate = async () => {
     setSaving(true);
     try {
       const res = await fetch('/api/vouchers', {
@@ -99,28 +183,38 @@ export default function AdminVoucherModal({ isOpen, onClose, selectedIds = [] })
           code,
           discount: parseInt(discount),
           maxUses: maxUses ? parseInt(maxUses) : null,
+          durationDays: durationDays ? parseInt(durationDays) : null,
           durationHours: durationHours ? parseInt(durationHours) : null,
           durationMinutes: durationMinutes ? parseInt(durationMinutes) : null,
           applicableProductIds: selectedIds
         })
       });
       if (res.ok) {
+        const data = await res.json();
         // Reset form
         setCode('');
         setDiscount('');
         setMaxUses('');
+        setDurationDays('');
         setDurationHours('');
         setDurationMinutes('');
-        // Refresh list
         fetchVouchers();
-        setPopupState({ show: true, type: 'success', message: 'Voucher berhasil dibuat!' });
+        
+        if (data.expiresAt) {
+           setCreatedVoucherExpiry(data.expiresAt);
+           setViewState('countdown');
+        } else {
+           setViewState('list');
+        }
       } else {
         const err = await res.json();
-        setPopupState({ show: true, type: 'error', message: err.error || 'Gagal membuat voucher' });
+        alert(err.error || 'Gagal membuat voucher');
+        setViewState('list');
       }
     } catch (error) {
       console.error('Failed to create voucher', error);
-      setPopupState({ show: true, type: 'error', message: 'Terjadi kesalahan jaringan atau server' });
+      alert('Terjadi kesalahan jaringan atau server');
+      setViewState('list');
     } finally {
       setSaving(false);
     }
@@ -142,24 +236,42 @@ export default function AdminVoucherModal({ isOpen, onClose, selectedIds = [] })
     }
   };
 
+  const applyTemplate = (days, hours, minutes) => {
+    setDurationDays(days ? days.toString() : '');
+    setDurationHours(hours ? hours.toString() : '');
+    setDurationMinutes(minutes ? minutes.toString() : '');
+  };
+
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-[#0b101d]/90 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
       <div 
-        className="bg-[#121827] border border-cyan-500/30 rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl shadow-cyan-900/20"
+        className="bg-[#121827] border border-cyan-500/30 rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl shadow-cyan-900/20 overflow-hidden"
         style={{ animation: 'slideUp 0.3s ease-out forwards' }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-white/5">
+        <div className="flex items-center justify-between p-6 border-b border-white/5 relative z-10 bg-[#121827]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center">
-              <Ticket className="w-5 h-5" />
+            {viewState !== 'list' && (
+              <button 
+                onClick={() => setViewState('list')}
+                className="w-10 h-10 rounded-xl bg-slate-800 text-slate-300 flex items-center justify-center hover:bg-slate-700 transition-colors mr-2"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </button>
+            )}
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${viewState === 'countdown' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-cyan-500/20 text-cyan-400'}`}>
+              {viewState === 'countdown' ? <CheckCircle2 className="w-5 h-5" /> : <Ticket className="w-5 h-5" />}
             </div>
             <div>
-              <h2 className="text-xl font-bold text-white">Kelola Voucher</h2>
-              <p className="text-sm text-slate-400">Buat dan atur kode diskon untuk pembeli</p>
-              {selectedIds.length > 0 && (
+              <h2 className="text-xl font-bold text-white">
+                {viewState === 'timer' ? 'Set Durasi Voucher' : viewState === 'countdown' ? 'Voucher Berhasil!' : 'Kelola Voucher'}
+              </h2>
+              <p className="text-sm text-slate-400">
+                 {viewState === 'timer' ? 'Tentukan masa berlaku voucher' : viewState === 'countdown' ? 'Voucher telah aktif dan siap digunakan' : 'Buat dan atur kode diskon untuk pembeli'}
+              </p>
+              {selectedIds.length > 0 && viewState === 'list' && (
                 <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-400 text-xs font-bold border border-emerald-500/20">
                   <CheckCircle2 className="w-3.5 h-3.5" />
                   Berlaku untuk {selectedIds.length} Produk Terpilih
@@ -177,36 +289,92 @@ export default function AdminVoucherModal({ isOpen, onClose, selectedIds = [] })
 
         <div className="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar">
           
-          {popupState.show ? (
-            <div className="flex flex-col items-center justify-center p-8 space-y-6 min-h-[300px]">
-              {popupState.type === 'success' ? (
-                <div className="w-24 h-24 rounded-full bg-emerald-500/20 flex items-center justify-center animate-bounce">
-                  <CheckCircle2 className="w-12 h-12 text-emerald-500" />
+          {viewState === 'countdown' ? (
+             <div className="flex flex-col items-center justify-center py-4">
+                <CircularCountdown expiresAt={createdVoucherExpiry} />
+                <button
+                  onClick={() => setViewState('list')}
+                  className="mt-8 px-8 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold transition-all active:scale-95 border border-white/5"
+                >
+                  Kembali
+                </button>
+             </div>
+          ) : viewState === 'timer' ? (
+             <div className="flex flex-col items-center space-y-8 py-4">
+                
+                {/* Timer Inputs */}
+                <div className="flex items-center justify-center gap-4 md:gap-8 w-full max-w-lg">
+                  <div className="flex flex-col items-center">
+                    <span className="text-sm font-semibold text-slate-400 mb-4 uppercase tracking-wider">Days</span>
+                    <input
+                      type="number"
+                      min="0"
+                      value={durationDays}
+                      onChange={(e) => setDurationDays(e.target.value)}
+                      placeholder="00"
+                      className="w-20 md:w-24 h-24 bg-transparent border-b-2 border-slate-700 focus:border-cyan-500 text-center text-4xl md:text-5xl font-bold text-white focus:outline-none transition-colors"
+                    />
+                  </div>
+                  <div className="text-4xl md:text-5xl font-bold text-slate-700 pb-2">:</div>
+                  <div className="flex flex-col items-center">
+                    <span className="text-sm font-semibold text-slate-400 mb-4 uppercase tracking-wider">Hours</span>
+                    <input
+                      type="number"
+                      min="0"
+                      max="23"
+                      value={durationHours}
+                      onChange={(e) => setDurationHours(e.target.value)}
+                      placeholder="00"
+                      className="w-20 md:w-24 h-24 bg-transparent border-b-2 border-slate-700 focus:border-cyan-500 text-center text-4xl md:text-5xl font-bold text-white focus:outline-none transition-colors"
+                    />
+                  </div>
+                  <div className="text-4xl md:text-5xl font-bold text-slate-700 pb-2">:</div>
+                  <div className="flex flex-col items-center">
+                    <span className="text-sm font-semibold text-slate-400 mb-4 uppercase tracking-wider">Minutes</span>
+                    <input
+                      type="number"
+                      min="0"
+                      max="59"
+                      value={durationMinutes}
+                      onChange={(e) => setDurationMinutes(e.target.value)}
+                      placeholder="00"
+                      className="w-20 md:w-24 h-24 bg-transparent border-b-2 border-slate-700 focus:border-cyan-500 text-center text-4xl md:text-5xl font-bold text-white focus:outline-none transition-colors"
+                    />
+                  </div>
                 </div>
-              ) : (
-                <div className="w-24 h-24 rounded-full bg-rose-500/20 flex items-center justify-center animate-pulse">
-                  <X className="w-12 h-12 text-rose-500" />
-                </div>
-              )}
-              
-              <div className="text-center space-y-2">
-                <h3 className="text-2xl font-bold text-white">
-                  {popupState.type === 'success' ? 'Berhasil!' : 'Gagal!'}
-                </h3>
-                <p className="text-slate-400 max-w-sm">{popupState.message}</p>
-              </div>
 
-              <button
-                onClick={() => setPopupState({ show: false, type: 'success', message: '' })}
-                className="px-8 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold transition-all active:scale-95 border border-white/5"
-              >
-                Kembali
-              </button>
-            </div>
+                {/* Templates */}
+                <div className="flex flex-wrap items-center justify-center gap-3 w-full">
+                  <button onClick={() => applyTemplate(7, 0, 0)} className="px-4 py-2 rounded-full bg-slate-800/50 hover:bg-slate-700 text-slate-300 text-sm font-medium border border-white/5 transition-colors">
+                    7 Days
+                  </button>
+                  <button onClick={() => applyTemplate(1, 0, 30)} className="px-4 py-2 rounded-full bg-slate-800/50 hover:bg-slate-700 text-slate-300 text-sm font-medium border border-white/5 transition-colors">
+                    1 Day 30 Mins
+                  </button>
+                  <button onClick={() => applyTemplate(0, 2, 15)} className="px-4 py-2 rounded-full bg-slate-800/50 hover:bg-slate-700 text-slate-300 text-sm font-medium border border-white/5 transition-colors">
+                    2 Hours 15 Mins
+                  </button>
+                  <button onClick={() => applyTemplate(0, 0, 15)} className="px-4 py-2 rounded-full bg-slate-800/50 hover:bg-slate-700 text-slate-300 text-sm font-medium border border-white/5 transition-colors">
+                    15 Mins
+                  </button>
+                </div>
+
+                {/* Start Button */}
+                <div className="pt-8 w-full max-w-xs">
+                  <button
+                    onClick={handleCreate}
+                    disabled={saving || (!durationDays && !durationHours && !durationMinutes)}
+                    className="w-full flex items-center justify-center gap-2 py-4 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-lg transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-900/20"
+                  >
+                    {saving ? 'Creating...' : 'Start'}
+                  </button>
+                </div>
+
+             </div>
           ) : (
             <>
               {/* Create Form */}
-              <form onSubmit={handleCreate} className="bg-slate-900/50 p-5 rounded-2xl border border-white/5 space-y-4">
+              <form onSubmit={(e) => { e.preventDefault(); setViewState('timer'); }} className="bg-slate-900/50 p-5 rounded-2xl border border-white/5 space-y-4">
                 <h3 className="text-sm font-bold text-slate-300 uppercase tracking-wider mb-2">Buat Voucher Baru</h3>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -246,7 +414,7 @@ export default function AdminVoucherModal({ isOpen, onClose, selectedIds = [] })
                     />
                   </div>
                   
-                  <div className="space-y-1.5 md:col-span-1">
+                  <div className="space-y-1.5 md:col-span-2">
                     <label className="text-xs font-semibold text-slate-400">Batas Penggunaan (Limit)</label>
                     <input
                       type="number"
@@ -257,38 +425,15 @@ export default function AdminVoucherModal({ isOpen, onClose, selectedIds = [] })
                       className="w-full bg-[#0b101d] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-cyan-500/50 transition-colors"
                     />
                   </div>
-
-                  <div className="space-y-1.5 md:col-span-1">
-                    <label className="text-xs font-semibold text-slate-400">Durasi (Jam & Menit)</label>
-                    <div className="flex gap-2">
-                      <input
-                        type="number"
-                        min="0"
-                        value={durationHours}
-                        onChange={(e) => setDurationHours(e.target.value)}
-                        placeholder="Jam"
-                        className="w-full bg-[#0b101d] border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-cyan-500/50 transition-colors"
-                      />
-                      <input
-                        type="number"
-                        min="0"
-                        max="59"
-                        value={durationMinutes}
-                        onChange={(e) => setDurationMinutes(e.target.value)}
-                        placeholder="Menit"
-                        className="w-full bg-[#0b101d] border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-cyan-500/50 transition-colors"
-                      />
-                    </div>
-                  </div>
                 </div>
 
                 <button
                   type="submit"
-                  disabled={saving}
+                  disabled={!code || !discount}
                   className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-sm transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed mt-2"
                 >
-                  <Plus className="w-4 h-4" />
-                  {saving ? 'Menyimpan...' : 'Buat Voucher'}
+                  <Timer className="w-4 h-4" />
+                  Set Durasi & Buat Voucher
                 </button>
               </form>
 
