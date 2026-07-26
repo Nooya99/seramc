@@ -631,7 +631,7 @@ export default function AdminProductsPage() {
       </div>
 
       {/* Category Selection Tabs Bar (Under Header) */}
-      <div className="flex items-center justify-between p-2 bg-[#0b101d] border border-slate-800 rounded-2xl overflow-x-auto gap-4">
+      <div className="sticky top-4 z-40 flex items-center justify-between p-2 bg-[#0b101d]/95 backdrop-blur-xl border border-slate-800 rounded-2xl overflow-x-auto gap-4 shadow-2xl shadow-black/50">
         <div className="flex items-center gap-2">
           {categories.map((cat) => (
             <button
