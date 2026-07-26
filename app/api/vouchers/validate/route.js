@@ -24,6 +24,10 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Voucher sudah tidak aktif' }, { status: 400 });
     }
 
+    if (voucher.expiresAt && new Date(voucher.expiresAt) < new Date()) {
+      return NextResponse.json({ error: 'Voucher sudah kedaluwarsa (expired)' }, { status: 400 });
+    }
+
     if (voucher.maxUses !== null && voucher.usedCount >= voucher.maxUses) {
       return NextResponse.json({ error: 'Batas penggunaan voucher telah habis' }, { status: 400 });
     }

@@ -19,7 +19,7 @@ export async function GET() {
 // POST create a new voucher
 export async function POST(request) {
   try {
-    const { code, discount, maxUses, applicableProductIds } = await request.json();
+    const { code, discount, maxUses, applicableProductIds, durationDays } = await request.json();
 
     if (!code || !discount) {
       return NextResponse.json({ error: 'Code and discount are required' }, { status: 400 });
@@ -38,12 +38,22 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Voucher code already exists' }, { status: 400 });
     }
 
+    let expiresAt = null;
+    if (durationDays) {
+      const days = parseInt(durationDays);
+      if (days > 0) {
+        expiresAt = new Date();
+        expiresAt.setDate(expiresAt.getDate() + days);
+      }
+    }
+
     const voucher = await prisma.voucher.create({
       data: {
         code,
         discount: parseInt(discount),
         maxUses: maxUses ? parseInt(maxUses) : null,
         applicableProductIds: applicableProductIds || [],
+        expiresAt
       }
     });
 

@@ -69,6 +69,7 @@ model Voucher {
   maxUses              Int?     // null means no limit
   usedCount            Int      @default(0)
   applicableProductIds String[] @default([]) // Array of product IDs this voucher applies to. Empty array means it applies to all.
+  expiresAt            DateTime?
   isActive             Boolean  @default(true)
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt

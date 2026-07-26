@@ -13,6 +13,7 @@ export default function AdminVoucherModal({ isOpen, onClose, selectedIds = [] })
   const [code, setCode] = useState('');
   const [discount, setDiscount] = useState('');
   const [maxUses, setMaxUses] = useState(''); // empty string means no limit
+  const [durationDays, setDurationDays] = useState(''); // empty string means no expiry
 
   useEffect(() => {
     if (isOpen) {
@@ -57,6 +58,7 @@ export default function AdminVoucherModal({ isOpen, onClose, selectedIds = [] })
           code,
           discount: parseInt(discount),
           maxUses: maxUses ? parseInt(maxUses) : null,
+          durationDays: durationDays ? parseInt(durationDays) : null,
           applicableProductIds: selectedIds
         })
       });
@@ -65,6 +67,7 @@ export default function AdminVoucherModal({ isOpen, onClose, selectedIds = [] })
         setCode('');
         setDiscount('');
         setMaxUses('');
+        setDurationDays('');
         // Refresh list
         fetchVouchers();
         setPopupState({ show: true, type: 'success', message: 'Voucher berhasil dibuat!' });
@@ -200,14 +203,26 @@ export default function AdminVoucherModal({ isOpen, onClose, selectedIds = [] })
                     />
                   </div>
                   
-                  <div className="space-y-1.5 md:col-span-2">
+                  <div className="space-y-1.5 md:col-span-1">
                     <label className="text-xs font-semibold text-slate-400">Batas Penggunaan (Limit)</label>
                     <input
                       type="number"
                       min="1"
                       value={maxUses}
                       onChange={(e) => setMaxUses(e.target.value)}
-                      placeholder="Kosongkan untuk tanpa batas (No Limit)"
+                      placeholder="Kosongkan jika tanpa batas"
+                      className="w-full bg-[#0b101d] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-cyan-500/50 transition-colors"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5 md:col-span-1">
+                    <label className="text-xs font-semibold text-slate-400">Durasi (Hari)</label>
+                    <input
+                      type="number"
+                      min="1"
+                      value={durationDays}
+                      onChange={(e) => setDurationDays(e.target.value)}
+                      placeholder="Kosongkan jika permanen"
                       className="w-full bg-[#0b101d] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-cyan-500/50 transition-colors"
                     />
                   </div>
@@ -249,6 +264,11 @@ export default function AdminVoucherModal({ isOpen, onClose, selectedIds = [] })
                                 <span>Terpakai {voucher.usedCount} / {voucher.maxUses}</span>
                               ) : (
                                 <span>Terpakai {voucher.usedCount} (Tanpa Batas)</span>
+                              )}
+                              {voucher.expiresAt && (
+                                <span className={new Date(voucher.expiresAt) < new Date() ? "ml-2 text-rose-500 font-semibold" : "ml-2 text-cyan-500 font-semibold"}>
+                                  • {new Date(voucher.expiresAt) < new Date() ? 'Expired' : `Hingga ${new Date(voucher.expiresAt).toLocaleDateString('id-ID')}`}
+                                </span>
                               )}
                               {voucher.applicableProductIds?.length > 0 && (
                                 <span className="ml-2 text-emerald-500 font-semibold">• {voucher.applicableProductIds.length} Item Khusus</span>
