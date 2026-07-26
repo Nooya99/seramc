@@ -1,8 +1,21 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import PixelIcon from '@/components/PixelIcon';
 
-export default function CartModal({ isOpen, onClose, cart, onRemoveItem, onUpdateQuantity, onCheckout }) {
+export default function CartModal({ isOpen, onClose, cart, onRemoveItem, onUpdateQuantity, onCheckout, appliedVoucher, setAppliedVoucher }) {
+  const [voucherCode, setVoucherCode] = useState('');
+  const [voucherError, setVoucherError] = useState('');
+  const [validatingVoucher, setValidatingVoucher] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      if (!appliedVoucher) {
+        setVoucherCode('');
+      }
+      setVoucherError('');
+    }
+  }, [isOpen, appliedVoucher]);
   if (!isOpen) return null;
 
   const parsePrice = (priceStr) => {
@@ -12,9 +25,71 @@ export default function CartModal({ isOpen, onClose, cart, onRemoveItem, onUpdat
     return priceStr.toUpperCase().includes('K') ? num * 1000 : num;
   };
 
-  const totalPrice = cart.reduce((total, item) => {
-    return total + (parsePrice(item.price) * (item.quantity || 1));
-  }, 0);
+  const calculateSubtotal = () => {
+    return cart.reduce((total, item) => {
+      return total + (parsePrice(item.price) * (item.quantity || 1));
+    }, 0);
+  };
+
+  const calculateDiscountValue = () => {
+    if (!appliedVoucher) return 0;
+    
+    // If the voucher has specific items, calculate subtotal only for those items
+    if (appliedVoucher.applicableProductIds && appliedVoucher.applicableProductIds.length > 0) {
+      const applicableSubtotal = cart.reduce((total, item) => {
+        if (appliedVoucher.applicableProductIds.includes(item.id)) {
+          return total + parsePrice(item.price) * (item.quantity || 1);
+        }
+        return total;
+      }, 0);
+      return applicableSubtotal * (appliedVoucher.discount / 100);
+    }
+    
+    // Otherwise, apply to the entire subtotal
+    const subtotal = calculateSubtotal();
+    return subtotal * (appliedVoucher.discount / 100);
+  };
+
+  const calculateTotal = () => {
+    const subtotal = calculateSubtotal();
+    return subtotal - calculateDiscountValue();
+  };
+
+  const handleApplyVoucher = async (e) => {
+    e.preventDefault();
+    if (!voucherCode.trim()) return;
+    setValidatingVoucher(true);
+    setVoucherError('');
+    try {
+      const res = await fetch('/api/vouchers/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: voucherCode.trim().toUpperCase() })
+      });
+      const data = await res.json();
+      if (res.ok && data.valid) {
+        // Check if the voucher applies to the current cart
+        if (data.applicableProductIds && data.applicableProductIds.length > 0) {
+          const hasApplicableItem = cart.some(item => data.applicableProductIds.includes(item.id));
+          if (!hasApplicableItem) {
+            setVoucherError('Voucher ini tidak berlaku untuk item di keranjang Anda');
+            setAppliedVoucher(null);
+            return;
+          }
+        }
+        setAppliedVoucher(data);
+        setVoucherError('');
+      } else {
+        setVoucherError(data.error || 'Voucher tidak valid');
+        setAppliedVoucher(null);
+      }
+    } catch (err) {
+      setVoucherError('Gagal memvalidasi voucher');
+      setAppliedVoucher(null);
+    } finally {
+      setValidatingVoucher(false);
+    }
+  };
 
   const formatPrice = (price) => {
     return price.toLocaleString('id-ID');
@@ -102,10 +177,68 @@ export default function CartModal({ isOpen, onClose, cart, onRemoveItem, onUpdat
 
         {/* Footer / Checkout */}
         {cart.length > 0 && (
-          <div className="p-6 md:p-8 border-t border-white/10 bg-[#0f1422] shrink-0">
-            <div className="flex items-center justify-between mb-6">
-              <span className="text-gray-300 font-medium text-lg">Total Pembayaran</span>
-              <span className="text-[#f2e28a] font-black text-2xl md:text-3xl">{formatPrice(totalPrice)}</span>
+          <div className="p-6 md:p-8 border-t border-white/10 bg-[#0f1422] shrink-0 space-y-5">
+            {/* Voucher Input */}
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
+              <label className="block text-gray-300 text-sm font-bold mb-2">Kode Voucher <span className="text-gray-500 font-normal text-xs">(Opsional)</span></label>
+              <div className="flex gap-2">
+                <input 
+                  type="text" 
+                  value={voucherCode}
+                  onChange={(e) => setVoucherCode(e.target.value.toUpperCase())}
+                  placeholder="Masukkan kode voucher"
+                  disabled={appliedVoucher !== null}
+                  className="flex-1 bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500/50 transition-all disabled:opacity-50"
+                />
+                {appliedVoucher ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAppliedVoucher(null);
+                      setVoucherCode('');
+                    }}
+                    className="px-4 py-2 rounded-xl bg-rose-500/20 text-rose-400 font-bold text-sm border border-rose-500/30 hover:bg-rose-500/30 transition-all"
+                  >
+                    Batal
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleApplyVoucher}
+                    disabled={validatingVoucher || !voucherCode.trim()}
+                    className="px-4 py-2 rounded-xl bg-emerald-500/20 text-emerald-400 font-bold text-sm border border-emerald-500/30 hover:bg-emerald-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {validatingVoucher ? 'Cek...' : 'Pakai'}
+                  </button>
+                )}
+              </div>
+              {voucherError && <p className="text-rose-400 text-xs mt-2">{voucherError}</p>}
+              {appliedVoucher && (
+                <p className="text-emerald-400 text-xs mt-2 flex items-center gap-1">
+                  Voucher berhasil diterapkan! (-{appliedVoucher.discount}%)
+                  {appliedVoucher.applicableProductIds?.length > 0 && " (Item Tertentu)"}
+                </p>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center justify-between text-gray-400 text-sm">
+                <span>Subtotal</span>
+                <span>{formatPrice(calculateSubtotal())}</span>
+              </div>
+              {appliedVoucher && (
+                <div className="flex items-center justify-between text-emerald-400 text-sm">
+                  <span>
+                    Diskon Voucher ({appliedVoucher.discount}%)
+                    {appliedVoucher.applicableProductIds?.length > 0 && " (Item Tertentu)"}
+                  </span>
+                  <span className="font-bold">- {formatPrice(calculateDiscountValue())}</span>
+                </div>
+              )}
+              <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/10">
+                <span className="text-gray-200 font-medium text-lg">Total Pembayaran</span>
+                <span className="text-[#f2e28a] font-black text-2xl md:text-3xl">{formatPrice(calculateTotal())}</span>
+              </div>
             </div>
             
             <button 

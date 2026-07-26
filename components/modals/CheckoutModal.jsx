@@ -5,18 +5,12 @@ import PixelIcon from '@/components/PixelIcon';
 
 const targetAdmin = '6285161516730'; // Owner WhatsApp
 
-export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], playerContext }) {
+export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], playerContext, appliedVoucher }) {
   const [ign, setIgn] = useState('');
   const [whatsapp, setWhatsapp] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('QRIS');
   const [checkoutStatus, setCheckoutStatus] = useState(null);
   const [checkoutMessage, setCheckoutMessage] = useState('');
-
-  // Voucher State
-  const [voucherCode, setVoucherCode] = useState('');
-  const [appliedVoucher, setAppliedVoucher] = useState(null);
-  const [voucherError, setVoucherError] = useState('');
-  const [validatingVoucher, setValidatingVoucher] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -25,9 +19,6 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
       }
       setCheckoutStatus(null);
       setCheckoutMessage('');
-      setVoucherCode('');
-      setAppliedVoucher(null);
-      setVoucherError('');
     }
   }, [isOpen, playerContext]);
 
@@ -72,43 +63,6 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
   const calculateTotal = () => {
     const subtotal = calculateSubtotal();
     return subtotal - calculateDiscountValue();
-  };
-
-  const handleApplyVoucher = async (e) => {
-    e.preventDefault(); // Prevent form submission
-    if (!voucherCode.trim()) return;
-    setValidatingVoucher(true);
-    setVoucherError('');
-    try {
-      const res = await fetch('/api/vouchers/validate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: voucherCode.trim().toUpperCase() })
-      });
-      const data = await res.json();
-      if (res.ok && data.valid) {
-        // Check if the voucher applies to the current cart
-        if (data.applicableProductIds && data.applicableProductIds.length > 0) {
-          const hasApplicableItem = cart.some(item => data.applicableProductIds.includes(item.id));
-          if (!hasApplicableItem) {
-            setVoucherError('Voucher ini tidak berlaku untuk item di keranjang Anda');
-            setAppliedVoucher(null);
-            return;
-          }
-        }
-        
-        setAppliedVoucher(data);
-        setVoucherError('');
-      } else {
-        setVoucherError(data.error || 'Voucher tidak valid');
-        setAppliedVoucher(null);
-      }
-    } catch (err) {
-      setVoucherError('Gagal memvalidasi voucher');
-      setAppliedVoucher(null);
-    } finally {
-      setValidatingVoucher(false);
-    }
   };
 
   const handleCheckout = async (e) => {
@@ -299,43 +253,7 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
             </div>
           </div>
 
-          {/* Voucher Input */}
-          <div>
-            <label className="block text-gray-300 text-sm font-bold mb-2">Kode Voucher <span className="text-gray-500 font-normal text-xs">(Opsional)</span></label>
-            <div className="flex gap-2">
-              <input 
-                type="text" 
-                value={voucherCode}
-                onChange={(e) => setVoucherCode(e.target.value.toUpperCase())}
-                placeholder="Masukkan kode voucher"
-                disabled={appliedVoucher !== null}
-                className="flex-1 neo-inset px-4 py-3 placeholder-gray-500 focus:outline-none focus:neo-glow transition-all disabled:opacity-50"
-              />
-              {appliedVoucher ? (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setAppliedVoucher(null);
-                    setVoucherCode('');
-                  }}
-                  className="px-4 py-2 rounded-xl bg-rose-500/20 text-rose-400 font-bold text-sm border border-rose-500/30 hover:bg-rose-500/30 transition-all"
-                >
-                  Batal
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={handleApplyVoucher}
-                  disabled={validatingVoucher || !voucherCode.trim()}
-                  className="px-4 py-2 rounded-xl bg-emerald-500/20 text-emerald-400 font-bold text-sm border border-emerald-500/30 hover:bg-emerald-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {validatingVoucher ? 'Cek...' : 'Pakai'}
-                </button>
-              )}
-            </div>
-            {voucherError && <p className="text-rose-400 text-xs mt-1.5">{voucherError}</p>}
-            {appliedVoucher && <p className="text-emerald-400 text-xs mt-1.5 flex items-center gap-1">Voucher berhasil diterapkan! (-{appliedVoucher.discount}%)</p>}
-          </div>
+          {/* Removed Voucher Input from here as it's now in CartModal */}
 
           <div>
             <label className="block text-gray-300 text-sm font-bold mb-2">Metode Pembayaran</label>

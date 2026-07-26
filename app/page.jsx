@@ -29,6 +29,7 @@ export default function Home() {
   const [activeModal, setActiveModal] = useState(null);
   const [pendingModal, setPendingModal] = useState(null);
   const [cart, setCart] = useState([]);
+  const [appliedVoucher, setAppliedVoucher] = useState(null);
   const [playerContext, setPlayerContext] = useState(null);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [toasts, setToasts] = useState([]);
@@ -194,16 +195,20 @@ export default function Home() {
         onRemoveItem={handleRemoveFromCart}
         onUpdateQuantity={handleUpdateQuantity}
         onCheckout={() => handleOpenModal('checkout')}
+        appliedVoucher={appliedVoucher}
+        setAppliedVoucher={setAppliedVoucher}
       />
       <CheckoutModal
         isOpen={activeModal === 'checkout'}
         onClose={() => setActiveModal('cart')}
         onSuccess={() => {
           setCart([]);
+          setAppliedVoucher(null);
           setActiveModal('shop');
         }}
         cart={cart}
         playerContext={playerContext}
+        appliedVoucher={appliedVoucher}
       />
       <PlayerLoginModal
         isOpen={isLoginOpen}
