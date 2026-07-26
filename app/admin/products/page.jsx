@@ -360,6 +360,33 @@ export default function AdminProductsPage() {
     });
   };
 
+  const handleApplyDiscount = async (reset = false) => {
+    const discountValue = reset ? 0 : parseInt(globalDiscount);
+    if (!reset && (isNaN(discountValue) || discountValue < 0 || discountValue > 100)) {
+      showToast('Masukkan diskon antara 0 - 100', 'error');
+      return;
+    }
+
+    if (discountTarget === 'SELECTED' && selectedIds.length === 0) {
+      showToast('Pilih setidaknya 1 produk terlebih dahulu', 'error');
+      return;
+    }
+
+    setUpdatingDiscount(true);
+    try {
+      const payload = { 
+        discount: discountValue,
+        target: discountTarget,
+        category: discountCategory,
+        productIds: selectedIds
+      };
+
+      const res = await fetch('/api/products/discount', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
       if (res.ok) {
         showToast(reset ? 'Diskon berhasil direset!' : `Diskon ${discountValue}% berhasil diterapkan!`);
         if (reset) setGlobalDiscount('');
