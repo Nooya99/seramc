@@ -397,13 +397,13 @@ const initialKeysData = [
 
 const initialOthersData = [
   {
-    name: 'Unlimited Claim',
-    iconName: 'repeat',
-    badge: 'Unlimited Claim',
-    price: '35.000',
-    duration: 'Permanen',
-    bgClass: 'bg-emerald-500/10 text-emerald-400 border-emerald-400/40',
-    btnClass: 'bg-[#064e3b] hover:bg-emerald-900 text-emerald-200 border border-emerald-500/20'
+    name: 'Coin Bundle',
+    iconName: 'coins',
+    badge: 'Coin Bundle',
+    price: '1.000',
+    benefit: '35 Coin',
+    bgClass: 'bg-yellow-500/10 text-yellow-400 border-yellow-400/40',
+    btnClass: 'bg-[#422006] hover:bg-yellow-900 text-yellow-200 border border-yellow-500/20'
   },
   {
     name: 'Premium Pass',
@@ -415,6 +415,15 @@ const initialOthersData = [
     btnClass: 'bg-[#4a044e] hover:bg-fuchsia-900 text-fuchsia-200 border border-fuchsia-500/20'
   },
   {
+    name: 'Unlimited Claim',
+    iconName: 'repeat',
+    badge: 'Unlimited Claim',
+    price: '35.000',
+    duration: 'Permanen',
+    bgClass: 'bg-emerald-500/10 text-emerald-400 border-emerald-400/40',
+    btnClass: 'bg-[#064e3b] hover:bg-emerald-900 text-emerald-200 border border-emerald-500/20'
+  },
+  {
     name: 'Max Skills',
     iconName: 'sword',
     badge: 'Max Skills',
@@ -422,15 +431,6 @@ const initialOthersData = [
     duration: 'Per Season',
     bgClass: 'bg-red-500/10 text-red-400 border-red-400/40',
     btnClass: 'bg-[#7f1d1d] hover:bg-red-900 text-red-200 border border-red-500/20'
-  },
-  {
-    name: 'Coin Bundle',
-    iconName: 'coins',
-    badge: 'Coin Bundle',
-    price: '1.000',
-    benefit: '35 Coin',
-    bgClass: 'bg-yellow-500/10 text-yellow-400 border-yellow-400/40',
-    btnClass: 'bg-[#422006] hover:bg-yellow-900 text-yellow-200 border border-yellow-500/20'
   }
 ];
 
@@ -525,6 +525,11 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
                 prices: sortedPrices
               };
             });
+            updatedRanks.sort((a, b) => {
+              const minPriceA = Math.min(...a.prices.map(p => p.numericPrice || 0));
+              const minPriceB = Math.min(...b.prices.map(p => p.numericPrice || 0));
+              return minPriceA - minPriceB;
+            });
             setRanks(updatedRanks);
           } else {
             setRanks(initialRanks);
@@ -550,6 +555,7 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
                 description: p.description
               };
             });
+            updatedKeys.sort((a, b) => (a.numericPrice || 0) - (b.numericPrice || 0));
             setKeysData(updatedKeys);
           } else {
             setKeysData(initialKeysData);
@@ -575,6 +581,7 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
                 description: p.description
               };
             });
+            updatedOthers.sort((a, b) => (a.numericPrice || 0) - (b.numericPrice || 0));
             setOthersData(updatedOthers);
           } else {
             setOthersData(initialOthersData);
@@ -600,6 +607,7 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
                 description: p.description
               };
             });
+            updatedRaces.sort((a, b) => (a.numericPrice || 0) - (b.numericPrice || 0));
             setRacesData(updatedRaces);
           } else {
             setRacesData([]);
