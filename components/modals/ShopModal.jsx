@@ -730,9 +730,8 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
                   </div>
                 )}
                 {item.isPopular && (
-                  <div className="absolute top-4 right-4 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 px-2 py-1 rounded-full text-[10px] md:text-xs font-black flex items-center gap-1 shadow-lg shadow-amber-500/20 z-10">
-                    <PixelIcon name="fire" className="w-3 h-3 md:w-3.5 md:h-3.5 text-slate-950" />
-                    POPULER
+                  <div className="absolute top-4 right-4 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 p-1.5 md:p-2 rounded-full shadow-lg shadow-amber-500/20 z-10" title="Populer">
+                    <PixelIcon name="fire" className="w-3 h-3 md:w-4 md:h-4 text-slate-950" />
                   </div>
                 )}
                 {/* Icon */}
@@ -804,9 +803,8 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
                   </div>
                 )}
                 {item.isPopular && (
-                  <div className="absolute top-3 right-3 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 px-2 py-0.5 rounded-full text-[9px] xl:text-[10px] font-black flex items-center gap-1 shadow-lg shadow-amber-500/20 z-10">
-                    <PixelIcon name="fire" className="w-2.5 h-2.5 text-slate-950" />
-                    POPULER
+                  <div className="absolute top-3 right-3 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 p-1.5 xl:p-2 rounded-full shadow-lg shadow-amber-500/20 z-10" title="Populer">
+                    <PixelIcon name="fire" className="w-2.5 h-2.5 xl:w-3 xl:h-3 text-slate-950" />
                   </div>
                 )}
                 <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-5 border ${item.bgClass}`}>
@@ -867,9 +865,8 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
                   </div>
                 )}
                 {item.isPopular && (
-                  <div className="absolute top-4 right-4 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 px-2 py-1 rounded-full text-[10px] font-black flex items-center gap-1 shadow-lg shadow-amber-500/20 z-10">
-                    <PixelIcon name="fire" className="w-3 h-3 text-slate-950" />
-                    POPULER
+                  <div className="absolute top-4 right-4 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 p-1.5 xl:p-2 rounded-full shadow-lg shadow-amber-500/20 z-10" title="Populer">
+                    <PixelIcon name="fire" className="w-3 h-3 xl:w-4 xl:h-4 text-slate-950" />
                   </div>
                 )}
                 <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-5 border ${item.bgClass}`}>
