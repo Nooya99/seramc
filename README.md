@@ -43,4 +43,4 @@ Website resmi dan landing page interaktif untuk **SERA MC** Minecraft Server.
 3. Hubungkan akun GitHub kamu dan pilih repository `sera-mc`.
 4. Pilih **Framework Preset**: *Other / HTML, CSS, JS*.
 5. Klik **Deploy**. Website kamu akan langsung online dalam beberapa detik!
-# seramc
+# SERAMC
