@@ -27,6 +27,10 @@ export default function AdminProductsPage() {
   const [editingProduct, setEditingProduct] = useState(null);
   const [saving, setSaving] = useState(false);
 
+  // Discount state
+  const [globalDiscount, setGlobalDiscount] = useState('');
+  const [updatingDiscount, setUpdatingDiscount] = useState(false);
+
   // Category Filter state (Default: 'ALL')
   const [categoryFilter, setCategoryFilter] = useState('ALL');
 
@@ -188,6 +192,7 @@ export default function AdminProductsPage() {
       description: formData.description || '',
       category: formData.category || 'Rank',
       price: parseInt(formData.price),
+      discount: editingProduct ? editingProduct.discount : 0,
       duration: formData.duration || 'Permanen',
       image: formData.image || null,
       isPopular: Boolean(formData.isPopular),
@@ -326,6 +331,36 @@ export default function AdminProductsPage() {
     });
   };
 
+  const handleApplyDiscount = async (reset = false) => {
+    const discountValue = reset ? 0 : parseInt(globalDiscount);
+    if (!reset && (isNaN(discountValue) || discountValue < 0 || discountValue > 100)) {
+      showToast('Masukkan diskon antara 0 - 100', 'error');
+      return;
+    }
+
+    setUpdatingDiscount(true);
+    try {
+      const res = await fetch('/api/products/discount', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ discount: discountValue })
+      });
+
+      if (res.ok) {
+        showToast(reset ? 'Diskon berhasil direset!' : `Diskon ${discountValue}% berhasil diterapkan!`);
+        if (reset) setGlobalDiscount('');
+        fetchProducts(); // Refresh data to get updated discounts
+      } else {
+        const errData = await res.json();
+        showToast('Gagal mengubah diskon: ' + (errData.error || 'Unknown error'), 'error');
+      }
+    } catch (err) {
+      showToast('Terjadi kesalahan jaringan.', 'error');
+    } finally {
+      setUpdatingDiscount(false);
+    }
+  };
+
   const formatPrice = (p) => (p || 0).toLocaleString('id-ID');
   const allSelected = products.length > 0 && selectedIds.length === products.length;
 
@@ -393,9 +428,14 @@ export default function AdminProductsPage() {
         <div className="pt-6 mt-6 border-t border-slate-800/80 flex items-center justify-between">
           <div>
             <p className="text-[11px] text-slate-500 font-medium">Durasi / Item: {product.duration}</p>
-            <p className="text-2xl font-black text-emerald-400 font-mono">
-              Rp {formatPrice(product.price)}
-            </p>
+            <div className="flex flex-col">
+              {product.discount > 0 && (
+                <span className="text-xs text-rose-400 line-through">Rp {formatPrice(product.price)}</span>
+              )}
+              <p className="text-2xl font-black text-emerald-400 font-mono">
+                Rp {formatPrice(product.price * (1 - (product.discount || 0) / 100))}
+              </p>
+            </div>
           </div>
 
           <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
@@ -451,7 +491,35 @@ export default function AdminProductsPage() {
           </p>
         </div>
 
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Global Discount Bar */}
+          <div className="flex items-center gap-2 bg-slate-900 border border-slate-700 rounded-2xl p-1.5">
+            <span className="text-xs font-bold text-slate-400 pl-2 hidden sm:inline-block">Diskon:</span>
+            <input
+              type="number"
+              min="0"
+              max="100"
+              placeholder="%"
+              value={globalDiscount}
+              onChange={(e) => setGlobalDiscount(e.target.value)}
+              className="w-16 bg-slate-800 border border-slate-700 rounded-xl px-2 py-1.5 text-sm text-center text-white focus:outline-none focus:border-cyan-500"
+            />
+            <button
+              onClick={() => handleApplyDiscount(false)}
+              disabled={updatingDiscount}
+              className="px-3 py-1.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-bold transition-all disabled:opacity-50"
+            >
+              Apply
+            </button>
+            <button
+              onClick={() => handleApplyDiscount(true)}
+              disabled={updatingDiscount}
+              className="px-3 py-1.5 rounded-xl bg-rose-500 hover:bg-rose-400 text-white text-xs font-bold transition-all disabled:opacity-50"
+            >
+              Reset
+            </button>
+          </div>
+
           {/* Generate All Button (Disabled if all 21 items generated) */}
           <button
             onClick={seedDefaultShopItems}

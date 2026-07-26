@@ -430,11 +430,17 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
             const updatedRanks = Object.keys(groupedRanks).map(baseName => {
               const items = groupedRanks[baseName];
               const style = getRankStyle(baseName);
-              const sortedPrices = items.sort((a, b) => a.price - b.price).map(p => ({
-                duration: p.duration || 'Permanen',
-                price: p.price ? p.price.toLocaleString('id-ID') : '0',
-                fullName: p.name
-              }));
+              const sortedPrices = items.sort((a, b) => a.price - b.price).map(p => {
+                const isDiscounted = p.discount > 0;
+                const finalPrice = isDiscounted ? p.price * (1 - p.discount / 100) : p.price;
+                return {
+                  duration: p.duration || 'Permanen',
+                  originalPrice: isDiscounted ? p.price.toLocaleString('id-ID') : null,
+                  price: finalPrice ? finalPrice.toLocaleString('id-ID') : '0',
+                  numericPrice: finalPrice,
+                  fullName: p.name
+                };
+              });
 
               return {
                 name: baseName,
@@ -453,10 +459,14 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
           if (keyItems.length > 0) {
             const updatedKeys = keyItems.map(p => {
               const style = getKeyStyle(p.name);
+              const isDiscounted = p.discount > 0;
+              const finalPrice = isDiscounted ? p.price * (1 - p.discount / 100) : p.price;
               return {
                 name: p.name,
                 ...style,
-                price: p.price ? p.price.toLocaleString('id-ID') : '0',
+                originalPrice: isDiscounted ? p.price.toLocaleString('id-ID') : null,
+                price: finalPrice ? finalPrice.toLocaleString('id-ID') : '0',
+                numericPrice: finalPrice,
                 benefit: p.duration || 'Key',
                 isPopular: p.isPopular
               };
@@ -471,10 +481,14 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
           if (otherItems.length > 0) {
             const updatedOthers = otherItems.map(p => {
               const style = getOtherStyle(p.name);
+              const isDiscounted = p.discount > 0;
+              const finalPrice = isDiscounted ? p.price * (1 - p.discount / 100) : p.price;
               return {
                 name: p.name,
                 ...style,
-                price: p.price ? p.price.toLocaleString('id-ID') : '0',
+                originalPrice: isDiscounted ? p.price.toLocaleString('id-ID') : null,
+                price: finalPrice ? finalPrice.toLocaleString('id-ID') : '0',
+                numericPrice: finalPrice,
                 duration: p.duration || 'Permanen',
                 isPopular: p.isPopular
               };
@@ -489,10 +503,14 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
           if (raceItems.length > 0) {
             const updatedRaces = raceItems.map(p => {
               const style = getRaceStyle(p.name);
+              const isDiscounted = p.discount > 0;
+              const finalPrice = isDiscounted ? p.price * (1 - p.discount / 100) : p.price;
               return {
                 name: p.name,
                 ...style,
-                price: p.price ? p.price.toLocaleString('id-ID') : '0',
+                originalPrice: isDiscounted ? p.price.toLocaleString('id-ID') : null,
+                price: finalPrice ? finalPrice.toLocaleString('id-ID') : '0',
+                numericPrice: finalPrice,
                 duration: p.duration || 'Permanen',
                 isPopular: p.isPopular
               };
@@ -626,9 +644,14 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
                     <span className="text-gray-300 text-[14px] md:text-[15px] font-medium">
                       Harga
                     </span>
-                    <span className="text-[#f2e28a] font-bold text-3xl">
-                      {p.price}
-                    </span>
+                    <div className="flex flex-col items-end">
+                      {p.originalPrice && (
+                        <span className="text-xs text-rose-400 line-through">Rp {p.originalPrice}</span>
+                      )}
+                      <span className="text-[#f2e28a] font-bold text-3xl">
+                        {p.price}
+                      </span>
+                    </div>
                   </div>
                 </div>
 
@@ -677,7 +700,12 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
                 <div className="flex flex-col gap-4 mb-6 mt-auto">
                   <div className="flex justify-between items-end border-b border-white/5 pb-3">
                     <span className="text-gray-300 text-sm font-medium">Harga</span>
-                    <span className="text-[#f2e28a] font-bold text-2xl">{item.price}</span>
+                    <div className="flex flex-col items-end">
+                      {item.originalPrice && (
+                        <span className="text-xs text-rose-400 line-through">Rp {item.originalPrice}</span>
+                      )}
+                      <span className="text-[#f2e28a] font-bold text-2xl">{item.price}</span>
+                    </div>
                   </div>
                 </div>
                 <button 
@@ -724,7 +752,12 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
                 <div className="flex flex-col gap-4 mb-6 mt-auto">
                   <div className="flex justify-between items-end border-b border-white/5 pb-3">
                     <span className="text-gray-300 text-sm font-medium">Harga</span>
-                    <span className="text-[#f2e28a] font-bold text-2xl">{item.price}</span>
+                    <div className="flex flex-col items-end">
+                      {item.originalPrice && (
+                        <span className="text-xs text-rose-400 line-through">Rp {item.originalPrice}</span>
+                      )}
+                      <span className="text-[#f2e28a] font-bold text-2xl">{item.price}</span>
+                    </div>
                   </div>
                 </div>
                 <button 
@@ -773,7 +806,12 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
                     <div className="flex flex-col gap-4 mb-6 mt-auto">
                       <div className="flex justify-between items-end border-b border-white/5 pb-3">
                         <span className="text-gray-300 text-sm font-medium">Harga</span>
-                        <span className="text-[#f2e28a] font-bold text-2xl">{item.price}</span>
+                        <div className="flex flex-col items-end">
+                          {item.originalPrice && (
+                            <span className="text-xs text-rose-400 line-through">Rp {item.originalPrice}</span>
+                          )}
+                          <span className="text-[#f2e28a] font-bold text-2xl">{item.price}</span>
+                        </div>
                       </div>
                     </div>
                     <button 
