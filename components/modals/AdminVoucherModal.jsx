@@ -1,7 +1,47 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Ticket, X, Plus, Trash2, CheckCircle2, RefreshCw } from 'lucide-react';
+import { Ticket, X, Plus, Trash2, CheckCircle2, RefreshCw, Clock } from 'lucide-react';
+
+const CountdownTimer = ({ expiresAt }) => {
+  const [timeLeft, setTimeLeft] = useState('');
+
+  useEffect(() => {
+    const calculateTimeLeft = () => {
+      const diff = new Date(expiresAt).getTime() - new Date().getTime();
+      if (diff <= 0) return 'Expired';
+      
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const totalHours = days * 24 + hours;
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      
+      return `${totalHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    };
+
+    setTimeLeft(calculateTimeLeft());
+    
+    const timer = setInterval(() => {
+      const tl = calculateTimeLeft();
+      setTimeLeft(tl);
+      if (tl === 'Expired') clearInterval(timer);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [expiresAt]);
+
+  if (!timeLeft) return null; // initial render
+  if (timeLeft === 'Expired') {
+    return <span className="ml-2 text-rose-500 font-semibold text-[11px] bg-rose-500/10 px-1.5 py-0.5 rounded border border-rose-500/20 animate-pulse">• Expired</span>;
+  }
+
+  return (
+    <span className="ml-2 text-cyan-400 font-mono font-semibold text-[11px] bg-cyan-950/50 px-1.5 py-0.5 rounded border border-cyan-500/20">
+      ⏳ {timeLeft}
+    </span>
+  );
+};
 
 export default function AdminVoucherModal({ isOpen, onClose, selectedIds = [] }) {
   const [vouchers, setVouchers] = useState([]);
@@ -13,7 +53,8 @@ export default function AdminVoucherModal({ isOpen, onClose, selectedIds = [] })
   const [code, setCode] = useState('');
   const [discount, setDiscount] = useState('');
   const [maxUses, setMaxUses] = useState(''); // empty string means no limit
-  const [durationDays, setDurationDays] = useState(''); // empty string means no expiry
+  const [durationHours, setDurationHours] = useState(''); 
+  const [durationMinutes, setDurationMinutes] = useState(''); 
 
   useEffect(() => {
     if (isOpen) {
@@ -58,7 +99,8 @@ export default function AdminVoucherModal({ isOpen, onClose, selectedIds = [] })
           code,
           discount: parseInt(discount),
           maxUses: maxUses ? parseInt(maxUses) : null,
-          durationDays: durationDays ? parseInt(durationDays) : null,
+          durationHours: durationHours ? parseInt(durationHours) : null,
+          durationMinutes: durationMinutes ? parseInt(durationMinutes) : null,
           applicableProductIds: selectedIds
         })
       });
@@ -67,7 +109,8 @@ export default function AdminVoucherModal({ isOpen, onClose, selectedIds = [] })
         setCode('');
         setDiscount('');
         setMaxUses('');
-        setDurationDays('');
+        setDurationHours('');
+        setDurationMinutes('');
         // Refresh list
         fetchVouchers();
         setPopupState({ show: true, type: 'success', message: 'Voucher berhasil dibuat!' });
@@ -216,15 +259,26 @@ export default function AdminVoucherModal({ isOpen, onClose, selectedIds = [] })
                   </div>
 
                   <div className="space-y-1.5 md:col-span-1">
-                    <label className="text-xs font-semibold text-slate-400">Durasi (Hari)</label>
-                    <input
-                      type="number"
-                      min="1"
-                      value={durationDays}
-                      onChange={(e) => setDurationDays(e.target.value)}
-                      placeholder="Kosongkan jika permanen"
-                      className="w-full bg-[#0b101d] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-cyan-500/50 transition-colors"
-                    />
+                    <label className="text-xs font-semibold text-slate-400">Durasi (Jam & Menit)</label>
+                    <div className="flex gap-2">
+                      <input
+                        type="number"
+                        min="0"
+                        value={durationHours}
+                        onChange={(e) => setDurationHours(e.target.value)}
+                        placeholder="Jam"
+                        className="w-full bg-[#0b101d] border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-cyan-500/50 transition-colors"
+                      />
+                      <input
+                        type="number"
+                        min="0"
+                        max="59"
+                        value={durationMinutes}
+                        onChange={(e) => setDurationMinutes(e.target.value)}
+                        placeholder="Menit"
+                        className="w-full bg-[#0b101d] border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-cyan-500/50 transition-colors"
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -266,9 +320,7 @@ export default function AdminVoucherModal({ isOpen, onClose, selectedIds = [] })
                                 <span>Terpakai {voucher.usedCount} (Tanpa Batas)</span>
                               )}
                               {voucher.expiresAt && (
-                                <span className={new Date(voucher.expiresAt) < new Date() ? "ml-2 text-rose-500 font-semibold" : "ml-2 text-cyan-500 font-semibold"}>
-                                  • {new Date(voucher.expiresAt) < new Date() ? 'Expired' : `Hingga ${new Date(voucher.expiresAt).toLocaleDateString('id-ID')}`}
-                                </span>
+                                <CountdownTimer expiresAt={voucher.expiresAt} />
                               )}
                               {voucher.applicableProductIds?.length > 0 && (
                                 <span className="ml-2 text-emerald-500 font-semibold">• {voucher.applicableProductIds.length} Item Khusus</span>
