@@ -5,7 +5,7 @@ import PixelIcon from '@/components/PixelIcon';
 import { Icon } from '@iconify/react';
 
 const admins = [
-  { name: 'Admin 1 (Owner)', phone: '6283178533575' },
+  { name: 'Admin 1 (Kira)', phone: '6283178533575' },
   { name: 'Admin 2 (Kaes)', phone: '6285273165229' },
   { name: 'Admin 3 (Finn)', phone: '6283119355072' },
 ];

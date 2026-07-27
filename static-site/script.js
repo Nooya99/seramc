@@ -45,7 +45,7 @@ setTimeout(() => {
         // SILAKAN UBAH NOMOR WHATSAPP ADMIN DI BAWAH INI (Gunakan kode negara, misal 62)
         // =========================================================================
         const adminWhatsAppNumbers = [
-            '6283178533575', // Nomor WhatsApp Admin 1 (Owner)
+            '6283178533575', // Nomor WhatsApp Admin 1 (Kira)
             '6285273165229', // Nomor WhatsApp Admin 2 (Kaes)
             '6283119355072'  // Nomor WhatsApp Admin 3 (Finn)
         ];
