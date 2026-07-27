@@ -5,9 +5,9 @@ import PixelIcon from '@/components/PixelIcon';
 import { Icon } from '@iconify/react';
 
 const admins = [
-  { name: 'Admin 1 (Owner)', phone: '6285161516730' },
-  { name: 'Admin 2', phone: '6285161516730' },
-  { name: 'Admin 3', phone: '6285161516730' },
+  { name: 'Admin 1 (Green)', phone: '6285813087161' },
+  { name: 'Admin 2 (Kaes)', phone: '6285273165229' },
+  { name: 'Admin 3 (Finn)', phone: '6283119355072' },
 ];
 
 export default function ContactModal({ isOpen, onClose, cart = [] }) {
