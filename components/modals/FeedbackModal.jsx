@@ -33,6 +33,15 @@ export default function FeedbackModal({ isOpen, onClose }) {
     }
   }, [isOpen]);
 
+  const handleClearNickname = () => {
+    localStorage.removeItem('sera_player_context');
+    localStorage.removeItem('sera_player_ign');
+    setPlayerContext(null);
+    setNickname('');
+    setEdition('java');
+    setIdentityMode('nickname');
+  };
+
   if (!isOpen) return null;
 
   const handleSubmit = async (e) => {
@@ -136,13 +145,25 @@ export default function FeedbackModal({ isOpen, onClose }) {
                       className="w-12 h-12 rounded-full border-2 border-[#f2e28a]/30 bg-black/50"
                     />
                   )}
-                  <input 
-                    type="text" 
-                    value={nickname}
-                    onChange={(e) => setNickname(e.target.value)}
-                    className="flex-1 w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#f2e28a] transition-colors" 
-                    placeholder="Masukkan IGN kamu..."
-                  />
+                  <div className="relative flex-1">
+                    <input 
+                      type="text" 
+                      value={nickname}
+                      onChange={(e) => setNickname(e.target.value)}
+                      className={`w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#f2e28a] transition-colors ${playerContext ? 'pr-11' : ''}`} 
+                      placeholder="Masukkan IGN kamu..."
+                    />
+                    {playerContext && (
+                      <button 
+                        type="button"
+                        onClick={handleClearNickname}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-red-400 p-1.5 rounded-lg hover:bg-red-500/10 transition-colors"
+                        title="Hapus Nama"
+                      >
+                        <PixelIcon name="trash" className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             )}
