@@ -117,13 +117,18 @@ export default function FeedbackClient({ initialFeedbacks }) {
       {isDeleteMode && (
         <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-3 flex justify-between items-center">
           <div className="flex items-center gap-4">
-            <span className="text-sm text-red-300 ml-2 font-medium">{selectedIds.size} dipilih</span>
-            <button
-              onClick={handleSelectAll}
-              className="text-xs text-red-400 hover:text-red-300 underline underline-offset-2 transition-colors"
-            >
-              {selectedIds.size === filteredFeedbacks.length && filteredFeedbacks.length > 0 ? 'Batal Pilih Semua' : 'Pilih Semua'}
-            </button>
+            <label className="flex items-center gap-2 cursor-pointer text-sm text-red-300 hover:text-red-200 transition-colors ml-2">
+              <input 
+                type="checkbox" 
+                className="w-4 h-4 rounded border-red-500/50 bg-red-500/10 text-red-500 focus:ring-red-500 focus:ring-offset-0 cursor-pointer"
+                checked={selectedIds.size === filteredFeedbacks.length && filteredFeedbacks.length > 0}
+                onChange={handleSelectAll}
+              />
+              <span className="font-medium">Pilih Semua</span>
+            </label>
+            {selectedIds.size > 0 && (
+              <span className="text-xs text-red-400 font-medium">({selectedIds.size} dipilih)</span>
+            )}
           </div>
           {selectedIds.size > 0 && (
             <button 
