@@ -12,7 +12,8 @@ import {
   X, 
   Sparkles,
   ExternalLink,
-  ChevronRight
+  ChevronRight,
+  MessageSquare
 } from 'lucide-react';
 
 export default function AdminLayout({ children }) {
@@ -54,6 +55,12 @@ export default function AdminLayout({ children }) {
       href: '/admin/products',
       icon: Package,
       active: pathname === '/admin/products'
+    },
+    {
+      name: 'Kritik & Saran',
+      href: '/admin/feedback',
+      icon: MessageSquare,
+      active: pathname === '/admin/feedback'
     }
   ];
 

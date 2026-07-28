@@ -10,17 +10,36 @@ export default function FeedbackModal({ isOpen, onClose }) {
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitted(true);
-    setTimeout(() => {
-      onClose();
-      setTimeout(() => {
-        setSubmitted(false);
-        setIgn('');
-        setMessage('');
-      }, 300);
-    }, 1500);
+    if (!message.trim()) return;
+
+    try {
+      const res = await fetch('/api/feedback', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ign, message }),
+      });
+
+      if (res.ok) {
+        setSubmitted(true);
+        setTimeout(() => {
+          onClose();
+          setTimeout(() => {
+            setSubmitted(false);
+            setIgn('');
+            setMessage('');
+          }, 300);
+        }, 1500);
+      } else {
+        alert('Gagal mengirim pesan, silakan coba lagi.');
+      }
+    } catch (error) {
+      console.error('Submit error:', error);
+      alert('Terjadi kesalahan koneksi.');
+    }
   };
 
   return (
