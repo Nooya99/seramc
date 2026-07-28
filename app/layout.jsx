@@ -1,4 +1,5 @@
 import { Inter, Poppins } from 'next/font/google';
+import ServerStatusWidget from '@/components/ServerStatusWidget';
 import './globals.css';
 
 const inter = Inter({ 
@@ -46,6 +47,8 @@ export default function RootLayout({ children }) {
         <div className="sparkle w-4 h-4 bottom-[25%] left-[15%]" style={{ animationDelay: '2.5s', animationDuration: '5s' }} />
         <div className="sparkle w-2 h-2 top-[60%] right-[10%]" style={{ animationDelay: '0.8s', animationDuration: '3.5s' }} />
         <div className="sparkle w-3 h-3 bottom-[10%] left-[60%]" style={{ animationDelay: '1.8s', animationDuration: '4.5s' }} />
+
+        <ServerStatusWidget />
 
         {children}
       </body>
