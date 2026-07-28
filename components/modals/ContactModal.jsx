@@ -86,8 +86,9 @@ export default function ContactModal({ isOpen, onClose, cart = [] }) {
         <div className="grid grid-cols-2 gap-3 pt-2 border-t border-white/10 mt-2">
           
           <a 
-            href="#" 
-            onClick={(e) => e.preventDefault()}
+            href="https://seramc.top/dc" 
+            target="_blank" 
+            rel="noopener noreferrer"
             className="neo-inset p-4 flex items-center gap-4 transition-all duration-300 ease-in-out group hover:-translate-y-1 hover:neo-glow active:scale-98"
           >
             <div className="w-11 h-11 bg-[#5865F2]/10 text-[#5865F2] rounded-full flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-110 transition-transform">
@@ -100,8 +101,9 @@ export default function ContactModal({ isOpen, onClose, cart = [] }) {
           </a>
 
           <a 
-            href="#" 
-            onClick={(e) => e.preventDefault()}
+            href="https://seramc.top/wa" 
+            target="_blank" 
+            rel="noopener noreferrer"
             className="neo-inset p-4 flex items-center gap-4 transition-all duration-300 ease-in-out group hover:-translate-y-1 hover:neo-glow active:scale-98"
           >
             <div className="w-11 h-11 bg-[#25D366]/10 text-[#25D366] rounded-full flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-110 transition-transform">
@@ -114,8 +116,9 @@ export default function ContactModal({ isOpen, onClose, cart = [] }) {
           </a>
 
           <a 
-            href="#" 
-            onClick={(e) => e.preventDefault()}
+            href="https://www.tiktok.com/@seramc.id?_r=1&_t=ZS-98P6TO16TIb" 
+            target="_blank" 
+            rel="noopener noreferrer"
             className="neo-inset p-4 flex items-center gap-4 transition-all duration-300 ease-in-out group hover:-translate-y-1 hover:neo-glow active:scale-98"
           >
             <div className="w-11 h-11 bg-white/5 text-white group-hover:text-[#ff0050] rounded-full flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-110 transition-transform">
