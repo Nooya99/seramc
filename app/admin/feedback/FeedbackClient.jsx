@@ -28,6 +28,15 @@ export default function FeedbackClient({ initialFeedbacks }) {
     setSelectedIds(newSet);
   };
 
+  const handleSelectAll = () => {
+    if (selectedIds.size === filteredFeedbacks.length && filteredFeedbacks.length > 0) {
+      setSelectedIds(new Set());
+    } else {
+      const allIds = filteredFeedbacks.map(fb => fb.id);
+      setSelectedIds(new Set(allIds));
+    }
+  };
+
   const handleDeleteSelected = async () => {
     if (selectedIds.size === 0) return;
     if (!confirm(`Yakin ingin menghapus ${selectedIds.size} masukan?`)) return;
@@ -105,16 +114,26 @@ export default function FeedbackClient({ initialFeedbacks }) {
         </button>
       </div>
 
-      {isDeleteMode && selectedIds.size > 0 && (
+      {isDeleteMode && (
         <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-3 flex justify-between items-center">
-          <span className="text-sm text-red-300 ml-2 font-medium">{selectedIds.size} dipilih</span>
-          <button 
-            onClick={handleDeleteSelected}
-            disabled={isDeleting}
-            className="px-4 py-1.5 bg-red-500 hover:bg-red-600 text-white text-sm font-bold rounded-lg transition-colors disabled:opacity-50"
-          >
-            {isDeleting ? 'Menghapus...' : 'Hapus Terpilih'}
-          </button>
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-red-300 ml-2 font-medium">{selectedIds.size} dipilih</span>
+            <button
+              onClick={handleSelectAll}
+              className="text-xs text-red-400 hover:text-red-300 underline underline-offset-2 transition-colors"
+            >
+              {selectedIds.size === filteredFeedbacks.length && filteredFeedbacks.length > 0 ? 'Batal Pilih Semua' : 'Pilih Semua'}
+            </button>
+          </div>
+          {selectedIds.size > 0 && (
+            <button 
+              onClick={handleDeleteSelected}
+              disabled={isDeleting}
+              className="px-4 py-1.5 bg-red-500 hover:bg-red-600 text-white text-sm font-bold rounded-lg transition-colors disabled:opacity-50"
+            >
+              {isDeleting ? 'Menghapus...' : 'Hapus Terpilih'}
+            </button>
+          )}
         </div>
       )}
 
