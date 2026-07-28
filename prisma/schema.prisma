@@ -79,6 +79,7 @@ model Voucher {
 model Feedback {
   id        String   @id @default(uuid())
   ign       String?
+  edition   String   @default("java")
   message   String
   isRead    Boolean  @default(false)
   createdAt DateTime @default(now())

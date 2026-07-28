@@ -35,7 +35,7 @@ export default function FeedbackModal({ isOpen, onClose }) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ ign: finalIgn, message }),
+        body: JSON.stringify({ ign: finalIgn, message, edition }),
       });
 
       if (res.ok) {

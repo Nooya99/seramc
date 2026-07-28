@@ -185,7 +185,7 @@ export default function FeedbackClient({ initialFeedbacks }) {
                   <div className="text-sm font-semibold text-slate-200">
                     {fb.ign ? fb.ign : <span className="text-slate-500 italic">Anonim</span>}
                   </div>
-                  <div className="text-[10px] text-cyan-400 font-mono tracking-wider uppercase">Pemain</div>
+                  <div className="text-[10px] text-cyan-400 font-mono tracking-wider uppercase">{fb.edition || 'Pemain'}</div>
                 </div>
               </div>
               
@@ -220,6 +220,9 @@ export default function FeedbackClient({ initialFeedbacks }) {
                 <h3 className="text-lg font-bold text-white">
                   {selectedFeedback.ign ? selectedFeedback.ign : <span className="text-slate-400 italic">Anonim</span>}
                 </h3>
+                <div className="text-xs text-cyan-400 font-mono tracking-wider uppercase mt-0.5">
+                  {selectedFeedback.edition || 'Pemain'}
+                </div>
                 <div className="flex items-center gap-2 text-xs text-slate-400 mt-1">
                   <Calendar className="w-3.5 h-3.5" />
                   {new Date(selectedFeedback.createdAt).toLocaleDateString('id-ID', {
