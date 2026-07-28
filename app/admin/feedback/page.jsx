@@ -1,6 +1,8 @@
 import { prisma } from '@/lib/prisma';
 import FeedbackClient from './FeedbackClient';
 
+export const dynamic = 'force-dynamic';
+
 export default async function FeedbackPage() {
   const feedbacks = await prisma.feedback.findMany({
     orderBy: { createdAt: 'desc' }
