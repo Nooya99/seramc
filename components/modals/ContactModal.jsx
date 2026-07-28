@@ -5,38 +5,6 @@ import PixelIcon from '@/components/PixelIcon';
 import { Icon } from '@iconify/react';
 import { useState } from 'react';
 
-const ExpandableButton = ({ title, subtitle, icon, iconColorClass, linkColorClass, links }) => {
-  const [expanded, setExpanded] = useState(false);
-  
-  return (
-    <div 
-      className={`neo-inset flex flex-col transition-all duration-300 ease-in-out cursor-pointer group hover:neo-glow ${expanded ? 'p-4 gap-3 bg-white/5' : 'p-4'}`}
-      onClick={() => setExpanded(!expanded)}
-    >
-      <div className="flex items-center gap-4">
-        <div className={`w-11 h-11 rounded-full flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-110 transition-transform ${iconColorClass}`}>
-          {icon}
-        </div>
-        <div className="text-left">
-          <h4 className="font-bold text-white text-[13px] md:text-sm leading-tight">{title}</h4>
-          <p className="text-gray-400 text-[10px] md:text-xs mt-0.5">{subtitle}</p>
-        </div>
-      </div>
-      
-      <div 
-        className={`overflow-hidden transition-all duration-300 ease-in-out flex gap-2 w-full ${expanded ? 'max-h-20 opacity-100 mt-2' : 'max-h-0 opacity-0 mt-0'}`}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {links.map((l, i) => (
-          <a key={i} href={l.href} target="_blank" rel="noopener noreferrer" className={`flex-1 bg-white/5 border border-white/5 text-center py-2.5 rounded-xl text-sm font-bold transition-all active:scale-95 ${linkColorClass}`}>
-            {l.text}
-          </a>
-        ))}
-      </div>
-    </div>
-  );
-};
-
 const admins = [
   { name: 'Admin 1 (Kira)', phone: '6283178533575' },
   { name: 'Admin 2 (Kaes)', phone: '6285273165229' },
@@ -44,6 +12,8 @@ const admins = [
 ];
 
 export default function ContactModal({ isOpen, onClose, cart = [] }) {
+  const [showVoteLinks, setShowVoteLinks] = useState(false);
+
   if (!isOpen) return null;
 
   const defaultMsg = 'Halo Admin, saya ingin bertanya tentang server SERA MC.';
@@ -97,67 +67,94 @@ export default function ContactModal({ isOpen, onClose, cart = [] }) {
         {/* ADMIN LIST */}
         <div className="flex flex-col gap-3 mb-4">
           {admins.map((admin, idx) => (
-            <ExpandableButton 
+            <a 
               key={idx}
-              title={admin.name}
-              subtitle="WhatsApp Contact"
-              icon={<Icon icon="simple-icons:whatsapp" className="w-5 h-5" />}
-              iconColorClass="bg-[#25D366]/20 text-[#25D366]"
-              linkColorClass="hover:bg-[#25D366]/20 hover:border-[#25D366]/30 text-[#25D366]"
-              links={[
-                { text: 'Chat via WA', href: `https://wa.me/${admin.phone}?text=${encodedText}` }
-              ]}
-            />
+              href={`https://wa.me/${admin.phone}?text=${encodedText}`} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="w-full flex items-center gap-4 neo-inset p-2 pr-6 transition-all duration-300 ease-in-out group cursor-pointer active:scale-95 hover:neo-glow"
+            >
+              <div className="w-10 h-10 bg-[#25D366]/20 text-[#25D366] rounded-full flex items-center justify-center text-lg flex-shrink-0 group-hover:scale-110 transition-transform">
+                <Icon icon="simple-icons:whatsapp" className="w-5 h-5" />
+              </div>
+              <div className="text-left">
+                <h4 className="font-bold text-white text-[13px] md:text-sm leading-tight">{admin.name}</h4>
+                <p className="text-gray-400 text-[10px] md:text-xs mt-0.5">WhatsApp Contact</p>
+              </div>
+            </a>
           ))}
         </div>
 
         {/* SOCIAL LINKS */}
         <div className="grid grid-cols-2 gap-3 pt-2 border-t border-white/10 mt-2 items-start">
           
-          <ExpandableButton 
-            title="Discord Server"
-            subtitle="Grup Komunitas"
-            icon={<Icon icon="simple-icons:discord" className="w-5 h-5" />}
-            iconColorClass="bg-[#5865F2]/10 text-[#5865F2]"
-            linkColorClass="hover:bg-[#5865F2]/20 hover:border-[#5865F2]/30 text-[#5865F2]"
-            links={[
-              { text: 'Join Discord', href: 'https://seramc.top/dc' }
-            ]}
-          />
+          <a 
+            href="https://seramc.top/dc" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="neo-inset p-4 flex items-center gap-4 transition-all duration-300 ease-in-out group hover:-translate-y-1 hover:neo-glow active:scale-98"
+          >
+            <div className="w-11 h-11 bg-[#5865F2]/10 text-[#5865F2] rounded-full flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-110 transition-transform">
+              <Icon icon="simple-icons:discord" className="w-5 h-5" />
+            </div>
+            <div className="text-left">
+              <h4 className="font-bold text-white text-[13px] md:text-sm leading-tight">Discord Server</h4>
+              <p className="text-gray-400 text-[10px] md:text-xs mt-0.5">Grup Komunitas</p>
+            </div>
+          </a>
 
-          <ExpandableButton 
-            title="WhatsApp Group"
-            subtitle="Grup Obrolan"
-            icon={<Icon icon="simple-icons:whatsapp" className="w-5 h-5" />}
-            iconColorClass="bg-[#25D366]/10 text-[#25D366]"
-            linkColorClass="hover:bg-[#25D366]/20 hover:border-[#25D366]/30 text-[#25D366]"
-            links={[
-              { text: 'Join Grup', href: 'https://seramc.top/wa' }
-            ]}
-          />
+          <a 
+            href="https://seramc.top/wa" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="neo-inset p-4 flex items-center gap-4 transition-all duration-300 ease-in-out group hover:-translate-y-1 hover:neo-glow active:scale-98"
+          >
+            <div className="w-11 h-11 bg-[#25D366]/10 text-[#25D366] rounded-full flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-110 transition-transform">
+              <Icon icon="simple-icons:whatsapp" className="w-5 h-5" />
+            </div>
+            <div className="text-left">
+              <h4 className="font-bold text-white text-[13px] md:text-sm leading-tight">WhatsApp Group</h4>
+              <p className="text-gray-400 text-[10px] md:text-xs mt-0.5">Grup Obrolan</p>
+            </div>
+          </a>
 
-          <ExpandableButton 
-            title="TikTok Resmi"
-            subtitle="Video & Hiburan"
-            icon={<Icon icon="simple-icons:tiktok" className="w-5 h-5" />}
-            iconColorClass="bg-white/5 text-white group-hover:text-[#ff0050]"
-            linkColorClass="hover:bg-[#ff0050]/20 hover:border-[#ff0050]/30 text-white hover:text-[#ff0050]"
-            links={[
-              { text: 'Buka TikTok', href: 'https://www.tiktok.com/@seramc.id?_r=1&_t=ZS-98P6TO16TIb' }
-            ]}
-          />
+          <a 
+            href="https://www.tiktok.com/@seramc.id?_r=1&_t=ZS-98P6TO16TIb" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="neo-inset p-4 flex items-center gap-4 transition-all duration-300 ease-in-out group hover:-translate-y-1 hover:neo-glow active:scale-98"
+          >
+            <div className="w-11 h-11 bg-white/5 text-white group-hover:text-[#ff0050] rounded-full flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-110 transition-transform">
+              <Icon icon="simple-icons:tiktok" className="w-5 h-5" />
+            </div>
+            <div className="text-left">
+              <h4 className="font-bold text-white text-[13px] md:text-sm leading-tight">TikTok Resmi</h4>
+              <p className="text-gray-400 text-[10px] md:text-xs mt-0.5">Video & Hiburan</p>
+            </div>
+          </a>
 
-          <ExpandableButton 
-            title="Vote Server"
-            subtitle="Dukung Kami"
-            icon={<PixelIcon name="checkbox-on" className="w-5 h-5" />}
-            iconColorClass="bg-[#f2e28a]/10 text-[#f2e28a]"
-            linkColorClass="hover:bg-[#f2e28a]/20 hover:border-[#f2e28a]/30 text-[#f2e28a]"
-            links={[
-              { text: 'Link 1', href: 'https://seramc.top/vote1' },
-              { text: 'Link 2', href: 'https://seramc.top/vote2' }
-            ]}
-          />
+          <div 
+            className={`neo-inset flex flex-col transition-all duration-300 ease-in-out cursor-pointer group hover:neo-glow ${showVoteLinks ? 'p-4 gap-3 bg-white/5' : 'p-4'}`}
+            onClick={() => setShowVoteLinks(!showVoteLinks)}
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-11 h-11 bg-[#f2e28a]/10 text-[#f2e28a] rounded-full flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-110 transition-transform">
+                <PixelIcon name="checkbox-on" className="w-5 h-5" />
+              </div>
+              <div className="text-left">
+                <h4 className="font-bold text-white text-[13px] md:text-sm leading-tight">Vote Server</h4>
+                <p className="text-gray-400 text-[10px] md:text-xs mt-0.5">Dukung Kami</p>
+              </div>
+            </div>
+            
+            <div 
+              className={`overflow-hidden transition-all duration-300 ease-in-out flex gap-2 w-full ${showVoteLinks ? 'max-h-20 opacity-100 mt-2' : 'max-h-0 opacity-0 mt-0'}`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <a href="https://seramc.top/vote1" target="_blank" rel="noopener noreferrer" className="flex-1 bg-white/5 hover:bg-[#f2e28a]/20 border border-white/5 hover:border-[#f2e28a]/30 text-[#f2e28a] text-center py-2 rounded-lg text-sm font-bold transition-all active:scale-95">Link 1</a>
+              <a href="https://seramc.top/vote2" target="_blank" rel="noopener noreferrer" className="flex-1 bg-white/5 hover:bg-[#f2e28a]/20 border border-white/5 hover:border-[#f2e28a]/30 text-[#f2e28a] text-center py-2 rounded-lg text-sm font-bold transition-all active:scale-95">Link 2</a>
+            </div>
+          </div>
 
         </div>
       </div>
