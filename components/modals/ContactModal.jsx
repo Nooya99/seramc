@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import PixelIcon from '@/components/PixelIcon';
 import { Icon } from '@iconify/react';
+import { useState } from 'react';
 
 const admins = [
   { name: 'Admin 1 (Kira)', phone: '6283178533575' },
@@ -11,6 +12,8 @@ const admins = [
 ];
 
 export default function ContactModal({ isOpen, onClose, cart = [] }) {
+  const [showVoteLinks, setShowVoteLinks] = useState(false);
+
   if (!isOpen) return null;
 
   const defaultMsg = 'Halo Admin, saya ingin bertanya tentang server SERA MC.';
@@ -130,35 +133,36 @@ export default function ContactModal({ isOpen, onClose, cart = [] }) {
             </div>
           </a>
 
-          <a 
-            href="https://seramc.top/vote1" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="neo-inset p-4 flex items-center gap-4 transition-all duration-300 ease-in-out group hover:-translate-y-1 hover:neo-glow active:scale-98"
-          >
-            <div className="w-11 h-11 bg-[#f2e28a]/10 text-[#f2e28a] rounded-full flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-110 transition-transform">
-              <PixelIcon name="checkbox-on" className="w-5 h-5" />
+          {showVoteLinks ? (
+            <div className="neo-inset p-4 flex flex-col gap-3 transition-all duration-300 ease-in-out">
+              <div className="flex items-center gap-4 mb-1">
+                <div className="w-11 h-11 bg-[#f2e28a]/10 text-[#f2e28a] rounded-full flex items-center justify-center text-xl flex-shrink-0">
+                  <PixelIcon name="checkbox-on" className="w-5 h-5" />
+                </div>
+                <div className="text-left">
+                  <h4 className="font-bold text-white text-[13px] md:text-sm leading-tight">Vote Server</h4>
+                  <p className="text-gray-400 text-[10px] md:text-xs mt-0.5">Pilih link vote di bawah:</p>
+                </div>
+              </div>
+              <div className="flex gap-2 w-full">
+                <a href="https://seramc.top/vote1" target="_blank" rel="noopener noreferrer" className="flex-1 bg-white/5 hover:bg-[#f2e28a]/20 border border-white/5 hover:border-[#f2e28a]/30 text-[#f2e28a] text-center py-2.5 rounded-xl text-sm font-bold transition-all active:scale-95">Link 1</a>
+                <a href="https://seramc.top/vote2" target="_blank" rel="noopener noreferrer" className="flex-1 bg-white/5 hover:bg-[#f2e28a]/20 border border-white/5 hover:border-[#f2e28a]/30 text-[#f2e28a] text-center py-2.5 rounded-xl text-sm font-bold transition-all active:scale-95">Link 2</a>
+              </div>
             </div>
-            <div className="text-left">
-              <h4 className="font-bold text-white text-[13px] md:text-sm leading-tight">Vote Server 1</h4>
-              <p className="text-gray-400 text-[10px] md:text-xs mt-0.5">Dukung Kami</p>
-            </div>
-          </a>
-
-          <a 
-            href="https://seramc.top/vote2" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="neo-inset p-4 flex items-center gap-4 transition-all duration-300 ease-in-out group hover:-translate-y-1 hover:neo-glow active:scale-98"
-          >
-            <div className="w-11 h-11 bg-[#f2e28a]/10 text-[#f2e28a] rounded-full flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-110 transition-transform">
-              <PixelIcon name="checkbox-on" className="w-5 h-5" />
-            </div>
-            <div className="text-left">
-              <h4 className="font-bold text-white text-[13px] md:text-sm leading-tight">Vote Server 2</h4>
-              <p className="text-gray-400 text-[10px] md:text-xs mt-0.5">Dukung Kami</p>
-            </div>
-          </a>
+          ) : (
+            <button 
+              onClick={() => setShowVoteLinks(true)}
+              className="neo-inset p-4 flex items-center gap-4 transition-all duration-300 ease-in-out group hover:-translate-y-1 hover:neo-glow active:scale-98 w-full text-left"
+            >
+              <div className="w-11 h-11 bg-[#f2e28a]/10 text-[#f2e28a] rounded-full flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-110 transition-transform">
+                <PixelIcon name="checkbox-on" className="w-5 h-5" />
+              </div>
+              <div className="text-left">
+                <h4 className="font-bold text-white text-[13px] md:text-sm leading-tight">Vote Server</h4>
+                <p className="text-gray-400 text-[10px] md:text-xs mt-0.5">Dukung Kami</p>
+              </div>
+            </button>
+          )}
 
         </div>
       </div>
