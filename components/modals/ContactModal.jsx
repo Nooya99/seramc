@@ -7,7 +7,7 @@ import { useState } from 'react';
 
 const admins = [
   { name: 'Admin 1 (Kira)', phone: '6283178533575' },
-  { name: 'Admin 2 (Kaes)', phone: '6285273165229' },
+  { name: 'Admin 2 (Green)', phone: '6285813087161' },
   { name: 'Admin 3 (Finn)', phone: '6283119355072' },
 ];
 
