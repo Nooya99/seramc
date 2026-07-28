@@ -104,7 +104,6 @@ body {
   max-width: 380px; 
   border: 1px solid rgba(255, 255, 255, 0.2);
   background: rgba(11, 17, 33, 0.85);
-  backdrop-filter: blur(20px);
   border-radius: 2rem;
 }
 
@@ -165,6 +164,19 @@ body {
   .shop-card.center, .race-card.center { transform: translate(-50%, -50%) scale(1.05); }
   .shop-card.left, .race-card.left { transform: translate(-85%, -50%) scale(0.8); opacity: 0; pointer-events: none; }
   .shop-card.right, .race-card.right { transform: translate(-15%, -50%) scale(0.8); opacity: 0; pointer-events: none; }
+}
+
+/* Modal Logic */
+.modal {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+.modal.active {
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
 }
 
 /* Toast Notice */
@@ -256,4 +268,17 @@ button, a {
 .neo-glow {
   box-shadow: 0 0 15px 2px rgba(123, 189, 232, 0.4);
   border-color: #7BBDE8;
+}
+
+/* Modal Base Styles (For Static Site) */
+.modal {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transition: all 0.3s ease-in-out;
+}
+.modal.active {
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
 }

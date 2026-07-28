@@ -282,3 +282,179 @@ setTimeout(() => {
         }
 
         updateRaceSlider();
+// =========================================
+// E-COMMERCE LOGIC (SHOP, CART, CHECKOUT)
+// =========================================
+
+let cart = JSON.parse(localStorage.getItem('sera_cart')) || [];
+let playerIgn = localStorage.getItem('sera_ign') || '';
+
+function saveCart() {
+    localStorage.setItem('sera_cart', JSON.stringify(cart));
+    updateCartUI();
+}
+
+function updateCartUI() {
+    const countEl = document.getElementById('cart-count');
+    if (countEl) countEl.innerText = cart.length;
+    
+    const container = document.getElementById('cart-items-container');
+    const totalEl = document.getElementById('cart-total');
+    if (!container || !totalEl) return;
+    
+    container.innerHTML = '';
+    let total = 0;
+    
+    if (cart.length === 0) {
+        container.innerHTML = '<div class="text-center text-gray-400 py-8">Keranjang belanja kosong.</div>';
+        totalEl.innerText = 'Rp 0';
+        return;
+    }
+    
+    cart.forEach((item, index) => {
+        total += item.price;
+        container.innerHTML += `
+            <div class="flex items-center justify-between bg-white/5 p-4 rounded-xl border border-white/10">
+                <div>
+                    <h4 class="font-bold text-white">${item.name}</h4>
+                    <p class="text-sm text-gray-400">${item.duration}</p>
+                    <p class="text-[#f2e28a] font-medium mt-1">Rp ${item.price.toLocaleString('id-ID')}</p>
+                </div>
+                <button onclick="removeFromCart(${index})" class="text-red-400 hover:text-red-300 p-2 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition-colors">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            </div>
+        `;
+    });
+    
+    totalEl.innerText = 'Rp ' + total.toLocaleString('id-ID');
+}
+
+function addToCart(productJson) {
+    const product = JSON.parse(decodeURIComponent(productJson));
+    cart.push({
+        id: product.id,
+        name: product.name,
+        price: product.discount > 0 ? product.price * (1 - product.discount/100) : product.price,
+        duration: product.duration || 'Permanen'
+    });
+    saveCart();
+    
+    // Show toast
+    const toast = document.getElementById('notice-toast');
+    if(toast) {
+        toast.innerHTML = '<i class="fa-solid fa-check-circle mr-2"></i> Berhasil ditambahkan ke keranjang!';
+        toast.classList.replace('bg-rose-500/20', 'bg-green-500/20');
+        toast.classList.replace('text-rose-200', 'text-green-200');
+        toast.classList.replace('border-rose-500/30', 'border-green-500/30');
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+}
+
+function removeFromCart(index) {
+    cart.splice(index, 1);
+    saveCart();
+}
+
+function openPlayerLogin() {
+    document.getElementById('player-ign-input').value = playerIgn;
+    openModal('player-login-modal');
+}
+
+function savePlayerLogin() {
+    const ign = document.getElementById('player-ign-input').value.trim();
+    if (!ign) {
+        alert('Username tidak boleh kosong!');
+        return;
+    }
+    playerIgn = ign;
+    localStorage.setItem('sera_ign', playerIgn);
+    updatePlayerUI();
+    closeModal('player-login-modal');
+}
+
+function updatePlayerUI() {
+    const display = document.getElementById('shop-ign-display');
+    if (display) {
+        display.innerText = playerIgn ? playerIgn : 'Belum Login';
+    }
+}
+
+function proceedToCheckout() {
+    if (cart.length === 0) {
+        alert('Keranjang belanja kosong!');
+        return;
+    }
+    if (!playerIgn) {
+        alert('Silakan isi Username Minecraft kamu terlebih dahulu!');
+        openPlayerLogin();
+        return;
+    }
+    
+    let total = 0;
+    let itemsText = cart.map((item, i) => {
+        total += item.price;
+        return `${i+1}. ${item.name} (${item.duration}) - Rp ${item.price.toLocaleString('id-ID')}`;
+    }).join('%0A'); // URL encoded newline
+    
+    let message = `Halo Admin SERA MC,%0ASaya ingin melakukan pembelian item berikut:%0A%0A*IGN:* ${playerIgn}%0A%0A*Pesanan:*%0A${itemsText}%0A%0A*Total:* Rp ${total.toLocaleString('id-ID')}%0A%0AMohon panduannya untuk pembayaran. Terima kasih!`;
+    
+    window.location.href = `https://wa.me/6283178533575?text=${message}`;
+}
+
+// Render Shop Products
+function renderShop(category = 'Rank') {
+    const container = document.getElementById('shop-products-container');
+    const tabsContainer = document.getElementById('shop-tabs');
+    if (!container || !window.SERA_PRODUCTS) return;
+    
+    const categories = ['Rank', 'Keys', 'Others'];
+    
+    tabsContainer.innerHTML = categories.map(cat => `
+        <button onclick="renderShop('${cat}')" class="px-5 py-2.5 rounded-xl font-bold transition-all ${category === cat ? 'bg-[#f2e28a] text-gray-900 shadow-[0_0_15px_rgba(242,226,138,0.4)]' : 'bg-white/5 text-gray-300 hover:bg-white/10 border border-white/10'}">
+            ${cat}
+        </button>
+    `).join('');
+    
+    let items = window.SERA_PRODUCTS.filter(p => {
+        if (category === 'Keys') return (p.category || '').toLowerCase().includes('key') || (p.category || '').toLowerCase().includes('crate');
+        if (category === 'Others') return (p.category || '').toLowerCase().includes('other');
+        return (p.category || '').toLowerCase() === category.toLowerCase();
+    });
+    
+    if (items.length === 0) {
+        container.innerHTML = '<div class="text-center text-gray-400 py-12">Tidak ada produk di kategori ini.</div>';
+        return;
+    }
+    
+    container.innerHTML = '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">' + items.map(p => {
+        const finalPrice = p.discount > 0 ? p.price * (1 - p.discount/100) : p.price;
+        const encodedData = encodeURIComponent(JSON.stringify(p));
+        return `
+            <div class="bg-black/30 border border-white/10 rounded-2xl p-5 hover:border-[#f2e28a]/40 transition-colors flex flex-col">
+                <div class="flex justify-between items-start mb-3">
+                    <h3 class="font-bold text-lg text-white">${p.name}</h3>
+                    ${p.discount > 0 ? `<span class="bg-red-500/20 text-red-400 text-xs font-bold px-2 py-1 rounded-md">-${p.discount}%</span>` : ''}
+                </div>
+                <p class="text-gray-400 text-sm mb-4 line-clamp-2">${p.description || p.category}</p>
+                <div class="mt-auto">
+                    ${p.discount > 0 ? `<p class="text-gray-500 text-sm line-through">Rp ${p.price.toLocaleString('id-ID')}</p>` : ''}
+                    <div class="flex justify-between items-center mt-1">
+                        <span class="text-[#f2e28a] font-bold text-xl">Rp ${finalPrice.toLocaleString('id-ID')}</span>
+                        <button onclick="addToCart('${encodedData}')" class="bg-white/10 hover:bg-white/20 text-white rounded-lg p-2.5 transition-colors">
+                            <i class="fa-solid fa-cart-plus"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('') + '</div>';
+}
+
+// Initialize on load
+document.addEventListener('DOMContentLoaded', () => {
+    updateCartUI();
+    updatePlayerUI();
+    renderShop('Rank');
+});

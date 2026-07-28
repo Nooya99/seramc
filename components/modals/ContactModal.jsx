@@ -140,22 +140,7 @@ export default function ContactModal({ isOpen, onClose, cart = [] }) {
               <PixelIcon name="checkbox-on" className="w-5 h-5" />
             </div>
             <div className="text-left">
-              <h4 className="font-bold text-white text-[13px] md:text-sm leading-tight">Vote Server 1</h4>
-              <p className="text-gray-400 text-[10px] md:text-xs mt-0.5">Dukung Kami</p>
-            </div>
-          </a>
-
-          <a 
-            href="https://seramc.top/vote2" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="neo-inset p-4 flex items-center gap-4 transition-all duration-300 ease-in-out group hover:-translate-y-1 hover:neo-glow active:scale-98"
-          >
-            <div className="w-11 h-11 bg-[#f2e28a]/10 text-[#f2e28a] rounded-full flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-110 transition-transform">
-              <PixelIcon name="checkbox-on" className="w-5 h-5" />
-            </div>
-            <div className="text-left">
-              <h4 className="font-bold text-white text-[13px] md:text-sm leading-tight">Vote Server 2</h4>
+              <h4 className="font-bold text-white text-[13px] md:text-sm leading-tight">Vote Server</h4>
               <p className="text-gray-400 text-[10px] md:text-xs mt-0.5">Dukung Kami</p>
             </div>
           </a>

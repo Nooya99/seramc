@@ -107,8 +107,8 @@
             >Features</a
           >
           <a
-            href="#shop"
-            class="nav-link text-gray-300 hover:text-white transition-colors px-2 py-1 active:scale-95 touch-manipulation"
+            href="javascript:void(0)" onclick="openModal('shop-modal')"
+            class="text-gray-300 hover:text-white hover:bg-white/5 px-4 py-2 rounded-xl transition-all font-medium active:scale-95 text-center flex items-center justify-center h-[42px]"
             ><i class="fa-solid fa-cart-shopping mr-1"></i> Shop</a
           >
           <a
@@ -2166,7 +2166,7 @@
             </div>
           </a>
 
-          <!-- 4. Vote 1 -->
+          <!-- 4. Vote -->
           <a
             href="https://seramc.top/vote1"
             target="_blank"
@@ -2181,7 +2181,7 @@
               <h4
                 class="font-bold text-white text-[13px] md:text-sm leading-tight"
               >
-                Vote Server 1
+                Vote Server
               </h4>
               <p class="text-gray-400 text-[10px] md:text-xs mt-0.5">
                 Dukung Kami
@@ -2189,28 +2189,6 @@
             </div>
           </a>
 
-          <!-- 5. Vote 2 -->
-          <a
-            href="https://seramc.top/vote2"
-            target="_blank"
-            class="community-card hitbox-full h-full w-full bg-[#131826] border border-white/5 hover:border-[#f2e28a]/50 rounded-2xl p-4 flex items-center gap-4 transition-all group hover:-translate-y-1 hover:shadow-[0_5px_15px_rgba(242,226,138,0.2)] cursor-pointer active:scale-95 touch-manipulation"
-          >
-            <div
-              class="w-11 h-11 bg-[#f2e28a]/10 text-[#f2e28a] rounded-full flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-110 transition-transform"
-            >
-              <i class="fa-solid fa-check-to-slot"></i>
-            </div>
-            <div class="text-left">
-              <h4
-                class="font-bold text-white text-[13px] md:text-sm leading-tight"
-              >
-                Vote Server 2
-              </h4>
-              <p class="text-gray-400 text-[10px] md:text-xs mt-0.5">
-                Dukung Kami
-              </p>
-            </div>
-          </a>
         </div>
       </div>
     </div>
@@ -2743,7 +2721,83 @@
       </div>
     </div>
 
+    <!-- MODAL SHOP -->
+    <div id="shop-modal" class="modal fixed inset-0 bg-black/80 backdrop-blur-md z-[100] flex justify-center items-center px-4">
+      <div class="modal-content bubble-glass w-full max-w-6xl rounded-3xl p-4 md:p-8 relative h-[90vh] flex flex-col" style="background: rgba(11, 17, 33, 0.95); border: 1px solid rgba(255, 255, 255, 0.3);">
+        <button onclick="closeModal('shop-modal')" class="absolute top-4 right-4 md:top-6 md:right-6 text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-full w-10 h-10 flex items-center justify-center transition-colors z-[110]">
+          <i class="fa-solid fa-xmark text-xl"></i>
+        </button>
+        <div class="text-center mb-6 pt-2">
+            <h2 class="text-3xl md:text-5xl font-bold font-poppins text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-[#f2e28a] to-yellow-500 inline-flex items-center gap-4">
+              <i class="fa-solid fa-store"></i> SERA MC Store
+            </h2>
+            <p class="text-gray-300 mt-3 max-w-2xl mx-auto">Dukung server dengan membeli rank, keys, atau item lainnya!</p>
+        </div>
+        
+        <!-- Tabs -->
+        <div class="flex flex-wrap justify-center gap-2 mb-8" id="shop-tabs">
+            <!-- Injected by JS -->
+        </div>
+
+        <!-- Content -->
+        <div id="shop-products-container" class="flex-1 overflow-y-auto custom-scrollbar px-2 pb-6">
+            <!-- Injected by JS -->
+        </div>
+
+        <!-- Footer Bar -->
+        <div class="mt-4 pt-4 border-t border-white/10 flex justify-between items-center bg-black/20 p-4 rounded-2xl">
+            <button onclick="openPlayerLogin()" class="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 rounded-xl transition-colors">
+                <i class="fa-solid fa-user text-[#f2e28a]"></i>
+                <span id="shop-ign-display" class="font-medium">Belum Login</span>
+            </button>
+            <button onclick="openModal('cart-modal')" class="neo-button-primary px-6 py-2.5 font-bold flex items-center gap-2">
+                <i class="fa-solid fa-cart-shopping"></i> Keranjang (<span id="cart-count">0</span>)
+            </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL CART -->
+    <div id="cart-modal" class="modal fixed inset-0 bg-black/80 backdrop-blur-md z-[110] flex justify-center items-center px-4">
+      <div class="modal-content bubble-glass w-full max-w-2xl rounded-3xl p-6 relative flex flex-col max-h-[85vh]" style="background: rgba(11, 17, 33, 0.95); border: 1px solid rgba(255, 255, 255, 0.3);">
+        <button onclick="closeModal('cart-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-full w-10 h-10 flex items-center justify-center transition-colors">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+        <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3 border-b border-white/10 pb-4">
+            <i class="fa-solid fa-cart-shopping text-[#f2e28a]"></i> Keranjang Belanja
+        </h2>
+        
+        <div id="cart-items-container" class="flex-1 overflow-y-auto custom-scrollbar space-y-4 pr-2">
+            <!-- Injected by JS -->
+        </div>
+        
+        <div class="mt-6 pt-4 border-t border-white/10 space-y-4">
+            <div class="flex justify-between items-center text-lg font-bold">
+                <span class="text-gray-300">Total:</span>
+                <span class="text-[#f2e28a]" id="cart-total">Rp 0</span>
+            </div>
+            <button onclick="proceedToCheckout()" class="w-full neo-button-primary py-3 font-bold text-lg flex items-center justify-center gap-2">
+                Checkout via WhatsApp <i class="fa-brands fa-whatsapp"></i>
+            </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL PLAYER LOGIN -->
+    <div id="player-login-modal" class="modal fixed inset-0 bg-black/80 backdrop-blur-md z-[120] flex justify-center items-center px-4">
+      <div class="modal-content bubble-glass w-full max-w-sm rounded-3xl p-6 text-center" style="background: rgba(11, 17, 33, 0.95); border: 1px solid rgba(255, 255, 255, 0.3);">
+        <h2 class="text-xl font-bold text-white mb-4">Login Player</h2>
+        <p class="text-gray-400 text-sm mb-6">Masukkan username Minecraft kamu untuk melanjutkan pesanan.</p>
+        <input type="text" id="player-ign-input" placeholder="Username Minecraft" class="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#f2e28a] mb-6 text-center">
+        <div class="flex gap-3">
+            <button onclick="closeModal('player-login-modal')" class="flex-1 bg-white/5 hover:bg-white/10 text-white py-2.5 rounded-xl transition-colors">Batal</button>
+            <button onclick="savePlayerLogin()" class="flex-1 neo-button-primary py-2.5">Simpan</button>
+        </div>
+      </div>
+    </div>
+
     <!-- SCRIPT UTAMA -->
+    <script src="products-data.js"></script>
     <script src="script.js"></script>
   </body>
 </html>
