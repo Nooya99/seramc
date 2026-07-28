@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PixelIcon from '@/components/PixelIcon';
 
 export default function FeedbackModal({ isOpen, onClose }) {
@@ -9,6 +9,29 @@ export default function FeedbackModal({ isOpen, onClose }) {
   const [nickname, setNickname] = useState('');
   const [edition, setEdition] = useState('java');
   const [message, setMessage] = useState('');
+  const [playerContext, setPlayerContext] = useState(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      try {
+        const ctx = localStorage.getItem('sera_player_context');
+        if (ctx) {
+          const parsed = JSON.parse(ctx);
+          setPlayerContext(parsed);
+          
+          let rawIgn = parsed.nickname || '';
+          if (parsed.edition === 'bedrock' && rawIgn.startsWith('_')) {
+            rawIgn = rawIgn.substring(1);
+          }
+          setNickname(rawIgn);
+          setEdition(parsed.edition || 'java');
+          setIdentityMode('nickname');
+        } else {
+          setPlayerContext(null);
+        }
+      } catch(e) {}
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -83,63 +106,74 @@ export default function FeedbackModal({ isOpen, onClose }) {
         <form onSubmit={handleSubmit} className="space-y-4 relative z-20">
           <div className="mb-2">
             <label className="block text-gray-300 text-xs font-bold mb-3 pl-1">Identitas Pengirim</label>
-            <div className="flex bg-black/40 p-1 rounded-xl border border-white/5 mb-4">
-              <button 
-                type="button"
-                onClick={() => setIdentityMode('nickname')}
-                className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all duration-300 ${identityMode === 'nickname' ? 'bg-[#f2e28a] text-gray-900 shadow-md' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
-              >
-                Set Nickname
-              </button>
-              <button 
-                type="button"
-                onClick={() => setIdentityMode('anonymous')}
-                className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all duration-300 ${identityMode === 'anonymous' ? 'bg-white/20 text-white shadow-md' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
-              >
-                Anonymous
-              </button>
-            </div>
+            
+            {!playerContext && (
+              <div className="flex bg-black/40 p-1 rounded-xl border border-white/5 mb-4">
+                <button 
+                  type="button"
+                  onClick={() => setIdentityMode('nickname')}
+                  className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all duration-300 ${identityMode === 'nickname' ? 'bg-[#f2e28a] text-gray-900 shadow-md' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+                >
+                  Set Nickname
+                </button>
+                <button 
+                  type="button"
+                  onClick={() => setIdentityMode('anonymous')}
+                  className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all duration-300 ${identityMode === 'anonymous' ? 'bg-white/20 text-white shadow-md' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+                >
+                  Anonymous
+                </button>
+              </div>
+            )}
 
             {identityMode === 'nickname' && (
-              <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300 mb-4">
-                <div>
+              <div className="animate-in fade-in slide-in-from-top-2 duration-300 mb-4">
+                <div className="flex items-center gap-3">
+                  {playerContext && playerContext.avatarUrl && (
+                    <img 
+                      src={playerContext.avatarUrl} 
+                      alt="Avatar" 
+                      className="w-12 h-12 rounded-full border-2 border-[#f2e28a]/30 bg-black/50"
+                    />
+                  )}
                   <input 
                     type="text" 
                     value={nickname}
                     onChange={(e) => setNickname(e.target.value)}
-                    className="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#f2e28a] transition-colors" 
+                    className="flex-1 w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#f2e28a] transition-colors" 
                     placeholder="Masukkan IGN kamu..."
                   />
                 </div>
-                <div>
-                  <label className="block text-gray-400 text-[11px] font-semibold mb-2 pl-1 uppercase tracking-wider">Edisi Minecraft</label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <button 
-                      type="button"
-                      onClick={() => setEdition('java')}
-                      className={`py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 border transition-all duration-300 ${
-                        edition === 'java' 
-                          ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-400' 
-                          : 'bg-black/30 border-white/10 text-gray-400 hover:bg-white/5'
-                      }`}
-                    >
-                      Java
-                    </button>
-                    <button 
-                      type="button"
-                      onClick={() => setEdition('bedrock')}
-                      className={`py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 border transition-all duration-300 ${
-                        edition === 'bedrock' 
-                          ? 'bg-blue-500/20 border-blue-500/50 text-blue-400' 
-                          : 'bg-black/30 border-white/10 text-gray-400 hover:bg-white/5'
-                      }`}
-                    >
-                      Bedrock
-                    </button>
-                  </div>
-                </div>
               </div>
             )}
+            
+            <div className="animate-in fade-in duration-300">
+              <label className="block text-gray-400 text-[11px] font-semibold mb-2 pl-1 uppercase tracking-wider">Edisi Minecraft</label>
+              <div className="grid grid-cols-2 gap-3">
+                <button 
+                  type="button"
+                  onClick={() => setEdition('java')}
+                  className={`py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 border transition-all duration-300 ${
+                    edition === 'java' 
+                      ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-400' 
+                      : 'bg-black/30 border-white/10 text-gray-400 hover:bg-white/5'
+                  }`}
+                >
+                  Java
+                </button>
+                <button 
+                  type="button"
+                  onClick={() => setEdition('bedrock')}
+                  className={`py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 border transition-all duration-300 ${
+                    edition === 'bedrock' 
+                      ? 'bg-blue-500/20 border-blue-500/50 text-blue-400' 
+                      : 'bg-black/30 border-white/10 text-gray-400 hover:bg-white/5'
+                  }`}
+                >
+                  Bedrock
+                </button>
+              </div>
+            </div>
           </div>
           <div>
             <label className="block text-gray-300 text-xs font-bold mb-2 pl-1">Pesan / Masukan <span className="text-red-400">*</span></label>
