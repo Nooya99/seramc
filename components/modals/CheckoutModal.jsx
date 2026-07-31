@@ -6,7 +6,7 @@ import { Icon } from '@iconify/react';
 
 const targetAdmin = '6285161516730'; // Owner WhatsApp
 
-export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], playerContext, appliedVoucher }) {
+export default function CheckoutModal({ isOpen, onClose, onSuccess, onCheckoutSuccess, cart = [], playerContext, appliedVoucher }) {
   const [ign, setIgn] = useState('');
   const [whatsapp, setWhatsapp] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('QRIS');
@@ -103,7 +103,10 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
         shortOrderId = data.id ? data.id.split('-')[0].toUpperCase() : null;
         
         if (platform === 'livechat') {
-          if (data.id) {
+          if (data.id && onCheckoutSuccess) {
+            onCheckoutSuccess(data.id);
+            return;
+          } else if (data.id) {
             window.location.href = `/payment/${data.id}`;
             return;
           } else {

@@ -24,6 +24,7 @@ import CartModal from '@/components/modals/CartModal';
 import CheckoutModal from '@/components/modals/CheckoutModal';
 import PlayerLoginModal from '@/components/modals/PlayerLoginModal';
 import OrderStatusModal from '@/components/modals/OrderStatusModal';
+import LiveChatWidget from '@/components/LiveChatWidget';
 
 export default function Home() {
   const [activeModal, setActiveModal] = useState(null);
@@ -33,6 +34,7 @@ export default function Home() {
   const [playerContext, setPlayerContext] = useState(null);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [toasts, setToasts] = useState([]);
+  const [activeChatOrderId, setActiveChatOrderId] = useState(null);
   const loginTimeoutRef = useRef(null);
 
   // Restore nickname from browser cache (localStorage) on initial mount
@@ -216,6 +218,12 @@ export default function Home() {
           setCart([]);
           setAppliedVoucher(null);
           setActiveModal('shop');
+        }}
+        onCheckoutSuccess={(id) => {
+          setActiveChatOrderId(id);
+          setActiveModal(null);
+          setCart([]);
+          setAppliedVoucher(null);
         }}
         cart={cart}
         playerContext={playerContext}
