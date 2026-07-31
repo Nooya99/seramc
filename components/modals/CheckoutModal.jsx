@@ -12,6 +12,7 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
   const [paymentMethod, setPaymentMethod] = useState('QRIS');
   const [checkoutStatus, setCheckoutStatus] = useState(null);
   const [checkoutMessage, setCheckoutMessage] = useState('');
+  const [showDiscordTutorial, setShowDiscordTutorial] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -20,6 +21,7 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
       }
       setCheckoutStatus(null);
       setCheckoutMessage('');
+      setShowDiscordTutorial(false);
     }
   }, [isOpen, playerContext]);
 
@@ -125,32 +127,65 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
     if (platform === 'discord') {
       try {
         await navigator.clipboard.writeText(purchaseMsg);
-        alert("Rincian pesanan telah disalin ke clipboard! Silakan Paste/Tempel pesan tersebut saat membuka tiket di server Discord kami.");
       } catch (err) {
         console.error('Failed to copy', err);
       }
-      window.open('https://discord.com/channels/1509580648925626599/1522494890443935774', '_blank');
+      setShowDiscordTutorial(true);
     } else {
       const encodedText = encodeURIComponent(purchaseMsg);
       window.open(`https://wa.me/${targetAdmin}?text=${encodedText}`, '_blank');
+      
+      setTimeout(() => {
+        setCheckoutStatus('success');
+        // Set to generic message if the database request didn't finish setting it
+        setCheckoutMessage(prev => prev || initialCheckoutMsg || 'PESANAN ANDA SEDANG DI PROSES');
+      }, 500);
     }
-    
-    setTimeout(() => {
-      setCheckoutStatus('success');
-      // Set to generic message if the database request didn't finish setting it
-      setCheckoutMessage(prev => prev || initialCheckoutMsg || 'PESANAN ANDA SEDANG DI PROSES');
-    }, 500);
   };
 
   return (
     <div 
       className="modal fixed inset-0 bg-black/70 backdrop-blur-md z-[100] flex justify-center items-center px-4 active"
-      onClick={(e) => { if (e.target === e.currentTarget && !checkoutStatus) onClose(); }}
+      onClick={(e) => { if (e.target === e.currentTarget && !checkoutStatus && !showDiscordTutorial) onClose(); }}
     >
       <div 
         className="modal-content neo-glass w-full max-w-lg p-6 md:p-8 relative overflow-hidden"
       >
-        {checkoutStatus && (
+        {showDiscordTutorial ? (
+          <div className="absolute inset-0 bg-[#0b1120]/95 backdrop-blur-xl z-50 flex flex-col items-center justify-center p-6 text-center" style={{ animation: 'fadeIn 0.3s ease-out forwards' }}>
+            <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4 bg-[#5865F2]/20 text-[#5865F2] border-2 border-[#5865F2]/50 shadow-[0_0_20px_rgba(88,101,242,0.3)]">
+              <Icon icon="simple-icons:discord" className="w-8 h-8" />
+            </div>
+            <h3 className="text-xl md:text-2xl font-bold text-white mb-2 font-poppins tracking-wide">TUTORIAL DISCORD</h3>
+            <p className="text-emerald-400 mb-4 text-xs md:text-sm font-bold bg-emerald-500/10 px-3 py-1.5 rounded-full border border-emerald-500/20">✅ Rincian Pesanan telah di-copy otomatis!</p>
+            
+            <div className="w-full text-left text-[11px] md:text-xs text-gray-300 max-h-[40vh] overflow-y-auto custom-scrollbar pr-2 space-y-2 mb-6 font-medium bg-black/40 p-4 rounded-xl border border-white/5">
+              <p className="flex gap-2"><span className="text-[#5865F2] font-bold">1.</span> Klik channel store atau langsung channel open tiket</p>
+              <p className="flex gap-2"><span className="text-[#5865F2] font-bold">2.</span> Klik create ticket</p>
+              <p className="flex gap-2"><span className="text-[#5865F2] font-bold">3.</span> Maka ticket anda telah terbikin</p>
+              <p className="flex gap-2"><span className="text-[#5865F2] font-bold">4.</span> Lalu paste pesanan anda yang sudah otomatis tercopy di dalam channel tiket anda</p>
+              <p className="flex gap-2"><span className="text-[#5865F2] font-bold">5.</span> Lalu tunggu respon dari admin</p>
+              <p className="flex gap-2"><span className="text-[#5865F2] font-bold">6.</span> Lanjutkan Pembayaran</p>
+              <p className="flex gap-2"><span className="text-[#5865F2] font-bold">7.</span> Jika pembayaran sudah di konfirmasi oleh admin</p>
+              <p className="flex gap-2"><span className="text-[#5865F2] font-bold">8.</span> Maka pesanan anda sedang di proses</p>
+              <p className="flex gap-2"><span className="text-[#5865F2] font-bold">9.</span> Tunggu konfirmasi dari admin</p>
+              <p className="flex gap-2"><span className="text-[#5865F2] font-bold">10.</span> Selamat pembelian anda sudah selesai!</p>
+              <p className="text-center font-bold text-[#f2e28a] mt-4 pt-2 border-t border-white/10 text-xs md:text-sm">SELAMAT MENIKMATI BERBELANJA DI SERAMC SHOP</p>
+            </div>
+
+            <button 
+              onClick={() => {
+                window.open('https://discord.com/channels/1509580648925626599/1522494890443935774', '_blank');
+                setShowDiscordTutorial(false);
+                setCheckoutStatus('success');
+                setCheckoutMessage('PESANAN ANDA SEDANG DI PROSES');
+              }}
+              className="bg-[#5865F2] hover:bg-[#4752C4] text-white w-full max-w-[250px] font-bold py-3.5 rounded-xl transition-all duration-300 ease-in-out shadow-[0_0_20px_rgba(88,101,242,0.3)] hover:shadow-[0_0_30px_rgba(88,101,242,0.5)] flex items-center justify-center gap-2 mx-auto active:scale-95"
+            >
+              Lanjut ke Discord
+            </button>
+          </div>
+        ) : checkoutStatus ? (
           <div className="absolute inset-0 bg-[#0b1120]/95 backdrop-blur-xl z-50 flex flex-col items-center justify-center p-8 text-center" style={{ animation: 'fadeIn 0.3s ease-out forwards' }}>
             <div 
               className={`w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-2xl ${
