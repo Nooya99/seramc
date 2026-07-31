@@ -3,6 +3,32 @@ import { supabaseAdmin } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
 
+export async function GET(request, { params }) {
+  try {
+    const { id } = params;
+
+    const { data: order, error } = await supabaseAdmin
+      .from('Order')
+      .select('*, user:User(*), items:OrderItem(*, product:Product(*))')
+      .eq('id', id)
+      .single();
+
+    if (error) {
+      console.error('Supabase error fetching single order:', error);
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    if (!order) {
+      return NextResponse.json({ error: 'Order not found' }, { status: 404 });
+    }
+
+    return NextResponse.json(order);
+  } catch (error) {
+    console.error('Error fetching order:', error);
+    return NextResponse.json({ error: 'Failed to fetch order', details: error.message }, { status: 500 });
+  }
+}
+
 export async function PATCH(request, { params }) {
   try {
     const { id } = params;

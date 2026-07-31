@@ -28,18 +28,12 @@ export default function PaymentChatPage({ params }) {
 
   const fetchOrderDetails = async () => {
     try {
-      // In a real app we'd have a specific GET /api/orders/[id] endpoint.
-      // But since /api/orders returns all, we filter on client for simplicity,
-      // OR we just wait for chats. Wait, we can fetch all orders and filter.
-      const res = await fetch('/api/orders');
+      const res = await fetch(`/api/orders/${orderId}`, { cache: 'no-store' });
       if (res.ok) {
-        const orders = await res.json();
-        const found = orders.find(o => o.id === orderId);
-        if (found) {
-          setOrder(found);
-        } else {
-          router.push('/');
-        }
+        const orderData = await res.json();
+        setOrder(orderData);
+      } else {
+        router.push('/');
       }
       setLoading(false);
     } catch (err) {
