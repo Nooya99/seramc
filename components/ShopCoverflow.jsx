@@ -184,9 +184,31 @@ export default function ShopCoverflow({ onOpenModal }) {
                 prices: sortedPrices
               };
             });
+            });
+            
+            updated.push({
+              name: 'SHOP_INFO',
+              isInfoCard: true,
+              badge: 'INFO LENGKAP',
+              iconName: 'shopping-cart',
+              bgClass: 'bg-cyan-500/10 text-cyan-400 border-cyan-400/40',
+              btnClass: 'bg-[#15323d] hover:bg-cyan-900 text-cyan-200 border border-cyan-500/20',
+              prices: [],
+              description: 'Terdapat lebih banyak paket, Crate Keys, dan Coins yang tidak tertampil di sini. Buka menu Shop untuk melihat selengkapnya!'
+            });
+
             setRanks(updated);
           } else {
-            setRanks(initialRanks);
+            setRanks([...initialRanks, {
+              name: 'SHOP_INFO',
+              isInfoCard: true,
+              badge: 'INFO LENGKAP',
+              iconName: 'shopping-cart',
+              bgClass: 'bg-cyan-500/10 text-cyan-400 border-cyan-400/40',
+              btnClass: 'bg-[#15323d] hover:bg-cyan-900 text-cyan-200 border border-cyan-500/20',
+              prices: [],
+              description: 'Terdapat lebih banyak paket, Crate Keys, dan Coins yang tidak tertampil di sini. Buka menu Shop untuk melihat selengkapnya!'
+            }]);
           }
         }
       }
@@ -257,27 +279,33 @@ export default function ShopCoverflow({ onOpenModal }) {
                     <PixelIcon name={item.iconName} className="w-7 h-7" />
                   </div>
                   
-                  <h3 className="font-bold text-2xl md:text-3xl text-white font-poppins">{item.badge}</h3>
+                  <h3 className="font-bold text-2xl md:text-3xl text-white font-poppins text-center">{item.badge}</h3>
  
-                  <div className="space-y-4 mt-6 text-[15px] md:text-[16px] text-gray-300 w-full">
-                    {item.prices.map((p, idx) => (
-                      <button 
-                        key={idx}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onOpenModal('shop');
-                        }}
-                        className="w-full flex justify-between items-center border-b border-white/10 pb-3 text-left focus:outline-none bg-transparent group active:scale-95 cursor-pointer transition-all duration-300 ease-in-out"
-                      >
-                        <span className="group-hover:text-white group-hover:translate-x-1 transition-all duration-300">
-                          {p.duration}
-                        </span>
-                        <span className="text-[#f2e28a] font-bold text-lg md:text-xl group-hover:scale-105 transition-all duration-300">
-                          {p.price}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
+                  {item.isInfoCard ? (
+                    <p className="text-gray-300 mt-6 text-center leading-relaxed font-medium">
+                      {item.description}
+                    </p>
+                  ) : (
+                    <div className="space-y-4 mt-6 text-[15px] md:text-[16px] text-gray-300 w-full">
+                      {item.prices.map((p, idx) => (
+                        <button 
+                          key={idx}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onOpenModal('shop');
+                          }}
+                          className="w-full flex justify-between items-center border-b border-white/10 pb-3 text-left focus:outline-none bg-transparent group active:scale-95 cursor-pointer transition-all duration-300 ease-in-out"
+                        >
+                          <span className="group-hover:text-white group-hover:translate-x-1 transition-all duration-300">
+                            {p.duration}
+                          </span>
+                          <span className="text-[#f2e28a] font-bold text-lg md:text-xl group-hover:scale-105 transition-all duration-300">
+                            {p.price}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
  
                 <button 
@@ -287,7 +315,7 @@ export default function ShopCoverflow({ onOpenModal }) {
                   }}
                   className={`mt-auto w-full font-bold py-3.5 rounded-xl transition-all duration-300 ease-in-out hover:scale-[1.02] border text-[15px] md:text-[16px] active:scale-95 cursor-pointer ${item.btnClass}`}
                 >
-                  TAMBAH KE KERANJANG
+                  {item.isInfoCard ? 'BUKA MENU SHOP' : 'TAMBAH KE KERANJANG'}
                 </button>
               </div>
             );
@@ -299,19 +327,6 @@ export default function ShopCoverflow({ onOpenModal }) {
           className="absolute right-2 md:right-10 z-40 text-gray-400 hover:text-[#f2e28a] transition-all duration-300 ease-in-out hover:scale-110 active:scale-95"
         >
           <PixelIcon name="chevron-right" className="w-12 h-12 md:w-16 md:h-16" />
-        </button>
-      </div>
-
-      <div className="mt-8 md:mt-12 flex flex-col items-center text-center relative z-10">
-        <p className="text-gray-400 mb-4 text-sm md:text-base px-4">
-          Terdapat lebih banyak paket, <span className="text-[#f2e28a]">Keys</span>, dan <span className="text-blue-400">Coins</span> yang tidak tertampil di sini.
-        </p>
-        <button 
-          onClick={() => onOpenModal('shop')}
-          className="bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/40 text-cyan-300 font-bold px-8 md:px-10 py-3.5 md:py-4 rounded-full transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 flex items-center gap-2 shadow-[0_0_15px_rgba(34,211,238,0.15)] hover:shadow-[0_0_25px_rgba(34,211,238,0.3)]"
-        >
-          <PixelIcon name="shopping-cart" className="w-5 h-5" />
-          Lihat Selengkapnya di SHOP
         </button>
       </div>
     </section>
