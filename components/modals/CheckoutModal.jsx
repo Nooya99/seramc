@@ -129,7 +129,7 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
       } catch (err) {
         console.error('Failed to copy', err);
       }
-      window.open('https://seramc.top/dc', '_blank');
+      window.open('https://discord.com/channels/1509580648925626599/1522494890443935774', '_blank');
     } else {
       const encodedText = encodeURIComponent(purchaseMsg);
       window.open(`https://wa.me/${targetAdmin}?text=${encodedText}`, '_blank');
