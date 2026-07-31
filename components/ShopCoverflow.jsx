@@ -312,9 +312,9 @@ export default function ShopCoverflow({ onOpenModal }) {
                     e.stopPropagation();
                     onOpenModal('shop');
                   }}
-                  className={`mt-auto w-full font-bold py-3.5 rounded-xl transition-all duration-300 ease-in-out hover:scale-[1.02] border text-[15px] md:text-[16px] active:scale-95 cursor-pointer ${item.btnClass}`}
+                  className={`mt-auto w-full font-bold py-3.5 rounded-xl transition-all duration-300 ease-in-out hover:scale-[1.02] border text-[13px] md:text-[14px] active:scale-95 cursor-pointer ${item.btnClass}`}
                 >
-                  {item.isInfoCard ? 'BUKA MENU SHOP' : 'TAMBAH KE KERANJANG'}
+                  {item.isInfoCard ? 'BUKA MENU SHOP' : 'CLICK SHOP UNTUK LEBIH LANJUT'}
                 </button>
               </div>
             );
