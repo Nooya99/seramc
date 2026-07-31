@@ -724,7 +724,7 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
         </div>
 
         {/* Grid Area for Ranks */}
-        <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 md:gap-6 w-full mb-16">
+        <div className="grid grid-cols-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 md:gap-6 w-full mb-16">
           {ranks.flatMap((item) => {
             return item.prices.map((p) => (
               <div 
@@ -807,7 +807,7 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
         </div>
 
         {/* Grid Area for Keys */}
-        <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 md:gap-6 w-full mb-16">
+        <div className="grid grid-cols-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-2 md:gap-6 w-full mb-16">
           {keysData.map((item) => {
             return (
               <div 
@@ -878,7 +878,7 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
         </div>
 
         {/* Grid Area for Others */}
-        <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 md:gap-6 w-full mb-16">
+        <div className="grid grid-cols-3 md:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-6 w-full mb-16">
           {othersData.map((item) => {
             return (
               <div 
@@ -956,7 +956,7 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
             </div>
 
             {/* Grid Area for Races */}
-            <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 md:gap-6 w-full">
+            <div className="grid grid-cols-3 md:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-6 w-full">
               {racesData.map((item) => {
                 return (
                   <div 
