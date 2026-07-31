@@ -20,7 +20,7 @@ export default function Hero({ onOpenModal }) {
           />
         </div>
 
-        <h1 className="text-[32px] md:text-[54px] font-bold text-white tracking-tight leading-tight font-poppins drop-shadow-lg relative">
+        <h1 className="text-[28px] sm:text-[32px] md:text-[54px] font-bold text-white tracking-tight leading-tight font-poppins drop-shadow-lg relative">
           Welcome to SERA MC
         </h1>
 
@@ -29,24 +29,24 @@ export default function Hero({ onOpenModal }) {
         </p>
 
         {/* HERO BUTTONS */}
-        <div className="flex flex-wrap items-center justify-center gap-4 md:gap-5 mt-6 md:mt-8 relative">
+        <div className="flex flex-wrap items-center justify-center gap-3 md:gap-5 mt-6 md:mt-8 relative w-full px-2">
           <button 
             onClick={() => onOpenModal('feedback')} 
-            className="glass-pill text-white font-semibold px-8 md:px-10 py-3 md:py-[14px] text-[13px] md:text-[14.5px] active:scale-95 transition-all duration-300 ease-in-out hover:bg-white/20 hover:border-white/30"
+            className="glass-pill text-white font-semibold px-6 md:px-10 py-3 md:py-[14px] text-[12px] md:text-[14.5px] active:scale-95 transition-all duration-300 ease-in-out hover:bg-white/20 hover:border-white/30"
           >
             Kritik & Saran
           </button>
           
           <button 
             onClick={() => onOpenModal('ip')} 
-            className="bg-[#f2e28a] hover:bg-[#e6d680] text-gray-900 font-bold px-10 md:px-14 py-4 md:py-[18px] text-[15px] md:text-[17px] rounded-full shadow-xl active:scale-95 transition-all duration-300 ease-in-out hover:scale-105"
+            className="bg-[#f2e28a] hover:bg-[#e6d680] text-gray-900 font-bold px-8 sm:px-10 md:px-14 py-3.5 md:py-[18px] text-[14px] md:text-[17px] rounded-full shadow-xl active:scale-95 transition-all duration-300 ease-in-out hover:scale-105 w-full sm:w-auto order-first sm:order-none"
           >
             Play Now
           </button>
 
           <button 
             onClick={() => onOpenModal('rules')} 
-            className="glass-pill text-white font-semibold px-8 md:px-10 py-3 md:py-[14px] text-[13px] md:text-[14.5px] active:scale-95 transition-all duration-300 ease-in-out hover:bg-white/20 hover:border-white/30"
+            className="glass-pill text-white font-semibold px-6 md:px-10 py-3 md:py-[14px] text-[12px] md:text-[14.5px] active:scale-95 transition-all duration-300 ease-in-out hover:bg-white/20 hover:border-white/30"
           >
             Rules
           </button>

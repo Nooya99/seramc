@@ -217,7 +217,7 @@ export default function ShopCoverflow({ onOpenModal }) {
         </p>
       </div>
 
-      <div className="relative w-full h-[500px] md:h-[600px] flex items-center justify-center">
+      <div className="relative w-full h-[450px] md:h-[600px] flex items-center justify-center">
         <button 
           onClick={() => moveShop(-1)} 
           className="absolute left-2 md:left-10 z-40 text-gray-400 hover:text-[#f2e28a] transition-all duration-300 ease-in-out hover:scale-110 active:scale-95"
