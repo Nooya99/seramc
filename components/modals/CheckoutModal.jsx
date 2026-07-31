@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import PixelIcon from '@/components/PixelIcon';
+import { Icon } from '@iconify/react';
 
 const targetAdmin = '6285161516730'; // Owner WhatsApp
 
@@ -65,7 +66,7 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
     return subtotal - calculateDiscountValue();
   };
 
-  const handleCheckout = async (e) => {
+  const handleCheckout = async (e, platform = 'whatsapp') => {
     e.preventDefault();
     
     if (!ign || !whatsapp) {
@@ -84,7 +85,7 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
         whatsapp,
         items: cart,
         totalAmount: calculateTotal(),
-        paymentMethod,
+        paymentMethod: platform === 'discord' ? 'Discord' : 'WhatsApp',
         voucherCode: appliedVoucher?.code || null
       };
 
@@ -119,10 +120,20 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
       return `${i + 1}. ${item.quantity || 1}x ${item.name} (${item.duration}) - ${formatPrice(itemTotal)}`;
     }).join('\n');
     
-    const purchaseMsg = `*PESANAN BARU - SERA MC*\n\n*In-Game Name:* ${ign}\n*No. WhatsApp:* ${whatsapp}${shortOrderId ? `\n*ID Pesanan:* ${shortOrderId}` : ''}\n\n*Pesanan:*\n${itemsList}${appliedVoucher ? `\n*Voucher:* ${appliedVoucher.code} (-${appliedVoucher.discount}%)` : ''}\n*Total Harga:* ${formatPrice(calculateTotal())}\n\n*Metode Pembayaran:* ${paymentMethod}\n\nMohon info untuk proses pembayarannya. Terima kasih!`;
+    const purchaseMsg = `*PESANAN BARU - SERA MC*\n\n*In-Game Name:* ${ign}\n*No. WhatsApp:* ${whatsapp}${shortOrderId ? `\n*ID Pesanan:* ${shortOrderId}` : ''}\n\n*Pesanan:*\n${itemsList}${appliedVoucher ? `\n*Voucher:* ${appliedVoucher.code} (-${appliedVoucher.discount}%)` : ''}\n*Total Harga:* ${formatPrice(calculateTotal())}\n\n*Metode Pembayaran:* ${platform === 'discord' ? 'Discord' : 'WhatsApp'}\n\nMohon info untuk proses pembayarannya. Terima kasih!`;
     
-    const encodedText = encodeURIComponent(purchaseMsg);
-    window.open(`https://wa.me/${targetAdmin}?text=${encodedText}`, '_blank');
+    if (platform === 'discord') {
+      try {
+        await navigator.clipboard.writeText(purchaseMsg);
+        alert("Rincian pesanan telah disalin ke clipboard! Silakan Paste/Tempel pesan tersebut saat membuka tiket di server Discord kami.");
+      } catch (err) {
+        console.error('Failed to copy', err);
+      }
+      window.open('https://seramc.top/dc', '_blank');
+    } else {
+      const encodedText = encodeURIComponent(purchaseMsg);
+      window.open(`https://wa.me/${targetAdmin}?text=${encodedText}`, '_blank');
+    }
     
     setTimeout(() => {
       setCheckoutStatus('success');
@@ -183,7 +194,7 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
 
         <h2 className="text-xl md:text-2xl font-bold text-white mb-6 font-poppins text-center">Informasi Pembelian</h2>
 
-        <form onSubmit={handleCheckout} className="space-y-4 relative z-10">
+        <form className="space-y-4 relative z-10">
           <div>
             <label className="block text-gray-300 text-sm font-bold mb-2">In-Game Name (IGN)</label>
             {playerContext ? (
@@ -255,23 +266,28 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
 
           {/* Removed Voucher Input from here as it's now in CartModal */}
 
-          <div>
-            <label className="block text-gray-300 text-sm font-bold mb-2">Metode Pembayaran</label>
-            <select 
-              value={paymentMethod}
-              onChange={(e) => setPaymentMethod(e.target.value)}
-              className="w-full neo-inset px-4 py-3 focus:outline-none focus:neo-glow transition-all cursor-pointer appearance-none"
-            >
-              <option value="QRIS" className="bg-[#0f172a]">QRIS</option>
-            </select>
-          </div>
+          <div className="pt-2">
+            <label className="block text-gray-300 text-sm font-bold mb-3 text-center tracking-wide">Lanjut Pembayaran via</label>
+            <div className="flex gap-4">
+              <button 
+                type="button"
+                onClick={(e) => handleCheckout(e, 'discord')}
+                className="flex-1 bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold py-3 md:py-4 rounded-full transition-all duration-300 active:scale-95 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(88,101,242,0.2)] hover:shadow-[0_0_30px_rgba(88,101,242,0.4)]"
+              >
+                <Icon icon="simple-icons:discord" className="w-5 h-5 md:w-6 md:h-6" />
+                <span className="text-sm md:text-base">Discord</span>
+              </button>
 
-          <button 
-            type="submit"
-            className="neo-button-primary w-full font-bold py-3.5 mt-4"
-          >
-            Lanjutkan Pembayaran
-          </button>
+              <button 
+                type="button"
+                onClick={(e) => handleCheckout(e, 'whatsapp')}
+                className="flex-1 bg-[#25D366] hover:bg-[#1ebd5a] text-white font-bold py-3 md:py-4 rounded-full transition-all duration-300 active:scale-95 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(37,211,102,0.2)] hover:shadow-[0_0_30px_rgba(37,211,102,0.4)]"
+              >
+                <Icon icon="simple-icons:whatsapp" className="w-5 h-5 md:w-6 md:h-6" />
+                <span className="text-sm md:text-base">WhatsApp</span>
+              </button>
+            </div>
+          </div>
         </form>
       </div>
 
