@@ -111,6 +111,7 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, onCheckoutSu
             return;
           } else {
             alert('Gagal membuat pesanan untuk Live Chat.');
+            return;
           }
         }
 
@@ -128,6 +129,11 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, onCheckoutSu
     } catch (error) {
       console.error('Failed to save order to database', error);
       // We continue to WhatsApp even if DB fails so user can still order
+    }
+
+    if (platform === 'livechat') {
+      alert('Gagal memproses pesanan untuk Live Chat. Silakan coba lagi atau gunakan metode lain.');
+      return;
     }
 
     let itemsList = cart.map((item, i) => {
