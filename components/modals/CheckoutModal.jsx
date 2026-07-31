@@ -218,7 +218,7 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
               Oke
             </button>
           </div>
-        )}
+        ) : null}
 
         <button 
           onClick={onClose} 
