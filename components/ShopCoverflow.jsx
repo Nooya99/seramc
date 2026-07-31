@@ -184,7 +184,6 @@ export default function ShopCoverflow({ onOpenModal }) {
                 prices: sortedPrices
               };
             });
-            });
             
             updated.push({
               name: 'SHOP_INFO',
