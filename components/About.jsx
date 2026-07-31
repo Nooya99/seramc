@@ -28,10 +28,10 @@ export default function About() {
   return (
     <section id="about" className="py-16 md:py-24 px-4 md:px-6 max-w-6xl mx-auto relative z-10">
       <div className="bubble-glass p-6 md:p-10 backdrop-blur-xl">
-        <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
+        <div className="flex flex-col gap-8 md:gap-12 items-center">
           
           {/* SLIDER CONTAINER */}
-          <div className="w-full h-[250px] md:h-[350px] rounded-2xl overflow-hidden shadow-2xl relative border border-white/20 group">
+          <div className="w-full aspect-video max-w-4xl mx-auto rounded-2xl overflow-hidden shadow-2xl relative border border-white/20 group">
             <div 
               className="flex w-full h-full transition-transform duration-500 ease-in-out" 
               style={{ transform: `translateX(-${currentSlide * 100}%)` }}
@@ -74,7 +74,7 @@ export default function About() {
             </div>
           </div>
 
-          <div className="text-center lg:text-left">
+          <div className="text-center w-full max-w-4xl mx-auto">
             <p className="text-xs md:text-sm font-bold text-[#f2e28a] tracking-widest uppercase mb-2">About Our Server</p>
             <h2 className="text-2xl md:text-4xl font-bold text-white mb-4 md:mb-6 font-poppins">A New Journey Begins</h2>
             <div className="space-y-3 md:space-y-4 text-gray-200 leading-relaxed text-[14px] md:text-[15px]">
