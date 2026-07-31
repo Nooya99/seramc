@@ -19,6 +19,7 @@ import {
   Square
 } from 'lucide-react';
 import { ConfirmModal, Toast } from '@/components/admin/NotificationModal';
+import AdminChatBox from '@/components/admin/AdminChatBox';
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -645,6 +646,12 @@ export default function AdminDashboard() {
                 Rp {formatPrice(selectedOrder.totalAmount)}
               </span>
             </div>
+
+            {selectedOrder.paymentMethod === 'Live Chat' && (
+              <div className="pt-2">
+                <AdminChatBox orderId={selectedOrder.id} orderStatus={selectedOrder.status} />
+              </div>
+            )}
 
             <div className="flex gap-3 pt-2">
               {selectedOrder.user?.whatsapp && (

@@ -46,6 +46,7 @@ model Order {
   paymentMethod String      @default("QRIS")
   status        String      @default("PENDING") // PENDING, PAID, CANCELLED
   items         OrderItem[]
+  chats         OrderChat[]
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
 }
@@ -82,5 +83,14 @@ model Feedback {
   edition   String   @default("java")
   message   String
   isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model OrderChat {
+  id        String   @id @default(uuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  sender    String   // "USER" or "ADMIN"
+  message   String
   createdAt DateTime @default(now())
 }

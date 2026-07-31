@@ -87,7 +87,7 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
         whatsapp,
         items: cart,
         totalAmount: calculateTotal(),
-        paymentMethod: platform === 'discord' ? 'Discord' : 'WhatsApp',
+        paymentMethod: platform === 'discord' ? 'Discord' : platform === 'livechat' ? 'Live Chat' : 'WhatsApp',
         voucherCode: appliedVoucher?.code || null
       };
 
@@ -101,6 +101,16 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
         const data = await res.json();
         // Extract the short order ID (first segment of UUID)
         shortOrderId = data.id ? data.id.split('-')[0].toUpperCase() : null;
+        
+        if (platform === 'livechat') {
+          if (data.id) {
+            window.location.href = `/payment/${data.id}`;
+            return;
+          } else {
+            alert('Gagal membuat pesanan untuk Live Chat.');
+          }
+        }
+
         if (shortOrderId) {
           initialCheckoutMsg = `PESANAN ANDA SEDANG DI PROSES. ID Pesanan Anda: ${shortOrderId}`;
           setCheckoutMessage(initialCheckoutMsg);
@@ -304,24 +314,41 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
 
           <div className="pt-2">
             <label className="block text-gray-300 text-sm font-bold mb-3 text-center tracking-wide">Lanjut Pembayaran via</label>
-            <div className="flex gap-4">
+            <div className="flex flex-col gap-3">
               <button 
                 type="button"
-                onClick={(e) => handleCheckout(e, 'discord')}
-                className="flex-1 bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold py-3 md:py-4 rounded-full transition-all duration-300 active:scale-95 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(88,101,242,0.2)] hover:shadow-[0_0_30px_rgba(88,101,242,0.4)]"
+                onClick={(e) => handleCheckout(e, 'livechat')}
+                className="w-full bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-bold py-3 md:py-4 rounded-xl transition-all duration-300 active:scale-95 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(14,165,233,0.3)] hover:shadow-[0_0_30px_rgba(14,165,233,0.5)] border border-sky-400/30"
               >
-                <Icon icon="simple-icons:discord" className="w-5 h-5 md:w-6 md:h-6" />
-                <span className="text-sm md:text-base">Discord</span>
+                <Icon icon="lucide:message-circle" className="w-5 h-5 md:w-6 md:h-6" />
+                <span className="text-sm md:text-base">Live Chat di Website (Baru!)</span>
               </button>
+              
+              <div className="flex items-center gap-4 py-1">
+                <div className="h-px bg-white/10 flex-1"></div>
+                <span className="text-xs text-gray-500 font-bold uppercase tracking-wider">Atau via Aplikasi</span>
+                <div className="h-px bg-white/10 flex-1"></div>
+              </div>
 
-              <button 
-                type="button"
-                onClick={(e) => handleCheckout(e, 'whatsapp')}
-                className="flex-1 bg-[#25D366] hover:bg-[#1ebd5a] text-white font-bold py-3 md:py-4 rounded-full transition-all duration-300 active:scale-95 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(37,211,102,0.2)] hover:shadow-[0_0_30px_rgba(37,211,102,0.4)]"
-              >
-                <Icon icon="simple-icons:whatsapp" className="w-5 h-5 md:w-6 md:h-6" />
-                <span className="text-sm md:text-base">WhatsApp</span>
-              </button>
+              <div className="flex gap-4">
+                <button 
+                  type="button"
+                  onClick={(e) => handleCheckout(e, 'discord')}
+                  className="flex-1 bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold py-3 md:py-4 rounded-xl transition-all duration-300 active:scale-95 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(88,101,242,0.2)] hover:shadow-[0_0_30px_rgba(88,101,242,0.4)]"
+                >
+                  <Icon icon="simple-icons:discord" className="w-5 h-5 md:w-6 md:h-6" />
+                  <span className="text-sm md:text-base">Discord</span>
+                </button>
+
+                <button 
+                  type="button"
+                  onClick={(e) => handleCheckout(e, 'whatsapp')}
+                  className="flex-1 bg-[#25D366] hover:bg-[#1ebd5a] text-white font-bold py-3 md:py-4 rounded-xl transition-all duration-300 active:scale-95 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(37,211,102,0.2)] hover:shadow-[0_0_30px_rgba(37,211,102,0.4)]"
+                >
+                  <Icon icon="simple-icons:whatsapp" className="w-5 h-5 md:w-6 md:h-6" />
+                  <span className="text-sm md:text-base">WhatsApp</span>
+                </button>
+              </div>
             </div>
           </div>
         </form>
