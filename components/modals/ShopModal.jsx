@@ -724,62 +724,62 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
         </div>
 
         {/* Grid Area for Ranks */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full mb-16">
+        <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 md:gap-6 w-full mb-16">
           {ranks.flatMap((item) => {
             return item.prices.map((p) => (
               <div 
                 key={`${item.name}-${p.duration}`} 
-                className="bg-[#0f1422] rounded-[1.5rem] p-6 md:p-8 flex flex-col relative overflow-hidden border border-white/5 shadow-xl transition-transform hover:-translate-y-1"
+                className="bg-[#0f1422] rounded-xl md:rounded-[1.5rem] p-3 md:p-8 flex flex-col relative overflow-hidden border border-white/5 shadow-xl transition-transform hover:-translate-y-1"
               >
                 {p.discount > 0 && (
-                  <div className="absolute top-4 left-4 bg-gradient-to-r from-red-600 to-rose-500 text-white px-2 py-1 rounded-full text-[10px] md:text-xs font-black flex items-center gap-1 shadow-lg shadow-red-500/20 z-10 border border-white/10">
-                    <PixelIcon name="tag" className="w-3 h-3" />
+                  <div className="absolute top-2 left-2 md:top-4 md:left-4 bg-gradient-to-r from-red-600 to-rose-500 text-white px-1.5 py-0.5 md:px-2 md:py-1 rounded-full text-[8px] md:text-xs font-black flex items-center gap-1 shadow-lg shadow-red-500/20 z-10 border border-white/10">
+                    <PixelIcon name="tag" className="w-2 h-2 md:w-3 md:h-3" />
                     -{p.discount}%
                     {p.discountExpiresAt && (
-                      <span className="ml-1 pl-1 border-l border-white/30 flex items-center gap-1 text-[9px] md:text-[10px]">
+                      <span className="hidden md:flex ml-1 pl-1 border-l border-white/30 items-center gap-1 text-[9px] md:text-[10px]">
                         <ShopCountdown expiresAt={p.discountExpiresAt} />
                       </span>
                     )}
                   </div>
                 )}
-                <div className="absolute top-4 right-4 flex items-center gap-3 z-10">
+                <div className="absolute top-2 right-2 md:top-4 md:right-4 flex items-center gap-1 md:gap-3 z-10">
                   {item.isPopular && (
-                    <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 p-2 md:p-2.5 rounded-full shadow-lg shadow-amber-500/20" title="Populer">
-                      <PixelIcon name="fire" className="w-4 h-4 md:w-5 md:h-5 text-slate-950" />
+                     <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 p-1 md:p-2.5 rounded-full shadow-lg shadow-amber-500/20" title="Populer">
+                      <PixelIcon name="fire" className="w-2 h-2 md:w-5 md:h-5 text-slate-950" />
                     </div>
                   )}
                   <button
                     onClick={() => setSelectedInfo({ name: item.badge, description: p.description })}
-                    className="bg-blue-500/20 text-blue-400 p-2 md:p-2.5 rounded-full shadow-lg shadow-blue-500/10 hover:scale-110 hover:bg-blue-500/30 transition-all border border-blue-500/30"
+                    className="bg-blue-500/20 text-blue-400 p-1 md:p-2.5 rounded-full shadow-lg shadow-blue-500/10 hover:scale-110 hover:bg-blue-500/30 transition-all border border-blue-500/30"
                     title="Informasi Benefit"
                   >
-                    <PixelIcon name="article" className="w-4 h-4 md:w-5 md:h-5" />
+                    <PixelIcon name="article" className="w-3 h-3 md:w-5 md:h-5" />
                   </button>
                 </div>
                 {/* Icon */}
-                <div className={`w-14 h-14 rounded-full flex items-center justify-center mb-6 border ${item.bgClass}`}>
-                  <PixelIcon name={item.iconName} className="w-6 h-6" />
+                <div className={`w-8 h-8 md:w-14 md:h-14 rounded-full flex items-center justify-center mb-2 md:mb-6 border ${item.bgClass}`}>
+                  <PixelIcon name={item.iconName} className="w-4 h-4 md:w-6 md:h-6" />
                 </div>
                 
                 {/* Rank Name & Duration */}
-                <div className="mb-6">
-                  <h3 className="font-black text-3xl md:text-4xl text-white font-poppins tracking-wide">
+                <div className="mb-2 md:mb-6">
+                  <h3 className="font-black text-sm md:text-4xl text-white font-poppins tracking-wide truncate">
                     {item.badge}
                   </h3>
-                  <p className="text-gray-400 font-medium mt-1">{p.duration}</p>
+                  <p className="text-gray-400 font-medium mt-0.5 md:mt-1 text-[10px] md:text-base truncate">{p.duration}</p>
                 </div>
 
                 {/* Price */}
-                <div className="flex flex-col gap-4 mb-8 mt-auto">
-                  <div className="flex justify-between items-end border-b border-white/5 pb-4">
-                    <span className="text-gray-300 text-[14px] md:text-[15px] font-medium">
+                <div className="flex flex-col gap-1 md:gap-4 mb-3 md:mb-8 mt-auto">
+                  <div className="flex flex-col border-b border-white/5 pb-2 md:pb-4">
+                    <span className="text-gray-300 text-[9px] md:text-[15px] font-medium hidden md:block">
                       Harga
                     </span>
-                    <div className="flex flex-col items-end">
+                    <div className="flex flex-col items-start md:items-end">
                       {p.originalPrice && (
-                        <span className="text-xs text-rose-400 line-through">Rp {p.originalPrice}</span>
+                        <span className="text-[8px] md:text-xs text-rose-400 line-through">Rp {p.originalPrice}</span>
                       )}
-                      <span className="text-[#f2e28a] font-bold text-3xl">
+                      <span className="text-[#f2e28a] font-bold text-xs md:text-3xl">
                         {p.price}
                       </span>
                     </div>
@@ -789,9 +789,10 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
                 {/* Purchase Button */}
                 <button 
                   onClick={() => onAddToCart({ name: p.fullName || `${item.name} Rank (${p.duration})`, duration: p.duration, price: p.price, category: 'rank' })}
-                  className={`w-full font-bold py-3.5 rounded-2xl transition-all duration-300 ease-in-out text-[14px] md:text-[15px] active:scale-95 ${item.btnClass}`}
+                  className={`w-full font-bold py-1.5 md:py-3.5 rounded-lg md:rounded-2xl transition-all duration-300 ease-in-out text-[9px] md:text-[15px] active:scale-95 ${item.btnClass}`}
                 >
-                  TAMBAH KE KERANJANG
+                  <span className="md:hidden">BELI</span>
+                  <span className="hidden md:inline">TAMBAH KE KERANJANG</span>
                 </button>
               </div>
             ));
@@ -806,7 +807,7 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
         </div>
 
         {/* Grid Area for Keys */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 w-full mb-16">
+        <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 md:gap-6 w-full mb-16">
           {keysData.map((item) => {
             return (
               <div 
@@ -877,63 +878,70 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
         </div>
 
         {/* Grid Area for Others */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full mb-16">
+        <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 md:gap-6 w-full mb-16">
           {othersData.map((item) => {
             return (
               <div 
                 key={item.name} 
                 className="bg-[#0f1422] rounded-[1.5rem] p-6 flex flex-col relative overflow-hidden border border-white/5 shadow-xl transition-transform hover:-translate-y-1"
               >
+                className="bg-[#0f1422] rounded-xl md:rounded-[1.5rem] p-3 md:p-8 flex flex-col relative overflow-hidden border border-white/5 shadow-xl transition-transform hover:-translate-y-1"
+              >
                 {item.discount > 0 && (
-                  <div className="absolute top-4 left-4 bg-gradient-to-r from-red-600 to-rose-500 text-white px-2 py-1 rounded-full text-[10px] font-black flex items-center gap-1 shadow-lg shadow-red-500/20 z-10 border border-white/10">
-                    <PixelIcon name="tag" className="w-3 h-3" />
+                  <div className="absolute top-2 left-2 md:top-4 md:left-4 bg-gradient-to-r from-red-600 to-rose-500 text-white px-1.5 py-0.5 md:px-2 md:py-1 rounded-full text-[8px] md:text-xs font-black flex items-center gap-1 shadow-lg shadow-red-500/20 z-10 border border-white/10">
+                    <PixelIcon name="tag" className="w-2 h-2 md:w-3 md:h-3" />
                     -{item.discount}%
                     {item.discountExpiresAt && (
-                      <span className="ml-1 pl-1 border-l border-white/30 flex items-center gap-1 text-[9px]">
+                      <span className="hidden md:flex ml-1 pl-1 border-l border-white/30 items-center gap-1 text-[9px] md:text-[10px]">
                         <ShopCountdown expiresAt={item.discountExpiresAt} />
                       </span>
                     )}
                   </div>
                 )}
-                <div className="absolute top-4 right-4 flex items-center gap-3 z-10">
+                <div className="absolute top-2 right-2 md:top-4 md:right-4 flex items-center gap-1 md:gap-3 z-10">
                   {item.isPopular && (
-                    <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 p-2 md:p-2.5 rounded-full shadow-lg shadow-amber-500/20" title="Populer">
-                      <PixelIcon name="fire" className="w-4 h-4 md:w-5 md:h-5 text-slate-950" />
+                    <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 p-1 md:p-2.5 rounded-full shadow-lg shadow-amber-500/20" title="Populer">
+                      <PixelIcon name="fire" className="w-2 h-2 md:w-5 md:h-5 text-slate-950" />
                     </div>
                   )}
                   <button
                     onClick={() => setSelectedInfo({ name: item.badge || item.name, description: item.description })}
-                    className="bg-blue-500/20 text-blue-400 p-2 md:p-2.5 rounded-full shadow-lg shadow-blue-500/10 hover:scale-110 hover:bg-blue-500/30 transition-all border border-blue-500/30"
+                    className="bg-blue-500/20 text-blue-400 p-1 md:p-2.5 rounded-full shadow-lg shadow-blue-500/10 hover:scale-110 hover:bg-blue-500/30 transition-all border border-blue-500/30"
                     title="Informasi Benefit"
                   >
-                    <PixelIcon name="article" className="w-4 h-4 md:w-5 md:h-5" />
+                    <PixelIcon name="article" className="w-3 h-3 md:w-5 md:h-5" />
                   </button>
                 </div>
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-5 border ${item.bgClass}`}>
-                  <PixelIcon name={item.iconName} className="w-5 h-5" />
+                <div className={`w-8 h-8 md:w-14 md:h-14 rounded-full flex items-center justify-center mb-2 md:mb-6 border ${item.bgClass}`}>
+                  <PixelIcon name={item.iconName} className="w-4 h-4 md:w-6 md:h-6" />
                 </div>
-                <div className="mb-5">
-                  <h3 className="font-black text-xl md:text-2xl text-white font-poppins tracking-wide leading-tight">
+                <div className="mb-2 md:mb-6">
+                  <h3 className="font-black text-sm md:text-3xl text-white font-poppins tracking-wide truncate">
                     {item.badge}
                   </h3>
-                  <p className="text-gray-400 font-medium text-sm mt-1">{item.duration || item.benefit}</p>
+                  <p className="text-gray-400 font-medium mt-0.5 md:mt-1 text-[10px] md:text-[15px] truncate">{item.duration || item.benefit}</p>
                 </div>
-                <div className="flex flex-col gap-4 mb-6 mt-auto">
-                  <div className="flex justify-between items-end border-b border-white/5 pb-3">
-                    <span className="text-gray-300 text-sm font-medium">Harga</span>
-                    <div className="flex flex-col items-end">
+                <div className="flex flex-col gap-1 md:gap-4 mb-3 md:mb-8 mt-auto">
+                  <div className="flex flex-col border-b border-white/5 pb-2 md:pb-4">
+                    <span className="text-gray-300 text-[9px] md:text-[15px] font-medium hidden md:block">
+                      Harga
+                    </span>
+                    <div className="flex flex-col items-start md:items-end">
                       {item.originalPrice && (
-                        <span className="text-xs text-rose-400 line-through">Rp {item.originalPrice}</span>
+                        <span className="text-[8px] md:text-xs text-rose-400 line-through">Rp {item.originalPrice}</span>
                       )}
-                      <span className="text-[#f2e28a] font-bold text-2xl">{item.price}</span>
+                      <span className="text-[#f2e28a] font-bold text-xs md:text-3xl">
+                        {item.price}
+                      </span>
                     </div>
                   </div>
                 </div>
                 <button 
                   onClick={() => onAddToCart({ name: item.name, duration: item.duration || item.benefit, price: item.price, category: 'other' })}
-                  className={`w-full font-bold py-3 rounded-xl transition-all duration-300 ease-in-out text-sm active:scale-95 ${item.btnClass}`}
+                  className={`w-full font-bold py-1.5 md:py-3.5 rounded-lg md:rounded-2xl transition-all duration-300 ease-in-out text-[9px] md:text-[15px] active:scale-95 ${item.btnClass}`}
                 >
-                  TAMBAH KE KERANJANG
+                  <span className="md:hidden">BELI</span>
+                  <span className="hidden md:inline">TAMBAH KE KERANJANG</span>
                 </button>
               </div>
             );
@@ -950,58 +958,68 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
             </div>
 
             {/* Grid Area for Races */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
+            <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 md:gap-6 w-full">
               {racesData.map((item) => {
                 return (
                   <div 
                     key={item.name} 
-                    className="bg-[#0f1422] rounded-[1.5rem] p-6 flex flex-col relative overflow-hidden border border-white/5 shadow-xl transition-transform hover:-translate-y-1"
+                    className="bg-[#0f1422] rounded-xl md:rounded-[1.5rem] p-3 md:p-8 flex flex-col relative overflow-hidden border border-white/5 shadow-xl transition-transform hover:-translate-y-1"
                   >
                     {item.discount > 0 && (
-                      <div className="absolute top-4 left-4 bg-gradient-to-r from-red-600 to-rose-500 text-white px-2 py-1 rounded-full text-[10px] font-black flex items-center gap-1 shadow-lg shadow-red-500/20 z-10 border border-white/10">
-                        <PixelIcon name="tag" className="w-3 h-3" />
+                      <div className="absolute top-2 left-2 md:top-4 md:left-4 bg-gradient-to-r from-red-600 to-rose-500 text-white px-1.5 py-0.5 md:px-2 md:py-1 rounded-full text-[8px] md:text-xs font-black flex items-center gap-1 shadow-lg shadow-red-500/20 z-10 border border-white/10">
+                        <PixelIcon name="tag" className="w-2 h-2 md:w-3 md:h-3" />
                         -{item.discount}%
+                        {item.discountExpiresAt && (
+                          <span className="hidden md:flex ml-1 pl-1 border-l border-white/30 items-center gap-1 text-[9px] md:text-[10px]">
+                            <ShopCountdown expiresAt={item.discountExpiresAt} />
+                          </span>
+                        )}
                       </div>
                     )}
-                    <div className="absolute top-4 right-4 flex items-center gap-3 z-10">
+                    <div className="absolute top-2 right-2 md:top-4 md:right-4 flex items-center gap-1 md:gap-3 z-10">
                       {item.isPopular && (
-                        <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 p-2 md:p-2.5 rounded-full shadow-lg shadow-amber-500/20" title="Populer">
-                          <PixelIcon name="fire" className="w-4 h-4 md:w-5 md:h-5 text-slate-950" />
+                        <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 p-1 md:p-2.5 rounded-full shadow-lg shadow-amber-500/20" title="Populer">
+                          <PixelIcon name="fire" className="w-2 h-2 md:w-5 md:h-5 text-slate-950" />
                         </div>
                       )}
                       <button
                         onClick={() => setSelectedInfo({ name: item.badge || item.name, description: item.description })}
-                        className="bg-blue-500/20 text-blue-400 p-2 md:p-2.5 rounded-full shadow-lg shadow-blue-500/10 hover:scale-110 hover:bg-blue-500/30 transition-all border border-blue-500/30"
+                        className="bg-blue-500/20 text-blue-400 p-1 md:p-2.5 rounded-full shadow-lg shadow-blue-500/10 hover:scale-110 hover:bg-blue-500/30 transition-all border border-blue-500/30"
                         title="Informasi Benefit"
                       >
-                        <PixelIcon name="article" className="w-4 h-4 md:w-5 md:h-5" />
+                        <PixelIcon name="article" className="w-3 h-3 md:w-5 md:h-5" />
                       </button>
                     </div>
-                    <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-5 border ${item.bgClass}`}>
-                      <PixelIcon name={item.iconName} className="w-5 h-5" />
+                    <div className={`w-8 h-8 md:w-14 md:h-14 rounded-full flex items-center justify-center mb-2 md:mb-6 border ${item.bgClass}`}>
+                      <PixelIcon name={item.iconName} className="w-4 h-4 md:w-6 md:h-6" />
                     </div>
-                    <div className="mb-5">
-                      <h3 className="font-black text-xl md:text-2xl text-white font-poppins tracking-wide leading-tight">
+                    <div className="mb-2 md:mb-6">
+                      <h3 className="font-black text-sm md:text-3xl text-white font-poppins tracking-wide truncate">
                         {item.badge}
                       </h3>
-                      <p className="text-gray-400 font-medium text-sm mt-1">{item.duration}</p>
+                      <p className="text-gray-400 font-medium mt-0.5 md:mt-1 text-[10px] md:text-[15px] truncate">{item.duration}</p>
                     </div>
-                    <div className="flex flex-col gap-4 mb-6 mt-auto">
-                      <div className="flex justify-between items-end border-b border-white/5 pb-3">
-                        <span className="text-gray-300 text-sm font-medium">Harga</span>
-                        <div className="flex flex-col items-end">
+                    <div className="flex flex-col gap-1 md:gap-4 mb-3 md:mb-8 mt-auto">
+                      <div className="flex flex-col border-b border-white/5 pb-2 md:pb-4">
+                        <span className="text-gray-300 text-[9px] md:text-[15px] font-medium hidden md:block">
+                          Harga
+                        </span>
+                        <div className="flex flex-col items-start md:items-end">
                           {item.originalPrice && (
-                            <span className="text-xs text-rose-400 line-through">Rp {item.originalPrice}</span>
+                            <span className="text-[8px] md:text-xs text-rose-400 line-through">Rp {item.originalPrice}</span>
                           )}
-                          <span className="text-[#f2e28a] font-bold text-2xl">{item.price}</span>
+                          <span className="text-[#f2e28a] font-bold text-xs md:text-3xl">
+                            {item.price}
+                          </span>
                         </div>
                       </div>
                     </div>
                     <button 
-                      onClick={() => onAddToCart({ name: item.name, duration: item.duration, price: item.price, category: 'race' })}
-                      className={`w-full font-bold py-3 rounded-xl transition-all duration-300 ease-in-out text-sm active:scale-95 ${item.btnClass}`}
+                      onClick={() => onAddToCart({ name: item.name, price: item.price, duration: item.duration, category: 'race' })}
+                      className={`w-full font-bold py-1.5 md:py-3.5 rounded-lg md:rounded-2xl transition-all duration-300 ease-in-out text-[9px] md:text-[15px] active:scale-95 ${item.btnClass}`}
                     >
-                      TAMBAH KE KERANJANG
+                      <span className="md:hidden">BELI</span>
+                      <span className="hidden md:inline">TAMBAH KE KERANJANG</span>
                     </button>
                   </div>
                 );
