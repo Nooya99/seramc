@@ -22,10 +22,6 @@ export const metadata = {
   },
 };
 
-export const viewport = {
-  width: 1024,
-};
-
 export default function RootLayout({ children }) {
   return (
     <html lang="id" className={`scroll-smooth ${inter.variable} ${poppins.variable}`}>
