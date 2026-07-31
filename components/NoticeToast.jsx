@@ -7,8 +7,12 @@ export default function NoticeToast() {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => setShow(true), 1200);
-    return () => clearTimeout(timer);
+    const showTimer = setTimeout(() => setShow(true), 1200);
+    const hideTimer = setTimeout(() => setShow(false), 1200 + 5000); // 5 seconds after showing
+    return () => {
+      clearTimeout(showTimer);
+      clearTimeout(hideTimer);
+    };
   }, []);
 
   if (!show) return null;
