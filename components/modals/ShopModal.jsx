@@ -883,8 +883,6 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
             return (
               <div 
                 key={item.name} 
-                className="bg-[#0f1422] rounded-[1.5rem] p-6 flex flex-col relative overflow-hidden border border-white/5 shadow-xl transition-transform hover:-translate-y-1"
-              >
                 className="bg-[#0f1422] rounded-xl md:rounded-[1.5rem] p-3 md:p-8 flex flex-col relative overflow-hidden border border-white/5 shadow-xl transition-transform hover:-translate-y-1"
               >
                 {item.discount > 0 && (
