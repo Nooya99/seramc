@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 
 export async function POST(req) {
   try {
-    const { ign, message } = await req.json();
+    const { ign, message, edition } = await req.json();
 
     if (!message || message.trim() === '') {
       return NextResponse.json({ error: 'Message is required' }, { status: 400 });
@@ -13,6 +13,7 @@ export async function POST(req) {
     const feedback = await prisma.feedback.create({
       data: {
         ign: ign || null,
+        edition: edition || 'java',
         message: message.trim(),
       },
     });
