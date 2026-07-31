@@ -181,14 +181,14 @@ export default function CartModal({ isOpen, onClose, cart, onRemoveItem, onUpdat
             {/* Voucher Input */}
             <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
               <label className="block text-gray-300 text-sm font-bold mb-2">Kode Voucher <span className="text-gray-500 font-normal text-xs">(Opsional)</span></label>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <input 
                   type="text" 
                   value={voucherCode}
                   onChange={(e) => setVoucherCode(e.target.value.toUpperCase())}
                   placeholder="Masukkan kode voucher"
                   disabled={appliedVoucher !== null}
-                  className="flex-1 bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500/50 transition-all disabled:opacity-50"
+                  className="w-full sm:flex-1 bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500/50 transition-all disabled:opacity-50"
                 />
                 {appliedVoucher ? (
                   <button
@@ -197,7 +197,7 @@ export default function CartModal({ isOpen, onClose, cart, onRemoveItem, onUpdat
                       setAppliedVoucher(null);
                       setVoucherCode('');
                     }}
-                    className="px-4 py-2 rounded-xl bg-rose-500/20 text-rose-400 font-bold text-sm border border-rose-500/30 hover:bg-rose-500/30 transition-all"
+                    className="w-full sm:w-auto px-4 py-3 sm:py-2 rounded-xl bg-rose-500/20 text-rose-400 font-bold text-sm border border-rose-500/30 hover:bg-rose-500/30 transition-all"
                   >
                     Batal
                   </button>
@@ -206,7 +206,7 @@ export default function CartModal({ isOpen, onClose, cart, onRemoveItem, onUpdat
                     type="button"
                     onClick={handleApplyVoucher}
                     disabled={validatingVoucher || !voucherCode.trim()}
-                    className="px-4 py-2 rounded-xl bg-emerald-500/20 text-emerald-400 font-bold text-sm border border-emerald-500/30 hover:bg-emerald-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full sm:w-auto px-4 py-3 sm:py-2 rounded-xl bg-emerald-500/20 text-emerald-400 font-bold text-sm border border-emerald-500/30 hover:bg-emerald-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {validatingVoucher ? 'Cek...' : 'Pakai'}
                   </button>
