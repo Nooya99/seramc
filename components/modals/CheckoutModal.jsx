@@ -69,9 +69,9 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
   const handleCheckout = async (e, platform = 'whatsapp') => {
     e.preventDefault();
     
-    if (!ign || !whatsapp) {
+    if (!ign || (platform === 'whatsapp' && !whatsapp)) {
       setCheckoutStatus('error');
-      setCheckoutMessage('Mohon isi In-Game Name dan Nomor WhatsApp Anda.');
+      setCheckoutMessage(platform === 'whatsapp' ? 'Mohon isi In-Game Name dan Nomor WhatsApp Anda.' : 'Mohon isi In-Game Name Anda.');
       return;
     }
 
@@ -219,14 +219,15 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, cart = [], p
           </div>
 
           <div>
-            <label className="block text-gray-300 text-sm font-bold mb-2">Nomor WhatsApp</label>
+            <label className="block text-gray-300 text-sm font-bold mb-2">
+              Nomor WhatsApp <span className="text-gray-500 font-normal text-xs">(Opsional jika via Discord)</span>
+            </label>
             <input 
               type="tel" 
               value={whatsapp}
               onChange={(e) => setWhatsapp(e.target.value)}
               placeholder="Contoh: 085161516730"
               className="w-full neo-inset px-4 py-3 placeholder-gray-500 focus:outline-none focus:neo-glow transition-all"
-              required
             />
           </div>
 
