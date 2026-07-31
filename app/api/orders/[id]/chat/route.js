@@ -6,14 +6,14 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(request, { params }) {
   try {
-    const { orderId } = params;
+    const { id } = params;
     
-    if (!orderId) {
+    if (!id) {
       return NextResponse.json({ error: 'Order ID is required' }, { status: 400 });
     }
 
     const chats = await prisma.orderChat.findMany({
-      where: { orderId },
+      where: { orderId: id },
       orderBy: { createdAt: 'asc' },
     });
 
@@ -26,9 +26,9 @@ export async function GET(request, { params }) {
 
 export async function POST(request, { params }) {
   try {
-    const { orderId } = params;
+    const { id } = params;
     
-    if (!orderId) {
+    if (!id) {
       return NextResponse.json({ error: 'Order ID is required' }, { status: 400 });
     }
 
@@ -41,7 +41,7 @@ export async function POST(request, { params }) {
 
     const newChat = await prisma.orderChat.create({
       data: {
-        orderId,
+        orderId: id,
         sender,
         message,
       }
