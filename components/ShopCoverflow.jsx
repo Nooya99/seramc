@@ -301,6 +301,19 @@ export default function ShopCoverflow({ onOpenModal }) {
           <PixelIcon name="chevron-right" className="w-12 h-12 md:w-16 md:h-16" />
         </button>
       </div>
+
+      <div className="mt-8 md:mt-12 flex flex-col items-center text-center relative z-10">
+        <p className="text-gray-400 mb-4 text-sm md:text-base px-4">
+          Terdapat lebih banyak paket, <span className="text-[#f2e28a]">Keys</span>, dan <span className="text-blue-400">Coins</span> yang tidak tertampil di sini.
+        </p>
+        <button 
+          onClick={() => onOpenModal('shop')}
+          className="bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/40 text-cyan-300 font-bold px-8 md:px-10 py-3.5 md:py-4 rounded-full transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 flex items-center gap-2 shadow-[0_0_15px_rgba(34,211,238,0.15)] hover:shadow-[0_0_25px_rgba(34,211,238,0.3)]"
+        >
+          <PixelIcon name="shopping-cart" className="w-5 h-5" />
+          Lihat Selengkapnya di SHOP
+        </button>
+      </div>
     </section>
   );
 }
