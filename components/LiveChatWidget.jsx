@@ -231,9 +231,19 @@ export default function LiveChatWidget({ orderId, onClose }) {
       {/* Input Area */}
       <form onSubmit={sendMessage} className="px-4 py-3 bg-[#0B0B0B] border-t border-[#1F1F1F] flex items-center gap-3 relative z-10">
         <div className="flex-1 bg-[#1F1F1F] rounded-full flex items-center px-4 py-2 border border-[#2A2A2A]">
-          <button type="button" className="text-gray-400 hover:text-white transition-colors mr-2">
-            <Icon icon="lucide:paperclip" className="w-4 h-4" />
-          </button>
+          <label className="text-gray-400 hover:text-white transition-colors mr-2 cursor-pointer" title="Kirim Bukti Pembayaran">
+            <Icon icon="lucide:image" className="w-4 h-4" />
+            <input 
+              type="file" 
+              accept="image/*" 
+              className="hidden" 
+              onChange={(e) => {
+                if (e.target.files && e.target.files.length > 0) {
+                  alert('Fitur unggah gambar sedang dalam tahap pengembangan.');
+                }
+              }} 
+            />
+          </label>
           <input 
             type="text" 
             value={message}
@@ -250,10 +260,8 @@ export default function LiveChatWidget({ orderId, onClose }) {
         >
           {sending ? (
             <Icon icon="lucide:loader-2" className="w-4 h-4 animate-spin" />
-          ) : message.trim() ? (
-            <Icon icon="lucide:send" className="w-4 h-4" />
           ) : (
-            <Icon icon="lucide:mic" className="w-4 h-4" />
+            <Icon icon="lucide:send" className="w-4 h-4" />
           )}
         </button>
       </form>
