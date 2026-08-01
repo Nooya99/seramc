@@ -67,6 +67,7 @@ export default function PlayerLoginModal({ isOpen, onClose, onSave, playerContex
     try {
       localStorage.removeItem('sera_player_context');
       localStorage.removeItem('sera_player_ign');
+      localStorage.removeItem('sera_active_chat_order_id');
     } catch (err) {
       console.error('Failed to clear localStorage:', err);
     }

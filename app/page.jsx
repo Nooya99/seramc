@@ -47,10 +47,22 @@ export default function Home() {
           setPlayerContext(parsed);
         }
       }
+
+      const savedOrderId = localStorage.getItem('sera_active_chat_order_id');
+      if (savedOrderId) {
+        setActiveChatOrderId(savedOrderId);
+      }
     } catch (err) {
-      console.error('Error restoring player context from localStorage:', err);
+      console.error('Error restoring from localStorage:', err);
     }
   }, []);
+
+  // Save active chat order id to localStorage when it changes
+  useEffect(() => {
+    if (activeChatOrderId) {
+      localStorage.setItem('sera_active_chat_order_id', activeChatOrderId);
+    }
+  }, [activeChatOrderId]);
 
   const addToast = (title, description, type = 'success') => {
     const id = Date.now() + Math.random();
@@ -241,6 +253,10 @@ export default function Home() {
         }}
         onSave={(data) => {
           setPlayerContext(data);
+          if (!data) {
+            setActiveChatOrderId(null);
+            localStorage.removeItem('sera_active_chat_order_id');
+          }
           setIsLoginOpen(false);
           if (pendingModal === 'checkout' && data) {
             setActiveModal('checkout');
