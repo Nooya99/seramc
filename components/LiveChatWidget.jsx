@@ -209,13 +209,13 @@ export default function LiveChatWidget({ orderId, onClose }) {
                 <div className="flex justify-start mt-1">
                   <div className="bg-[#2a374a] p-2 rounded-3xl rounded-tl-sm max-w-[85%] shadow-sm">
                     <img 
-                      src="/qris.jpg" 
+                      src="/qris_seramc.jpg" 
                       alt="QRIS Payment" 
                       className="w-full max-w-[200px] rounded-2xl cursor-pointer hover:opacity-90 transition-opacity" 
                       onClick={() => setIsZoomed(true)}
                     />
                     <a 
-                      href="/qris.jpg" 
+                      href="/qris_seramc.jpg" 
                       download="QRIS_SERAMC.jpg"
                       className="mt-2 w-full flex items-center justify-center gap-2 bg-[#1F1F1F] hover:bg-[#333333] text-white text-xs py-2 rounded-xl transition-colors"
                     >
