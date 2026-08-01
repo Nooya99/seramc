@@ -189,21 +189,28 @@ export default function LiveChatWidget({ orderId, onClose }) {
 
             {/* Initial System Message */}
             {order && (
-              <div className="flex justify-start">
-                <div className="bg-[#2a374a] text-[#E0E0E0] px-4 py-3 rounded-3xl rounded-tl-sm max-w-[85%] text-[13px] shadow-sm leading-relaxed">
-                  Halo <b>{order.user.ign}</b>! Pesanan Anda telah kami terima dengan rincian:
-                  <ul className="mt-2 mb-3 list-disc pl-4 text-gray-300">
-                    {order.items && order.items.map((item, idx) => (
-                      <li key={idx}>
-                        {item.product?.name || 'Item'} (x{item.quantity}) - {formatPrice(item.price * item.quantity)}
-                      </li>
-                    ))}
-                  </ul>
-                  Silakan lakukan pembayaran sebesar <b className="text-white">{formatPrice(order.totalAmount)}</b> melalui metode QRIS.
-                  <br/><br/>
-                  Kirimkan bukti pembayarannya di obrolan ini ya!
+              <>
+                <div className="flex justify-start">
+                  <div className="bg-[#2a374a] text-[#E0E0E0] px-4 py-3 rounded-3xl rounded-tl-sm max-w-[85%] text-[13px] shadow-sm leading-relaxed">
+                    Halo <b>{order.user.ign}</b>! Pesanan Anda telah kami terima dengan rincian:
+                    <ul className="mt-2 mb-3 list-disc pl-4 text-gray-300">
+                      {order.items && order.items.map((item, idx) => (
+                        <li key={idx}>
+                          {item.product?.name || 'Item'} (x{item.quantity}) - {formatPrice(item.price * item.quantity)}
+                        </li>
+                      ))}
+                    </ul>
+                    Silakan lakukan pembayaran sebesar <b className="text-white">{formatPrice(order.totalAmount)}</b> melalui metode QRIS.
+                    <br/><br/>
+                    Kirimkan bukti pembayarannya di obrolan ini ya!
+                  </div>
                 </div>
-              </div>
+                <div className="flex justify-start mt-1">
+                  <div className="bg-[#2a374a] p-2 rounded-3xl rounded-tl-sm max-w-[85%] shadow-sm">
+                    <img src="/qris.jpg" alt="QRIS Payment" className="w-full max-w-[200px] rounded-2xl" />
+                  </div>
+                </div>
+              </>
             )}
 
             {/* Chat Messages */}
