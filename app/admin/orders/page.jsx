@@ -28,6 +28,22 @@ export default function AdminOrdersPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [readChats, setReadChats] = useState({});
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('admin_read_chats');
+      if (saved) setReadChats(JSON.parse(saved));
+    } catch(e) {}
+  }, []);
+
+  const markChatAsRead = (orderId, totalChats) => {
+    setReadChats(prev => {
+      const newReadChats = { ...prev, [orderId]: totalChats };
+      localStorage.setItem('admin_read_chats', JSON.stringify(newReadChats));
+      return newReadChats;
+    });
+  };
 
   // Multi-select & Batch action state (OFF by default)
   const [selectMode, setSelectMode] = useState(false);
@@ -53,6 +69,19 @@ export default function AdminOrdersPage() {
   useEffect(() => {
     fetchOrders();
   }, []);
+
+  // When an order is selected, or its chats update while it's selected, mark it as read
+  useEffect(() => {
+    if (selectedOrder) {
+      const updatedOrder = orders.find(o => o.id === selectedOrder.id) || selectedOrder;
+      if (updatedOrder.chats && updatedOrder.chats.length > 0) {
+        const currentRead = readChats[updatedOrder.id] || 0;
+        if (currentRead !== updatedOrder.chats.length) {
+          markChatAsRead(updatedOrder.id, updatedOrder.chats.length);
+        }
+      }
+    }
+  }, [selectedOrder, orders, readChats]);
 
   const fetchOrders = async () => {
     setLoading(true);
@@ -481,13 +510,20 @@ export default function AdminOrdersPage() {
 
 
                       {/* Notification Badge */}
-                      {order.chats && order.chats.length > 0 ? (
-                        <div className="flex items-center justify-center w-12 h-12 bg-emerald-500 text-white font-bold text-lg rounded-full shadow-lg shadow-emerald-500/30">
-                          {order.chats.length}
-                        </div>
-                      ) : (
-                        <div className="w-12 h-12 opacity-0" />
-                      )}
+                      {(() => {
+                        const totalChats = order.chats ? order.chats.length : 0;
+                        const readCount = readChats[order.id] || 0;
+                        const unreadCount = totalChats - readCount;
+                        
+                        if (unreadCount > 0) {
+                          return (
+                            <div className="flex items-center justify-center w-12 h-12 bg-emerald-500 text-white font-bold text-lg rounded-full shadow-lg shadow-emerald-500/30">
+                              {unreadCount}
+                            </div>
+                          );
+                        }
+                        return <div className="w-12 h-12 opacity-0" />;
+                      })()}
                     </div>
                   </div>
                 );
