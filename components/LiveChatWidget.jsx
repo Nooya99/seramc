@@ -214,6 +214,14 @@ export default function LiveChatWidget({ orderId, onClose }) {
                       className="w-full max-w-[200px] rounded-2xl cursor-pointer hover:opacity-90 transition-opacity" 
                       onClick={() => setIsZoomed(true)}
                     />
+                    <a 
+                      href="/qris.jpg" 
+                      download="QRIS_SERAMC.jpg"
+                      className="mt-2 w-full flex items-center justify-center gap-2 bg-[#1F1F1F] hover:bg-[#333333] text-white text-xs py-2 rounded-xl transition-colors"
+                    >
+                      <Icon icon="lucide:download" className="w-3 h-3" />
+                      Simpan QRIS
+                    </a>
                   </div>
                 </div>
               </>
@@ -300,7 +308,23 @@ export default function LiveChatWidget({ orderId, onClose }) {
           onClick={() => setIsZoomed(false)}
         >
           <img src="/qris.jpg" alt="QRIS Zoom" className="w-full rounded-2xl max-h-[80%]" />
-          <p className="text-white text-sm font-medium mt-4 bg-black/50 px-4 py-2 rounded-full">Tap di mana saja untuk menutup</p>
+          
+          <div className="flex gap-3 mt-4" onClick={(e) => e.stopPropagation()}>
+            <a 
+              href="/qris.jpg" 
+              download="QRIS_SERAMC.jpg"
+              className="flex items-center gap-2 bg-[#f2e28a] hover:bg-[#d1c272] text-[#0b1121] px-4 py-2 rounded-full font-medium transition-colors"
+            >
+              <Icon icon="lucide:download" className="w-4 h-4" />
+              Download
+            </a>
+            <button 
+              onClick={() => setIsZoomed(false)}
+              className="bg-black/50 text-white px-4 py-2 rounded-full font-medium"
+            >
+              Tutup
+            </button>
+          </div>
         </div>
       )}
     </div>
