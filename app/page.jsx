@@ -281,6 +281,11 @@ export default function Home() {
         ))}
       </div>
 
+      <LiveChatWidget 
+        orderId={activeChatOrderId} 
+        onClose={() => setActiveChatOrderId(null)} 
+      />
+
       <style jsx>{`
         @keyframes slideInRight {
           from { transform: translateX(100%); opacity: 0; }
