@@ -299,7 +299,10 @@ export default function Home() {
 
       <LiveChatWidget 
         orderId={activeChatOrderId} 
-        onClose={() => setActiveChatOrderId(null)} 
+        onClose={() => {
+          setActiveChatOrderId(null);
+          localStorage.removeItem('sera_active_chat_order_id');
+        }} 
       />
 
       <style jsx>{`

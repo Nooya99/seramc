@@ -9,6 +9,7 @@ export default function LiveChatWidget({ orderId, onClose }) {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
+  const [showEndChatModal, setShowEndChatModal] = useState(false);
   const [zoomedImage, setZoomedImage] = useState(null);
   const [currentTime, setCurrentTime] = useState('');
 
@@ -140,6 +141,13 @@ export default function LiveChatWidget({ orderId, onClose }) {
           </div>
         </div>
         <div className="flex items-center gap-3">
+          <button 
+            onClick={() => setShowEndChatModal(true)}
+            className="w-8 h-8 flex items-center justify-center text-rose-400 hover:text-white hover:bg-rose-500 bg-[#1a2333] rounded-full transition-colors"
+            title="Akhiri Obrolan"
+          >
+            <Icon icon="lucide:x" className="w-4 h-4" />
+          </button>
           <button 
             onClick={() => setIsMinimized(true)}
             className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white bg-[#1a2333] rounded-full transition-colors"
@@ -367,6 +375,39 @@ export default function LiveChatWidget({ orderId, onClose }) {
           </div>
         </div>
       )}
+
+      {/* End Chat Confirmation Modal */}
+      {showEndChatModal && (
+        <div className="absolute inset-0 z-[10000] bg-black/80 backdrop-blur-sm flex items-center justify-center p-6 animate-in fade-in duration-200">
+          <div className="bg-[#1a2333] rounded-2xl w-full max-w-[280px] p-6 text-center border border-[#2a374a] shadow-2xl scale-in-center">
+            <div className="w-14 h-14 bg-rose-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-rose-500/20">
+              <Icon icon="lucide:alert-triangle" className="w-7 h-7 text-rose-400" />
+            </div>
+            <h3 className="text-white font-bold text-lg mb-2 font-poppins">Akhiri Obrolan?</h3>
+            <p className="text-gray-400 text-xs mb-6 leading-relaxed">
+              Apakah Anda yakin ingin mengakhiri percakapan ini? Riwayat obrolan akan dihapus dari layar Anda.
+            </p>
+            <div className="flex gap-3">
+              <button 
+                onClick={() => setShowEndChatModal(false)}
+                className="flex-1 bg-[#2a374a] hover:bg-[#324158] text-white text-xs font-bold py-2.5 rounded-xl transition-colors"
+              >
+                Tidak
+              </button>
+              <button 
+                onClick={() => {
+                  setShowEndChatModal(false);
+                  if (onClose) onClose();
+                }}
+                className="flex-1 bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold py-2.5 rounded-xl transition-colors shadow-[0_0_15px_rgba(244,63,94,0.3)]"
+              >
+                Ya, Akhiri
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
