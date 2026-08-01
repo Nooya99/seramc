@@ -231,7 +231,7 @@ export default function AdminOrdersPage() {
   const allSelected = filteredOrders.length > 0 && selectedIds.length === filteredOrders.length;
 
   return (
-    <div className="space-y-8 pb-24 relative">
+    <div className="flex flex-col h-[calc(100vh-96px)] md:h-[calc(100vh-48px)] lg:h-[calc(100vh-80px)] space-y-4 sm:space-y-6 lg:space-y-8 relative">
       {/* Toast & Confirmation Modal */}
       <Toast toast={toast} onClose={() => setToast(null)} />
       <ConfirmModal
@@ -245,7 +245,7 @@ export default function AdminOrdersPage() {
       />
 
       {/* Header Banner */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-cyan-950/40 via-blue-950/20 to-slate-900/60 p-6 md:p-8 rounded-3xl border border-cyan-500/20 backdrop-blur-xl relative overflow-hidden">
+      <div className="shrink-0 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-cyan-950/40 via-blue-950/20 to-slate-900/60 p-6 md:p-8 rounded-3xl border border-cyan-500/20 backdrop-blur-xl relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl -z-10 pointer-events-none" />
         <div>
           <div className="flex items-center gap-2 mb-2">
@@ -273,7 +273,7 @@ export default function AdminOrdersPage() {
       </div>
 
       {/* Metric Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div className="shrink-0 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {/* Metric 1: Total Revenue */}
         <div className="bg-[#0b101d]/80 border border-slate-800 p-6 rounded-2xl relative overflow-hidden group hover:border-emerald-500/40 transition-all duration-300">
           <div className="flex justify-between items-start mb-4">
@@ -359,9 +359,9 @@ export default function AdminOrdersPage() {
       </div>
 
       {/* Main Table & Filters */}
-      <div className="bg-[#0b101d]/90 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl backdrop-blur-xl">
+      <div className="flex-1 min-h-0 bg-[#0b101d]/90 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl backdrop-blur-xl flex flex-col">
         {/* Table Toolbar */}
-        <div className="p-6 border-b border-slate-800/80 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+        <div className="shrink-0 p-6 border-b border-slate-800/80 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <h2 className="text-lg font-bold text-white tracking-wide">Daftar Transaksi</h2>
             <span className="px-2.5 py-0.5 text-xs font-bold rounded-full bg-slate-800 text-slate-300 border border-slate-700">
@@ -401,7 +401,7 @@ export default function AdminOrdersPage() {
         </div>
 
         {/* Table Content */}
-        <div className="overflow-x-auto">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar p-4 md:p-6">
           {loading ? (
             <div className="p-16 text-center text-slate-400 space-y-3">
               <RefreshCw className="w-8 h-8 animate-spin text-cyan-400 mx-auto" />
