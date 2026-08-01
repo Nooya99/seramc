@@ -478,24 +478,7 @@ export default function AdminOrdersPage() {
 
                     {/* Right Side (Status & Notif) */}
                     <div className="flex items-center gap-4 shrink-0">
-                      {/* Status */}
-                      <div onClick={(e) => e.stopPropagation()}>
-                        <select
-                          value={order.status}
-                          onChange={(e) => handleUpdateStatus(order.id, e.target.value)}
-                          className={`text-xs font-bold rounded-xl px-3 py-1.5 border focus:outline-none transition-all cursor-pointer ${
-                            order.status === 'PAID'
-                              ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20'
-                              : order.status === 'PENDING'
-                              ? 'bg-amber-500/10 text-amber-400 border-amber-500/30 hover:bg-amber-500/20'
-                              : 'bg-rose-500/10 text-rose-400 border-rose-500/30 hover:bg-rose-500/20'
-                          }`}
-                        >
-                          <option value="PENDING" className="bg-slate-900 text-amber-400">PENDING</option>
-                          <option value="PAID" className="bg-slate-900 text-emerald-400">PAID</option>
-                          <option value="CANCELLED" className="bg-slate-900 text-rose-400">CANCELLED</option>
-                        </select>
-                      </div>
+
 
                       {/* Notification Badge */}
                       {order.chats && order.chats.length > 0 ? (
@@ -578,13 +561,30 @@ export default function AdminOrdersPage() {
                   </p>
                 </div>
               </div>
-              <button 
-                onClick={() => setSelectedOrder(null)}
-                className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white bg-[#0b1121] rounded-full transition-colors"
-                title="Tutup"
-              >
-                ✕
-              </button>
+              <div className="flex items-center gap-3">
+                <select
+                  value={selectedOrder.status}
+                  onChange={(e) => handleUpdateStatus(selectedOrder.id, e.target.value)}
+                  className={`text-xs font-bold rounded-xl px-3 py-1.5 border focus:outline-none transition-all cursor-pointer ${
+                    selectedOrder.status === 'PAID'
+                      ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20'
+                      : selectedOrder.status === 'PENDING'
+                      ? 'bg-amber-500/10 text-amber-400 border-amber-500/30 hover:bg-amber-500/20'
+                      : 'bg-rose-500/10 text-rose-400 border-rose-500/30 hover:bg-rose-500/20'
+                  }`}
+                >
+                  <option value="PENDING" className="bg-slate-900 text-amber-400">PENDING</option>
+                  <option value="PAID" className="bg-slate-900 text-emerald-400">PAID</option>
+                  <option value="CANCELLED" className="bg-slate-900 text-rose-400">CANCELLED</option>
+                </select>
+                <button 
+                  onClick={() => setSelectedOrder(null)}
+                  className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white bg-[#0b1121] rounded-full transition-colors"
+                  title="Tutup"
+                >
+                  ✕
+                </button>
+              </div>
             </div>
 
             {/* Chat Content */}
