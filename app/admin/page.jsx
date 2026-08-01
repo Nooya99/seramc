@@ -385,150 +385,129 @@ export default function AdminDashboard() {
               <p className="text-xs text-slate-500">Coba ubah kata kunci pencarian atau filter status.</p>
             </div>
           ) : (
-            <table className="w-full text-left border-collapse min-w-[900px]">
-              <thead>
-                <tr className="bg-slate-900/60 text-slate-400 text-xs font-bold uppercase tracking-wider border-b border-slate-800">
-                  {selectMode && (
-                    <th className="p-4 pl-6 w-12">
-                      <button onClick={toggleSelectAll} className="flex items-center">
-                        {allSelected ? (
-                          <CheckSquare className="w-5 h-5 text-cyan-400" />
-                        ) : (
-                          <Square className="w-5 h-5 text-slate-600" />
-                        )}
-                      </button>
-                    </th>
-                  )}
-                  <th className={`p-4 ${selectMode ? '' : 'pl-6'}`}>Tanggal</th>
-                  <th className="p-4">Player</th>
-                  <th className="p-4">WhatsApp</th>
-                  <th className="p-4">Riwayat Chat</th>
-                  <th className="p-4">Status</th>
-                  <th className="p-4 text-center">Aksi</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800/60 text-sm">
-                {filteredOrders.map((order) => {
-                  const isSelected = selectedIds.includes(order.id);
-                  return (
-                    <tr 
-                      key={order.id} 
-                      onClick={() => {
-                        if (selectMode) toggleSelect(order.id);
-                      }}
-                      className={`hover:bg-slate-800/30 transition-colors group ${
-                        selectMode ? 'cursor-pointer' : ''
-                      } ${isSelected ? 'bg-cyan-950/30' : ''}`}
-                    >
-                      {selectMode && (
-                        <td className="p-4 pl-6" onClick={(e) => e.stopPropagation()}>
-                          <button onClick={() => toggleSelect(order.id)}>
-                            {isSelected ? (
-                              <CheckSquare className="w-5 h-5 text-cyan-400" />
-                            ) : (
-                              <Square className="w-5 h-5 text-slate-600" />
-                            )}
-                          </button>
-                        </td>
+            <div className="flex flex-col gap-3 w-full max-w-4xl mx-auto">
+              {selectMode && (
+                <div className="flex items-center justify-between p-3 bg-slate-900/60 border border-slate-800 rounded-2xl mb-2">
+                  <div className="flex items-center gap-3">
+                    <button onClick={toggleSelectAll} className="p-1">
+                      {allSelected ? (
+                        <CheckSquare className="w-5 h-5 text-cyan-400" />
+                      ) : (
+                        <Square className="w-5 h-5 text-slate-600" />
                       )}
+                    </button>
+                    <span className="text-sm font-bold text-slate-300">Pilih Semua</span>
+                  </div>
+                </div>
+              )}
+              {filteredOrders.map((order) => {
+                const isSelected = selectedIds.includes(order.id);
+                // Get latest chat if available
+                const latestChat = order.chats && order.chats.length > 0 
+                  ? [...order.chats].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0] 
+                  : null;
 
-                      <td className={`p-4 font-mono text-xs ${selectMode ? '' : 'pl-6'}`}>
-                        <p className="text-slate-200 font-semibold">
-                          {new Date(order.createdAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}
-                        </p>
-                        <p className="text-slate-400 text-[11px] font-normal truncate max-w-[120px]">
-                          ID: #{order.id.slice(0, 8)}
-                        </p>
-                      </td>
-
-                      <td className="p-4">
-                        <div className="flex items-center gap-2">
-                          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 flex items-center justify-center font-bold text-cyan-300 text-xs">
-                            {(order.user?.ign || 'P')[0].toUpperCase()}
-                          </div>
-                          <span className="font-bold text-white group-hover:text-cyan-300 transition-colors">
-                            {order.user?.ign || 'Anonim'}
-                          </span>
-                        </div>
-                      </td>
-
-                      <td className="p-4" onClick={(e) => e.stopPropagation()}>
-                        {order.user?.whatsapp ? (
-                          <a
-                            href={`https://wa.me/${order.user.whatsapp.replace(/[^0-9]/g, '')}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-lg hover:bg-emerald-500/20 transition-colors font-medium"
-                          >
-                            <MessageCircle className="w-3.5 h-3.5" />
-                            {order.user.whatsapp}
-                          </a>
-                        ) : (
-                          <span className="text-slate-500 text-xs">-</span>
-                        )}
-                      </td>
-
-                      <td className="p-4 max-w-[280px]">
-                        <div className="space-y-1">
-                          {(order.chats || []).length > 0 ? (
-                            <span className="text-xs text-slate-300 flex items-center gap-2">
-                              <MessageCircle className="w-3.5 h-3.5 text-cyan-400" />
-                              Ada {(order.chats || []).length} pesan. Klik untuk melihat riwayat chat dan bukti pembayaran.
-                            </span>
+                return (
+                  <div 
+                    key={order.id} 
+                    onClick={() => {
+                      if (selectMode) {
+                        toggleSelect(order.id);
+                      } else {
+                        setSelectedOrder(order);
+                      }
+                    }}
+                    className={`relative flex items-center p-4 rounded-[1.5rem] cursor-pointer transition-all ${
+                      isSelected 
+                        ? 'bg-cyan-950/40 border border-cyan-500/50 shadow-lg shadow-cyan-900/20' 
+                        : 'bg-slate-900/80 border border-slate-800/80 hover:bg-slate-800/80 hover:border-slate-700/80'
+                    }`}
+                  >
+                    {/* Bulk Delete Checkbox */}
+                    {selectMode && (
+                      <div className="mr-4" onClick={(e) => e.stopPropagation()}>
+                        <button onClick={() => toggleSelect(order.id)}>
+                          {isSelected ? (
+                            <CheckSquare className="w-6 h-6 text-cyan-400" />
                           ) : (
-                            <span className="text-xs text-slate-500 italic flex items-center gap-2">
-                              <MessageCircle className="w-3.5 h-3.5 opacity-50" />
-                              Belum ada pesan
-                            </span>
+                            <Square className="w-6 h-6 text-slate-600" />
                           )}
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Avatar */}
+                    <img 
+                      src={`https://minotar.net/helm/${order.user?.ign || 'steve'}/100.png`} 
+                      alt="Avatar"
+                      className="w-12 h-12 rounded-full border border-slate-700 object-cover mr-4 shrink-0"
+                    />
+
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-center mb-0.5">
+                        <h4 className="font-bold text-slate-200 text-sm truncate pr-2 flex items-center gap-2">
+                          {order.user?.ign || 'Anonim'}
+                          {order.user?.whatsapp && (
+                            <a
+                              href={`https://wa.me/${order.user.whatsapp.replace(/[^0-9]/g, '')}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={(e) => e.stopPropagation()}
+                              className="inline-flex items-center gap-1 text-[10px] text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded-md hover:bg-emerald-500/20 transition-colors font-medium"
+                              title="Hubungi WA"
+                            >
+                              <MessageCircle className="w-3 h-3" />
+                            </a>
+                          )}
+                        </h4>
+                        <span className="text-[11px] text-slate-500 font-medium shrink-0">
+                          {latestChat 
+                            ? new Date(latestChat.createdAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+                            : new Date(order.createdAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' })
+                          }
+                        </span>
+                      </div>
+                      
+                      <div className="flex justify-between items-end gap-4">
+                        <div className="text-xs text-slate-400 truncate max-w-full">
+                          {latestChat 
+                            ? (latestChat.message.startsWith('[IMAGE_BASE64]') ? '📷 Mengirim foto bukti pembayaran' : latestChat.message)
+                            : <span className="italic text-slate-500">Belum ada chat.</span>}
                         </div>
-                      </td>
-
-                      <td className="p-4" onClick={(e) => e.stopPropagation()}>
-                        <select
-                          value={order.status}
-                          onChange={(e) => handleUpdateStatus(order.id, e.target.value)}
-                          className={`text-xs font-bold rounded-xl px-3 py-1.5 border focus:outline-none transition-all cursor-pointer ${
-                            order.status === 'PAID'
-                              ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20'
-                              : order.status === 'PENDING'
-                              ? 'bg-amber-500/10 text-amber-400 border-amber-500/30 hover:bg-amber-500/20'
-                              : 'bg-rose-500/10 text-rose-400 border-rose-500/30 hover:bg-rose-500/20'
-                          }`}
-                        >
-                          <option value="PENDING" className="bg-slate-900 text-amber-400">PENDING</option>
-                          <option value="PAID" className="bg-slate-900 text-emerald-400">PAID</option>
-                          <option value="CANCELLED" className="bg-slate-900 text-rose-400">CANCELLED</option>
-                        </select>
-                      </td>
-
-                      <td className="p-4 pr-6 text-right" onClick={(e) => e.stopPropagation()}>
-                        <div className="flex items-center justify-end gap-2">
-                          <button
-                            onClick={() => setSelectedOrder(order)}
-                            className="p-2 rounded-xl text-slate-300 hover:text-cyan-300 hover:bg-cyan-500/10 border border-slate-700/60 hover:border-cyan-500/30 transition-all"
-                            title="Lihat Detail Pesanan"
+                        
+                        {/* Status Label & Actions */}
+                        <div className="flex items-center gap-2 shrink-0" onClick={(e) => e.stopPropagation()}>
+                          <select
+                            value={order.status}
+                            onChange={(e) => handleUpdateStatus(order.id, e.target.value)}
+                            className={`text-[10px] font-bold rounded-full px-2 py-1 border focus:outline-none transition-all cursor-pointer ${
+                              order.status === 'PAID'
+                                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20'
+                                : order.status === 'PENDING'
+                                ? 'bg-amber-500/10 text-amber-400 border-amber-500/30 hover:bg-amber-500/20'
+                                : 'bg-rose-500/10 text-rose-400 border-rose-500/30 hover:bg-rose-500/20'
+                            }`}
                           >
-                            <Eye className="w-4 h-4" />
-                          </button>
+                            <option value="PENDING" className="bg-slate-900 text-amber-400">PENDING</option>
+                            <option value="PAID" className="bg-slate-900 text-emerald-400">PAID</option>
+                            <option value="CANCELLED" className="bg-slate-900 text-rose-400">CANCELLED</option>
+                          </select>
+                          
                           <button
                             onClick={() => handleTrashClick(order.id)}
-                            className={`p-2 rounded-xl transition-all ${
-                              isSelected 
-                                ? 'bg-rose-600 text-white' 
-                                : 'text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 border border-slate-700/60 hover:border-rose-500/30'
-                            }`}
-                            title="Klik untuk memilih & hapus pesanan"
+                            className="p-1.5 rounded-full text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+                            title="Hapus"
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="w-3.5 h-3.5" />
                           </button>
                         </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           )}
         </div>
       </div>
