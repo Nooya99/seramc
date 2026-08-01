@@ -553,96 +553,41 @@ export default function AdminOrdersPage() {
         </div>
       )}
 
-      {/* Modal Detail Pesanan */}
+      {/* Phone Chat Modal */}
       {selectedOrder && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-[#0b101d] border border-slate-800 rounded-3xl max-w-xl w-full p-6 sm:p-8 space-y-6 shadow-2xl relative overflow-y-auto max-h-[90vh] animate-in fade-in zoom-in duration-200">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
-              <div>
-                <h3 className="text-xl font-bold text-white">Detail Pesanan #{selectedOrder.id.slice(0, 8)}</h3>
-                <p className="text-xs text-slate-400">
-                  {new Date(selectedOrder.createdAt).toLocaleString('id-ID')}
-                </p>
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="w-[380px] h-[750px] max-h-[90vh] bg-black rounded-[50px] border-[14px] border-[#1a1a2e] relative overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 flex flex-col">
+            {/* iPhone Notch */}
+            <div className="absolute top-0 inset-x-0 h-6 bg-[#1a1a2e] rounded-b-3xl w-40 mx-auto z-20 flex justify-center items-end pb-1">
+              <div className="w-12 h-1.5 bg-black/20 rounded-full" />
+            </div>
+
+            {/* Header */}
+            <div className="bg-[#0b1121] pt-10 pb-4 px-6 flex items-center justify-between border-b border-gray-800/50 shrink-0 z-10 relative">
+              <div className="flex items-center gap-3">
+                <img 
+                  src={`https://minotar.net/helm/${selectedOrder.user?.ign || 'steve'}/100.png`} 
+                  alt="Player" 
+                  className="w-10 h-10 rounded-full border border-slate-700 bg-slate-800"
+                />
+                <div>
+                  <h3 className="text-white font-bold text-sm leading-tight">{selectedOrder.user?.ign}</h3>
+                  <p className="text-emerald-400 text-[10px] animate-pulse">
+                    {selectedOrder.status === 'PAID' ? 'LUNAS' : selectedOrder.status === 'PENDING' ? 'MENUNGGU PEMBAYARAN' : 'DIBATALKAN'}
+                  </p>
+                </div>
               </div>
-              <button
+              <button 
                 onClick={() => setSelectedOrder(null)}
-                className="p-2 text-slate-400 hover:text-white rounded-xl bg-slate-800 border border-slate-700"
+                className="w-8 h-8 flex items-center justify-center bg-gray-800/50 hover:bg-gray-700 text-gray-300 rounded-full transition-colors"
               >
                 ✕
               </button>
             </div>
 
-            <div className="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-slate-400">Player IGN:</span>
-                <span className="font-bold text-cyan-300">{selectedOrder.user?.ign}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-slate-400">WhatsApp:</span>
-                <span className="font-medium text-white">{selectedOrder.user?.whatsapp || '-'}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-400">Metode Pembayaran:</span>
-                <span className="font-bold text-slate-200">{selectedOrder.paymentMethod || 'QRIS'}</span>
-              </div>
-              <div className="flex justify-between items-center pt-2 border-t border-slate-800">
-                <span className="text-slate-400">Status Pembayaran:</span>
-                <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                  selectedOrder.status === 'PAID' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' :
-                  selectedOrder.status === 'PENDING' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' :
-                  'bg-rose-500/20 text-rose-400 border border-rose-500/30'
-                }`}>
-                  {selectedOrder.status}
-                </span>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">Item Dipesan</h4>
-              <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
-                {(selectedOrder.items || []).map((item, idx) => (
-                  <div key={idx} className="flex justify-between items-center p-3 rounded-xl bg-slate-900/60 border border-slate-800 text-sm">
-                    <div>
-                      <p className="font-bold text-white">{item.quantity}x {item.product?.name || 'Item Store'}</p>
-                      <p className="text-xs text-slate-400">Durasi: {item.duration}</p>
-                    </div>
-                    <p className="font-mono font-bold text-emerald-400">
-                      Rp {formatPrice(item.price * item.quantity)}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex justify-between items-center pt-4 border-t border-slate-800">
-              <span className="text-slate-300 font-semibold">Total Pembayaran</span>
-              <span className="text-2xl font-black text-emerald-400 font-mono">
-                Rp {formatPrice(selectedOrder.totalAmount)}
-              </span>
-            </div>
-
-            <div className="pt-2">
-              <AdminChatBox orderId={selectedOrder.id} orderStatus={selectedOrder.status} />
-            </div>
-
-            <div className="flex gap-3 pt-2">
-              {selectedOrder.user?.whatsapp && (
-                <a
-                  href={`https://wa.me/${selectedOrder.user.whatsapp.replace(/[^0-9]/g, '')}?text=Halo%20${encodeURIComponent(selectedOrder.user.ign)},%20mengenai%20pesanan%20SERA%20MC%20kamu...`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-center text-sm flex items-center justify-center gap-2 transition-colors shadow-lg shadow-emerald-600/20"
-                >
-                  <MessageCircle className="w-4 h-4" />
-                  Hubungi WA Pemain
-                </a>
-              )}
-              <button
-                onClick={() => setSelectedOrder(null)}
-                className="px-5 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-xl text-sm transition-colors"
-              >
-                Tutup
-              </button>
+            {/* Chat Content */}
+            <div className="flex-1 bg-[#0b1121] relative flex flex-col min-h-0">
+               <AdminChatBox orderId={selectedOrder.id} orderStatus={selectedOrder.status} isPhoneMode={true} />
             </div>
           </div>
         </div>

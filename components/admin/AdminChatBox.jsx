@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Send, Loader2, Download } from 'lucide-react';
 
-export default function AdminChatBox({ orderId, orderStatus }) {
+export default function AdminChatBox({ orderId, orderStatus, isPhoneMode = false }) {
   const [chats, setChats] = useState([]);
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(true);
@@ -65,14 +65,16 @@ export default function AdminChatBox({ orderId, orderStatus }) {
   }
 
   return (
-    <div className="flex flex-col bg-slate-900/80 rounded-2xl border border-slate-800 h-[350px] overflow-hidden">
-      <div className="p-3 bg-slate-800/80 border-b border-slate-700/50 flex justify-between items-center">
-        <h4 className="text-sm font-bold text-white flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          Live Chat Pemain
-        </h4>
-        <span className="text-xs text-slate-400">{chats.length} Pesan</span>
-      </div>
+    <div className={`flex flex-col ${isPhoneMode ? 'h-full bg-transparent' : 'bg-slate-900/80 rounded-2xl border border-slate-800 h-[350px] overflow-hidden'}`}>
+      {!isPhoneMode && (
+        <div className="p-3 bg-slate-800/80 border-b border-slate-700/50 flex justify-between items-center">
+          <h4 className="text-sm font-bold text-white flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            Live Chat Pemain
+          </h4>
+          <span className="text-xs text-slate-400">{chats.length} Pesan</span>
+        </div>
+      )}
 
       <div className="flex-1 p-4 overflow-y-auto custom-scrollbar flex flex-col gap-3">
         {chats.length === 0 ? (
@@ -84,10 +86,10 @@ export default function AdminChatBox({ orderId, orderStatus }) {
             const isAdmin = chat.sender === 'ADMIN';
             return (
               <div key={chat.id} className={`flex ${isAdmin ? 'justify-end' : 'justify-start'}`}>
-                <div className={`p-2.5 rounded-xl max-w-[85%] text-sm shadow-md break-words ${
-                  isAdmin 
-                    ? 'bg-cyan-600 text-white rounded-tr-sm border border-cyan-500/50' 
-                    : 'bg-slate-800 border border-slate-700 text-slate-200 rounded-tl-sm'
+                <div className={`px-4 py-3 max-w-[85%] text-[13px] shadow-sm break-words ${
+                  isPhoneMode
+                    ? (isAdmin ? 'bg-[#f2e28a] text-[#0b1121] rounded-3xl rounded-tr-sm font-medium' : 'bg-[#2a374a] text-[#E0E0E0] rounded-3xl rounded-tl-sm')
+                    : (isAdmin ? 'bg-cyan-600 text-white rounded-xl rounded-tr-sm border border-cyan-500/50' : 'bg-slate-800 border border-slate-700 text-slate-200 rounded-xl rounded-tl-sm p-2.5')
                 }`}>
                   {chat.message.startsWith('[IMAGE_BASE64]') ? (
                     <img 
@@ -118,23 +120,33 @@ export default function AdminChatBox({ orderId, orderStatus }) {
         <div ref={chatEndRef} />
       </div>
 
-      <form onSubmit={sendMessage} className="p-3 bg-slate-800/50 border-t border-slate-700/50 flex gap-2">
-        <input 
-          type="text" 
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="Ketik pesan..." 
-          className="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500/50"
-          disabled={sending || orderStatus === 'CANCELLED'}
-        />
-        <button 
-          type="submit" 
-          disabled={sending || !message.trim() || orderStatus === 'CANCELLED'}
-          className="bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 disabled:hover:bg-cyan-600 text-white w-10 h-10 rounded-xl flex items-center justify-center transition-colors shrink-0"
-        >
-          {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-        </button>
-      </form>
+      <div className={`p-3 ${isPhoneMode ? 'bg-[#0b1121] border-t border-gray-800/50' : 'bg-slate-800/50 border-t border-slate-700/50'}`}>
+        <form onSubmit={sendMessage} className="flex gap-2">
+          <input 
+            type="text" 
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="Ketik pesan..." 
+            className={`flex-1 rounded-full px-4 py-2 text-sm focus:outline-none ${
+              isPhoneMode 
+                ? 'bg-[#1a2333] text-white border border-transparent focus:border-gray-600 placeholder-gray-500' 
+                : 'bg-slate-900 text-white border border-slate-700 focus:border-cyan-500 placeholder-slate-500'
+            }`}
+            disabled={sending || orderStatus === 'CANCELLED'}
+          />
+          <button 
+            type="submit" 
+            disabled={sending || !message.trim() || orderStatus === 'CANCELLED'}
+            className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors shrink-0 ${
+              isPhoneMode
+                ? 'bg-[#f2e28a] text-[#0b1121] hover:bg-[#e0d070]'
+                : 'bg-cyan-600 text-white hover:bg-cyan-500 disabled:opacity-50'
+            }`}
+          >
+            {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+          </button>
+        </form>
+      </div>
 
       {/* Zoomed Image Modal */}
       {zoomedImage && (
