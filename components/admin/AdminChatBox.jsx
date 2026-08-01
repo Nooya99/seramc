@@ -1,12 +1,13 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { Send, Loader2 } from 'lucide-react';
+import { Send, Loader2, Download } from 'lucide-react';
 
 export default function AdminChatBox({ orderId, orderStatus }) {
   const [chats, setChats] = useState([]);
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  const [zoomedImage, setZoomedImage] = useState(null);
   const chatEndRef = useRef(null);
 
   useEffect(() => {
@@ -88,13 +89,22 @@ export default function AdminChatBox({ orderId, orderStatus }) {
                     ? 'bg-cyan-600 text-white rounded-tr-sm border border-cyan-500/50' 
                     : 'bg-slate-800 border border-slate-700 text-slate-200 rounded-tl-sm'
                 }`}>
-                  {chat.message.split(/(https?:\/\/[^\s]+)/g).map((part, i) => 
-                    part.match(/https?:\/\/[^\s]+/) ? (
-                      <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="underline font-bold text-emerald-300 hover:text-emerald-200 break-all">
-                        {part}
-                      </a>
-                    ) : (
-                      <span key={i}>{part}</span>
+                  {chat.message.startsWith('[IMAGE_BASE64]') ? (
+                    <img 
+                      src={chat.message.replace('[IMAGE_BASE64]', '')} 
+                      alt="Uploaded" 
+                      className="w-full max-w-[300px] rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+                      onClick={() => setZoomedImage(chat.message.replace('[IMAGE_BASE64]', ''))}
+                    />
+                  ) : (
+                    chat.message.split(/(https?:\/\/[^\s]+)/g).map((part, i) => 
+                      part.match(/https?:\/\/[^\s]+/) ? (
+                        <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="underline font-bold text-emerald-300 hover:text-emerald-200 break-all">
+                          {part}
+                        </a>
+                      ) : (
+                        <span key={i}>{part}</span>
+                      )
                     )
                   )}
                   <div className={`text-[9px] mt-1 text-right ${isAdmin ? 'text-cyan-200' : 'text-slate-400'}`}>
@@ -125,6 +135,33 @@ export default function AdminChatBox({ orderId, orderStatus }) {
           {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
         </button>
       </form>
+
+      {/* Zoomed Image Modal */}
+      {zoomedImage && (
+        <div 
+          className="fixed inset-0 bg-black/90 z-[99999] flex flex-col items-center justify-center p-6 animate-in fade-in"
+          onClick={() => setZoomedImage(null)}
+        >
+          <img src={zoomedImage} alt="Zoom" className="max-w-full max-h-[85vh] object-contain rounded-xl shadow-2xl" />
+          
+          <div className="flex gap-4 mt-6" onClick={(e) => e.stopPropagation()}>
+            <a 
+              href={zoomedImage} 
+              download="Bukti_Transfer_SERAMC.jpg"
+              className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2.5 rounded-xl font-medium transition-colors"
+            >
+              <Download className="w-4 h-4" />
+              Download Bukti
+            </a>
+            <button 
+              onClick={() => setZoomedImage(null)}
+              className="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white px-6 py-2.5 rounded-xl font-medium transition-colors"
+            >
+              Tutup
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

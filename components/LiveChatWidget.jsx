@@ -9,7 +9,7 @@ export default function LiveChatWidget({ orderId, onClose }) {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
-  const [isZoomed, setIsZoomed] = useState(false);
+  const [zoomedImage, setZoomedImage] = useState(null);
   const [currentTime, setCurrentTime] = useState('');
   const chatEndRef = useRef(null);
 
@@ -212,7 +212,7 @@ export default function LiveChatWidget({ orderId, onClose }) {
                       src="/qris_seramc.jpg" 
                       alt="QRIS Payment" 
                       className="w-full max-w-[200px] rounded-2xl cursor-pointer hover:opacity-90 transition-opacity" 
-                      onClick={() => setIsZoomed(true)}
+                      onClick={() => setZoomedImage('/qris_seramc.jpg')}
                     />
                     <a 
                       href="/qris_seramc.jpg" 
@@ -237,13 +237,22 @@ export default function LiveChatWidget({ orderId, onClose }) {
                       ? 'bg-[#2a374a] text-[#E0E0E0] rounded-tl-sm' 
                       : 'bg-[#f2e28a] text-[#0b1121] rounded-tr-sm font-medium'
                   }`}>
-                    {chat.message.split(/(https?:\/\/[^\s]+)/g).map((part, i) => 
-                      part.match(/https?:\/\/[^\s]+/) ? (
-                        <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="underline font-bold hover:text-white break-all">
-                          {part}
-                        </a>
-                      ) : (
-                        <span key={i}>{part}</span>
+                    {chat.message.startsWith('[IMAGE_BASE64]') ? (
+                      <img 
+                        src={chat.message.replace('[IMAGE_BASE64]', '')} 
+                        alt="Uploaded" 
+                        className="w-full max-w-[200px] rounded-xl cursor-pointer hover:opacity-90"
+                        onClick={() => setZoomedImage(chat.message.replace('[IMAGE_BASE64]', ''))}
+                      />
+                    ) : (
+                      chat.message.split(/(https?:\/\/[^\s]+)/g).map((part, i) => 
+                        part.match(/https?:\/\/[^\s]+/) ? (
+                          <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="underline font-bold hover:text-white break-all">
+                            {part}
+                          </a>
+                        ) : (
+                          <span key={i}>{part}</span>
+                        )
                       )
                     )}
                     <div className={`text-[9px] mt-1.5 ${isAdmin ? 'text-gray-500' : 'text-[#0b1121]/60'} text-right`}>
@@ -268,8 +277,47 @@ export default function LiveChatWidget({ orderId, onClose }) {
               accept="image/*" 
               className="hidden" 
               onChange={(e) => {
-                if (e.target.files && e.target.files.length > 0) {
-                  alert('Fitur unggah gambar sedang dalam tahap pengembangan.');
+                if (e.target.files && e.target.files[0]) {
+                  const file = e.target.files[0];
+                  const reader = new FileReader();
+                  reader.onload = async (event) => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = async () => {
+                      const canvas = document.createElement('canvas');
+                      const MAX_WIDTH = 800;
+                      let width = img.width;
+                      let height = img.height;
+                      if (width > MAX_WIDTH) {
+                        height = Math.round((height * MAX_WIDTH) / width);
+                        width = MAX_WIDTH;
+                      }
+                      canvas.width = width;
+                      canvas.height = height;
+                      const ctx = canvas.getContext('2d');
+                      ctx.drawImage(img, 0, 0, width, height);
+                      const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                      
+                      setSending(true);
+                      try {
+                        const res = await fetch(`/api/orders/${orderId}/chat`, {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ message: `[IMAGE_BASE64]${compressedBase64}`, sender: 'USER' })
+                        });
+                        if (res.ok) {
+                          const newChat = await res.json();
+                          setChats(prev => [...prev, newChat]);
+                        }
+                      } catch (err) {
+                        console.error(err);
+                      } finally {
+                        setSending(false);
+                      }
+                    }
+                  };
+                  reader.readAsDataURL(file);
+                  e.target.value = ''; // Reset input
                 }
               }} 
             />
@@ -302,24 +350,24 @@ export default function LiveChatWidget({ orderId, onClose }) {
       </div>
       
       {/* Zoomed Image Overlay */}
-      {isZoomed && (
+      {zoomedImage && (
         <div 
           className="absolute inset-0 bg-black/80 z-[99999] flex flex-col items-center justify-center p-6 animate-in fade-in"
-          onClick={() => setIsZoomed(false)}
+          onClick={() => setZoomedImage(null)}
         >
-          <img src="/qris.jpg" alt="QRIS Zoom" className="w-full rounded-2xl max-h-[80%]" />
+          <img src={zoomedImage} alt="Zoom" className="w-full rounded-2xl max-h-[80%] object-contain" />
           
           <div className="flex gap-3 mt-4" onClick={(e) => e.stopPropagation()}>
             <a 
-              href="/qris.jpg" 
-              download="QRIS_SERAMC.jpg"
+              href={zoomedImage} 
+              download={zoomedImage === '/qris_seramc.jpg' ? "QRIS_SERAMC.jpg" : "Image_SERAMC.jpg"}
               className="flex items-center gap-2 bg-[#f2e28a] hover:bg-[#d1c272] text-[#0b1121] px-4 py-2 rounded-full font-medium transition-colors"
             >
               <Icon icon="lucide:download" className="w-4 h-4" />
               Download
             </a>
             <button 
-              onClick={() => setIsZoomed(false)}
+              onClick={() => setZoomedImage(null)}
               className="bg-black/50 text-white px-4 py-2 rounded-full font-medium"
             >
               Tutup
