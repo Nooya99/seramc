@@ -45,7 +45,7 @@ export default function AdminLayout({ children }) {
       active: pathname === '/admin'
     },
     {
-      name: 'Kelola Pesanan',
+      name: 'Kelola Chat',
       href: '/admin/orders',
       icon: ShoppingBag,
       active: pathname === '/admin/orders'

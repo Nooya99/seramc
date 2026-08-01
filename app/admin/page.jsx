@@ -582,7 +582,7 @@ export default function AdminDashboard() {
       {/* Modal Detail Pesanan */}
       {selectedOrder && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-[#0b101d] border border-slate-800 rounded-3xl max-w-xl w-full p-6 sm:p-8 space-y-6 shadow-2xl relative overflow-hidden animate-in fade-in zoom-in duration-200">
+          <div className="bg-[#0b101d] border border-slate-800 rounded-3xl max-w-xl w-full p-6 sm:p-8 space-y-6 shadow-2xl relative overflow-y-auto max-h-[90vh] animate-in fade-in zoom-in duration-200">
             <div className="flex items-center justify-between border-b border-slate-800 pb-4">
               <div>
                 <h3 className="text-xl font-bold text-white">Detail Pesanan #{selectedOrder.id.slice(0, 8)}</h3>
@@ -647,11 +647,9 @@ export default function AdminDashboard() {
               </span>
             </div>
 
-            {selectedOrder.paymentMethod === 'Live Chat' && (
-              <div className="pt-2">
-                <AdminChatBox orderId={selectedOrder.id} orderStatus={selectedOrder.status} />
-              </div>
-            )}
+            <div className="pt-2">
+              <AdminChatBox orderId={selectedOrder.id} orderStatus={selectedOrder.status} />
+            </div>
 
             <div className="flex gap-3 pt-2">
               {selectedOrder.user?.whatsapp && (
