@@ -417,7 +417,7 @@ export default function AdminOrdersPage() {
                         setSelectedOrder(order);
                       }
                     }}
-                    className={`relative flex items-center p-4 rounded-[1.5rem] cursor-pointer transition-all ${
+                    className={`relative flex items-center p-5 rounded-2xl cursor-pointer transition-all ${
                       isSelected 
                         ? 'bg-cyan-950/40 border border-cyan-500/50 shadow-lg shadow-cyan-900/20' 
                         : 'bg-slate-900/80 border border-slate-800/80 hover:bg-slate-800/80 hover:border-slate-700/80'
@@ -461,12 +461,19 @@ export default function AdminOrdersPage() {
                             </a>
                           )}
                         </h4>
-                        <span className="text-[11px] text-slate-500 font-medium shrink-0">
-                          {latestChat 
-                            ? new Date(latestChat.createdAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
-                            : new Date(order.createdAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' })
-                          }
-                        </span>
+                        <div className="flex flex-col items-end gap-1 shrink-0">
+                          <span className="text-[11px] text-slate-500 font-medium">
+                            {latestChat 
+                              ? new Date(latestChat.createdAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+                              : new Date(order.createdAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' })
+                            }
+                          </span>
+                          {order.chats && order.chats.length > 0 && (
+                            <span className="bg-emerald-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[20px] text-center shadow-sm shadow-emerald-500/30">
+                              {order.chats.length}
+                            </span>
+                          )}
+                        </div>
                       </div>
                       
                       <div className="flex justify-between items-end gap-4">
@@ -493,14 +500,6 @@ export default function AdminOrdersPage() {
                             <option value="PAID" className="bg-slate-900 text-emerald-400">PAID</option>
                             <option value="CANCELLED" className="bg-slate-900 text-rose-400">CANCELLED</option>
                           </select>
-                          
-                          <button
-                            onClick={() => handleTrashClick(order.id)}
-                            className="p-1.5 rounded-full text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
-                            title="Hapus"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
                         </div>
                       </div>
                     </div>
