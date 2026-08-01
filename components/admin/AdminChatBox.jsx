@@ -11,7 +11,6 @@ export default function AdminChatBox({ order, orderId, orderStatus, isPhoneMode 
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [zoomedImage, setZoomedImage] = useState(null);
-  const chatEndRef = useRef(null);
 
   const formatPrice = (price) => {
     if (!price) return '0';
@@ -23,10 +22,6 @@ export default function AdminChatBox({ order, orderId, orderStatus, isPhoneMode 
     const interval = setInterval(fetchChats, 3000);
     return () => clearInterval(interval);
   }, [actualOrderId]);
-
-  useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [chats]);
 
   const fetchChats = async () => {
     if (!actualOrderId) return;
@@ -183,7 +178,6 @@ export default function AdminChatBox({ order, orderId, orderStatus, isPhoneMode 
             );
           })
         )}
-        <div ref={chatEndRef} />
       </div>
 
       <div className={`p-3 ${isPhoneMode ? 'bg-[#0b1121] border-t border-gray-800/50' : 'bg-slate-800/50 border-t border-slate-700/50'}`}>

@@ -11,7 +11,6 @@ export default function LiveChatWidget({ orderId, onClose }) {
   const [isMinimized, setIsMinimized] = useState(false);
   const [zoomedImage, setZoomedImage] = useState(null);
   const [currentTime, setCurrentTime] = useState('');
-  const chatEndRef = useRef(null);
 
   useEffect(() => {
     // Set mock phone time
@@ -37,12 +36,6 @@ export default function LiveChatWidget({ orderId, onClose }) {
       return () => clearInterval(interval);
     }
   }, [orderId]);
-
-  useEffect(() => {
-    if (!isMinimized) {
-      chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [chats, isMinimized]);
 
   const fetchOrderDetails = async () => {
     try {
@@ -262,7 +255,6 @@ export default function LiveChatWidget({ orderId, onClose }) {
                 </div>
               );
             })}
-            <div ref={chatEndRef} />
           </div>
         )}
       </div>
