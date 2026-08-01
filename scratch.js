@@ -1,121 +1,43 @@
-import 'dotenv/config';
-import { createClient } from '@supabase/supabase-js';
-import crypto from 'crypto';
+const fs = require('fs');
+const path = require('path');
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const filePath = path.join(__dirname, 'components', 'LiveChatWidget.jsx');
+let content = fs.readFileSync(filePath, 'utf8');
 
-const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
-  auth: { persistSession: false, autoRefreshToken: false },
+// Replacements
+const replacements = [
+  { from: /bg-\[\#0B0B0B\]/g, to: 'bg-[#0b1121]' },
+  { from: /border-\[\#0B0B0B\]/g, to: 'border-[#0b1121]' },
+  
+  { from: /bg-\[\#1F1F1F\]/g, to: 'bg-[#1a2333]' },
+  { from: /border-\[\#1F1F1F\]/g, to: 'border-[#1a2333]' },
+  
+  { from: /bg-\[\#2A2A2A\]/g, to: 'bg-[#2a374a]' },
+  { from: /border-\[\#2A2A2A\]/g, to: 'border-[#2a374a]' },
+  
+  // Floating button & accent colors
+  { from: /bg-\[\#FF4D4D\]/g, to: 'bg-[#f2e28a] text-[#0b1121]' },
+  { from: /text-\[\#FF4D4D\]/g, to: 'text-[#f2e28a]' },
+  { from: /border-\[\#FF4D4D\]/g, to: 'border-[#f2e28a]' },
+  
+  { from: /hover:bg-\[\#ff3333\]/g, to: 'hover:bg-[#d1c272]' }, // darker gold for hover
+  
+  { from: /rgba\(255,77,77,0\.4\)/g, to: 'rgba(242,226,138,0.4)' },
+  
+  // Specific tweaks
+  // In user chat bubble, text should be dark instead of text-white if bg is gold
+  { from: /bg-\[\#f2e28a\] text-\[\#0b1121\] text-white rounded-tr-sm/g, to: 'bg-[#f2e28a] text-[#0b1121] rounded-tr-sm font-medium' },
+  // And time text inside user bubble
+  { from: /text-white\/80/g, to: 'text-[#0b1121]/60' },
+  // Send button text-white -> text-[#0b1121]
+  { from: /text-white w-10 h-10 rounded-full flex items-center justify-center transition-all shrink-0 active:scale-95 shadow-sm/g, to: 'text-[#0b1121] w-10 h-10 rounded-full flex items-center justify-center transition-all shrink-0 active:scale-95 shadow-sm' },
+  // Floating button text-white -> text-[#0b1121]
+  { from: /bg-\[\#f2e28a\] text-\[\#0b1121\] hover:bg-\[\#d1c272\] text-white w-14 h-14/g, to: 'bg-[#f2e28a] hover:bg-[#d1c272] text-[#0b1121] w-14 h-14' },
+];
+
+replacements.forEach(({ from, to }) => {
+  content = content.replace(from, to);
 });
 
-const parsePrice = (priceStr) => {
-  if (typeof priceStr === 'number') return priceStr;
-  if (!priceStr) return 0;
-  const num = parseInt(priceStr.replace(/[^0-9]/g, ''));
-  if (isNaN(num)) return 0;
-  return priceStr.toUpperCase().includes('K') ? num * 1000 : num;
-};
-
-async function createTestOrder() {
-  const ign = "TestUser";
-  const whatsapp = "08123456789";
-  const items = [{ name: 'Test Product', price: '10k', quantity: 1 }];
-  const totalAmount = 10000;
-  const paymentMethod = "Live Chat";
-
-  const nowIso = new Date().toISOString();
-
-  try {
-    const { data: existingUser } = await supabaseAdmin
-      .from('User')
-      .select('*')
-      .eq('ign', ign)
-      .single();
-
-    let userId;
-    if (!existingUser) {
-      const newUserObj = {
-        id: crypto.randomUUID(),
-        ign,
-        whatsapp,
-        updatedAt: nowIso
-      };
-      const { data: newUser, error: userErr } = await supabaseAdmin
-        .from('User')
-        .insert([newUserObj])
-        .select()
-        .single();
-      
-      if (userErr) throw userErr;
-      userId = newUser.id;
-    } else {
-      userId = existingUser.id;
-    }
-
-    const orderObj = {
-      id: crypto.randomUUID(),
-      userId,
-      totalAmount,
-      paymentMethod,
-      status: 'PENDING',
-      updatedAt: nowIso
-    };
-
-    const { data: order, error: orderErr } = await supabaseAdmin
-      .from('Order')
-      .insert([orderObj])
-      .select()
-      .single();
-
-    if (orderErr) throw orderErr;
-
-    const itemNames = items.map(i => i.name);
-    const { data: existingProducts } = await supabaseAdmin
-      .from('Product')
-      .select('*')
-      .in('name', itemNames);
-
-    const productMap = new Map((existingProducts || []).map(p => [p.name, p]));
-    const newProductsToCreate = [];
-
-    for (const item of items) {
-      if (!productMap.has(item.name)) {
-        const prod = {
-          id: crypto.randomUUID(),
-          name: item.name,
-          category: 'Shop Item',
-          price: parsePrice(item.price),
-          duration: item.duration || 'Permanen',
-          updatedAt: nowIso
-        };
-        newProductsToCreate.push(prod);
-        productMap.set(item.name, prod);
-      }
-    }
-
-    if (newProductsToCreate.length > 0) {
-      await supabaseAdmin.from('Product').insert(newProductsToCreate);
-    }
-
-    const orderItemsData = items.map(item => ({
-      id: crypto.randomUUID(),
-      orderId: order.id,
-      productId: productMap.get(item.name).id,
-      quantity: item.quantity || 1,
-      price: parsePrice(item.price),
-      duration: item.duration || 'Permanen',
-      updatedAt: nowIso
-    }));
-
-    if (orderItemsData.length > 0) {
-      await supabaseAdmin.from('OrderItem').insert(orderItemsData);
-    }
-
-    console.log("Order created successfully:", order.id);
-  } catch (error) {
-    console.error("Test failed:", error);
-  }
-}
-
-createTestOrder();
+fs.writeFileSync(filePath, content, 'utf8');
+console.log('Theme updated successfully.');
