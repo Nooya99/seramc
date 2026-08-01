@@ -9,6 +9,7 @@ export default function LiveChatWidget({ orderId, onClose }) {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
+  const [isZoomed, setIsZoomed] = useState(false);
   const [currentTime, setCurrentTime] = useState('');
   const chatEndRef = useRef(null);
 
@@ -207,7 +208,12 @@ export default function LiveChatWidget({ orderId, onClose }) {
                 </div>
                 <div className="flex justify-start mt-1">
                   <div className="bg-[#2a374a] p-2 rounded-3xl rounded-tl-sm max-w-[85%] shadow-sm">
-                    <img src="/qris.jpg" alt="QRIS Payment" className="w-full max-w-[200px] rounded-2xl" />
+                    <img 
+                      src="/qris.jpg" 
+                      alt="QRIS Payment" 
+                      className="w-full max-w-[200px] rounded-2xl cursor-pointer hover:opacity-90 transition-opacity" 
+                      onClick={() => setIsZoomed(true)}
+                    />
                   </div>
                 </div>
               </>
@@ -286,6 +292,17 @@ export default function LiveChatWidget({ orderId, onClose }) {
       <div className="h-4 w-full bg-[#0b1121] flex items-center justify-center pb-2">
         <div className="w-[100px] h-[4px] bg-gray-500 rounded-full opacity-50"></div>
       </div>
+      
+      {/* Zoomed Image Overlay */}
+      {isZoomed && (
+        <div 
+          className="absolute inset-0 bg-black/80 z-[99999] flex flex-col items-center justify-center p-6 animate-in fade-in"
+          onClick={() => setIsZoomed(false)}
+        >
+          <img src="/qris.jpg" alt="QRIS Zoom" className="w-full rounded-2xl max-h-[80%]" />
+          <p className="text-white text-sm font-medium mt-4 bg-black/50 px-4 py-2 rounded-full">Tap di mana saja untuk menutup</p>
+        </div>
+      )}
     </div>
   );
 }
