@@ -29,7 +29,10 @@ export default function LiveChatWidget({ orderId, onClose }) {
     if (orderId) {
       fetchOrderDetails();
       fetchChats();
-      const interval = setInterval(fetchChats, 3000);
+      const interval = setInterval(() => {
+        fetchChats();
+        fetchOrderDetails();
+      }, 3000);
       return () => clearInterval(interval);
     }
   }, [orderId]);
