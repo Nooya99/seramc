@@ -563,23 +563,28 @@ export default function AdminOrdersPage() {
             </div>
 
             {/* Header */}
-            <div className="bg-[#0b1121] pt-10 pb-4 px-6 flex items-center justify-between border-b border-gray-800/50 shrink-0 z-10 relative">
+            <div className="bg-[#1a2333] pt-10 pb-4 px-6 flex items-center justify-between border-b border-[#2a374a] shrink-0 z-10 relative">
               <div className="flex items-center gap-3">
-                <img 
-                  src={`https://minotar.net/helm/${selectedOrder.user?.ign || 'steve'}/100.png`} 
-                  alt="Player" 
-                  className="w-10 h-10 rounded-full border border-slate-700 bg-slate-800"
-                />
+                <div className="relative">
+                  <img 
+                    src={`https://minotar.net/helm/${selectedOrder.user?.ign || 'steve'}/100.png`} 
+                    alt="Player" 
+                    className="w-10 h-10 rounded-full border-2 border-[#2a374a] bg-[#0b1121] object-cover"
+                  />
+                  <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full border-2 border-[#1a2333]"></div>
+                </div>
                 <div>
-                  <h3 className="text-white font-bold text-sm leading-tight">{selectedOrder.user?.ign}</h3>
-                  <p className="text-emerald-400 text-[10px] animate-pulse">
-                    {selectedOrder.status === 'PAID' ? 'LUNAS' : selectedOrder.status === 'PENDING' ? 'MENUNGGU PEMBAYARAN' : 'DIBATALKAN'}
+                  <h3 className="text-white font-bold text-sm leading-tight">{selectedOrder.user?.ign || 'Anonim'}</h3>
+                  <p className="text-[#f2e28a] text-[10px] flex items-center gap-1 font-medium">
+                    <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                    Online
                   </p>
                 </div>
               </div>
               <button 
                 onClick={() => setSelectedOrder(null)}
-                className="w-8 h-8 flex items-center justify-center bg-gray-800/50 hover:bg-gray-700 text-gray-300 rounded-full transition-colors"
+                className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white bg-[#0b1121] rounded-full transition-colors"
+                title="Tutup"
               >
                 ✕
               </button>
