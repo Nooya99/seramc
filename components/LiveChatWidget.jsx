@@ -144,13 +144,6 @@ export default function LiveChatWidget({ orderId, onClose }) {
         </div>
         <div className="flex items-center gap-3">
           <button 
-            onClick={() => setIsMinimized(true)}
-            className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white bg-[#1F1F1F] rounded-full transition-colors"
-            title="Minimize"
-          >
-            <Icon icon="lucide:minus" className="w-4 h-4" />
-          </button>
-          <button 
             onClick={onClose}
             className="w-8 h-8 flex items-center justify-center text-[#FF4D4D] hover:text-white bg-[#1F1F1F] rounded-full transition-colors"
             title="Tutup Chat"
