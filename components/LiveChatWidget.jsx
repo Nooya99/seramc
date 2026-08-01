@@ -188,8 +188,14 @@ export default function LiveChatWidget({ orderId, onClose }) {
             {order && (
               <div className="flex justify-start">
                 <div className="bg-[#2A2A2A] text-[#E0E0E0] px-4 py-3 rounded-3xl rounded-tl-sm max-w-[85%] text-[13px] shadow-sm leading-relaxed">
-                  Halo <b>{order.user.ign}</b>! Pesanan Anda telah kami terima.
-                  <br/><br/>
+                  Halo <b>{order.user.ign}</b>! Pesanan Anda telah kami terima dengan rincian:
+                  <ul className="mt-2 mb-3 list-disc pl-4 text-gray-300">
+                    {order.items && order.items.map((item, idx) => (
+                      <li key={idx}>
+                        {item.product?.name || 'Item'} (x{item.quantity}) - {formatPrice(item.price * item.quantity)}
+                      </li>
+                    ))}
+                  </ul>
                   Silakan lakukan pembayaran sebesar <b className="text-white">{formatPrice(order.totalAmount)}</b> melalui metode QRIS.
                   <br/><br/>
                   Kirimkan bukti pembayarannya di obrolan ini ya!
