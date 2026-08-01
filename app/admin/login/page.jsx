@@ -16,7 +16,7 @@ export default function AdminLogin() {
     setError('');
 
     setTimeout(() => {
-      if (password === 'seramc123') {
+      if (password === 'GKFRN5STAFF') {
         document.cookie = "admin_token=authenticated; path=/; max-age=86400"; // 1 day
         localStorage.setItem('sera_admin_auth', 'true');
         router.push('/admin');
