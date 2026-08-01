@@ -440,68 +440,71 @@ export default function AdminOrdersPage() {
                     <img 
                       src={`https://minotar.net/helm/${order.user?.ign || 'steve'}/100.png`} 
                       alt="Avatar"
-                      className="w-12 h-12 rounded-full border border-slate-700 object-cover mr-4 shrink-0"
+                      className="w-16 h-16 rounded-2xl border border-slate-700 object-cover mr-5 shrink-0 shadow-md"
                     />
 
-                    {/* Content */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex justify-between items-center mb-0.5">
-                        <h4 className="font-bold text-slate-200 text-sm truncate pr-2 flex items-center gap-2">
+                    {/* Content (Middle) */}
+                    <div className="flex-1 min-w-0 pr-4">
+                      <div className="flex items-center gap-3 mb-1">
+                        <h4 className="font-bold text-slate-100 text-lg truncate">
                           {order.user?.ign || 'Anonim'}
-                          {order.user?.whatsapp && (
-                            <a
-                              href={`https://wa.me/${order.user.whatsapp.replace(/[^0-9]/g, '')}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              onClick={(e) => e.stopPropagation()}
-                              className="inline-flex items-center gap-1 text-[10px] text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded-md hover:bg-emerald-500/20 transition-colors font-medium"
-                              title="Hubungi WA"
-                            >
-                              <MessageCircle className="w-3 h-3" />
-                            </a>
-                          )}
                         </h4>
-                        <div className="flex flex-col items-end gap-1 shrink-0">
-                          <span className="text-[11px] text-slate-500 font-medium">
-                            {latestChat 
-                              ? new Date(latestChat.createdAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
-                              : new Date(order.createdAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' })
-                            }
-                          </span>
-                          {order.chats && order.chats.length > 0 && (
-                            <span className="bg-emerald-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[20px] text-center shadow-sm shadow-emerald-500/30">
-                              {order.chats.length}
-                            </span>
-                          )}
-                        </div>
+                        {order.user?.whatsapp && (
+                          <a
+                            href={`https://wa.me/${order.user.whatsapp.replace(/[^0-9]/g, '')}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="inline-flex items-center gap-1 text-[10px] text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded-md hover:bg-emerald-500/20 transition-colors font-medium"
+                            title="Hubungi WA"
+                          >
+                            <MessageCircle className="w-3 h-3" />
+                          </a>
+                        )}
+                        <span className="text-xs text-slate-500 font-medium ml-1">
+                          {latestChat 
+                            ? new Date(latestChat.createdAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+                            : new Date(order.createdAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' })
+                          }
+                        </span>
                       </div>
                       
-                      <div className="flex justify-between items-end gap-4">
-                        <div className="text-xs text-slate-400 truncate max-w-full">
-                          {latestChat 
-                            ? (latestChat.message.startsWith('[IMAGE_BASE64]') ? '📷 Mengirim foto bukti pembayaran' : latestChat.message)
-                            : <span className="italic text-slate-500">Belum ada chat.</span>}
-                        </div>
-                        
-                        {/* Status Label & Actions */}
-                        <div className="flex items-center gap-2 shrink-0" onClick={(e) => e.stopPropagation()}>
-                          <select
-                            value={order.status}
-                            onChange={(e) => handleUpdateStatus(order.id, e.target.value)}
-                            className={`text-[10px] font-bold rounded-full px-2 py-1 border focus:outline-none transition-all cursor-pointer ${
-                              order.status === 'PAID'
-                                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20'
-                                : order.status === 'PENDING'
-                                ? 'bg-amber-500/10 text-amber-400 border-amber-500/30 hover:bg-amber-500/20'
-                                : 'bg-rose-500/10 text-rose-400 border-rose-500/30 hover:bg-rose-500/20'
-                            }`}
-                          >
-                            <option value="PENDING" className="bg-slate-900 text-amber-400">PENDING</option>
-                            <option value="PAID" className="bg-slate-900 text-emerald-400">PAID</option>
-                            <option value="CANCELLED" className="bg-slate-900 text-rose-400">CANCELLED</option>
-                          </select>
-                        </div>
+                      <div className="text-sm text-slate-400 truncate max-w-full mt-1">
+                        {latestChat 
+                          ? (latestChat.message.startsWith('[IMAGE_BASE64]') ? '📷 Mengirim foto bukti pembayaran' : latestChat.message)
+                          : <span className="italic text-slate-500">Belum ada chat.</span>}
                       </div>
+                    </div>
+
+                    {/* Right Side (Status & Notif) */}
+                    <div className="flex items-center gap-4 shrink-0">
+                      {/* Status */}
+                      <div onClick={(e) => e.stopPropagation()}>
+                        <select
+                          value={order.status}
+                          onChange={(e) => handleUpdateStatus(order.id, e.target.value)}
+                          className={`text-xs font-bold rounded-xl px-3 py-1.5 border focus:outline-none transition-all cursor-pointer ${
+                            order.status === 'PAID'
+                              ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20'
+                              : order.status === 'PENDING'
+                              ? 'bg-amber-500/10 text-amber-400 border-amber-500/30 hover:bg-amber-500/20'
+                              : 'bg-rose-500/10 text-rose-400 border-rose-500/30 hover:bg-rose-500/20'
+                          }`}
+                        >
+                          <option value="PENDING" className="bg-slate-900 text-amber-400">PENDING</option>
+                          <option value="PAID" className="bg-slate-900 text-emerald-400">PAID</option>
+                          <option value="CANCELLED" className="bg-slate-900 text-rose-400">CANCELLED</option>
+                        </select>
+                      </div>
+
+                      {/* Notification Badge */}
+                      {order.chats && order.chats.length > 0 ? (
+                        <div className="flex items-center justify-center w-12 h-12 bg-emerald-500 text-white font-bold text-lg rounded-full shadow-lg shadow-emerald-500/30">
+                          {order.chats.length}
+                        </div>
+                      ) : (
+                        <div className="w-12 h-12 opacity-0" />
+                      )}
                     </div>
                   </div>
                 );
