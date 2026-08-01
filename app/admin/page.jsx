@@ -399,13 +399,12 @@ export default function AdminDashboard() {
                       </button>
                     </th>
                   )}
-                  <th className={`p-4 ${selectMode ? '' : 'pl-6'}`}>Tanggal & ID</th>
-                  <th className="p-4">Pemain (IGN)</th>
-                  <th className="p-4">Kontak WhatsApp</th>
-                  <th className="p-4">Ringkasan Item</th>
-                  <th className="p-4">Total Harga</th>
-                  <th className="p-4">Status Transaksi</th>
-                  <th className="p-4 pr-6 text-right">Aksi</th>
+                  <th className={`p-4 ${selectMode ? '' : 'pl-6'}`}>Tanggal</th>
+                  <th className="p-4">Player</th>
+                  <th className="p-4">WhatsApp</th>
+                  <th className="p-4">Riwayat Chat</th>
+                  <th className="p-4">Status</th>
+                  <th className="p-4 text-center">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60 text-sm">
@@ -469,26 +468,20 @@ export default function AdminDashboard() {
                         )}
                       </td>
 
-                      <td className="p-4 max-w-[220px]">
+                      <td className="p-4 max-w-[280px]">
                         <div className="space-y-1">
-                          {(order.items || []).slice(0, 2).map((item, idx) => (
-                            <div key={idx} className="text-xs text-slate-300 flex items-center justify-between">
-                              <span className="truncate max-w-[140px] font-medium">
-                                {item.quantity}x {item.product?.name || 'Custom Rank'}
-                              </span>
-                              <span className="text-[10px] text-slate-400 font-mono">({item.duration})</span>
-                            </div>
-                          ))}
-                          {(order.items || []).length > 2 && (
-                            <span className="text-[11px] text-cyan-400 font-medium">
-                              +{(order.items || []).length - 2} item lainnya
+                          {(order.chats || []).length > 0 ? (
+                            <span className="text-xs text-slate-300 flex items-center gap-2">
+                              <MessageCircle className="w-3.5 h-3.5 text-cyan-400" />
+                              Ada {(order.chats || []).length} pesan. Klik untuk melihat riwayat chat dan bukti pembayaran.
+                            </span>
+                          ) : (
+                            <span className="text-xs text-slate-500 italic flex items-center gap-2">
+                              <MessageCircle className="w-3.5 h-3.5 opacity-50" />
+                              Belum ada pesan
                             </span>
                           )}
                         </div>
-                      </td>
-
-                      <td className="p-4 font-bold text-emerald-400 font-mono">
-                        Rp {formatPrice(order.totalAmount)}
                       </td>
 
                       <td className="p-4" onClick={(e) => e.stopPropagation()}>
