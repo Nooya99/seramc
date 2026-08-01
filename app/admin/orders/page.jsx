@@ -556,11 +556,8 @@ export default function AdminOrdersPage() {
       {/* Phone Chat Modal */}
       {selectedOrder && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="w-[380px] h-[750px] max-h-[90vh] bg-black rounded-[50px] border-[14px] border-[#1a1a2e] relative overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 flex flex-col">
-            {/* iPhone Notch */}
-            <div className="absolute top-0 inset-x-0 h-6 bg-[#1a1a2e] rounded-b-3xl w-40 mx-auto z-20 flex justify-center items-end pb-1">
-              <div className="w-12 h-1.5 bg-black/20 rounded-full" />
-            </div>
+          <div className="w-full max-w-[450px] h-[80vh] max-h-[850px] bg-[#0b1121] rounded-3xl relative overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 flex flex-col border border-gray-800/50">
+
 
             {/* Header */}
             <div className="bg-[#1a2333] pt-10 pb-4 px-6 flex items-center justify-between border-b border-[#2a374a] shrink-0 z-10 relative">
@@ -592,7 +589,7 @@ export default function AdminOrdersPage() {
 
             {/* Chat Content */}
             <div className="flex-1 bg-[#0b1121] relative flex flex-col min-h-0">
-               <AdminChatBox orderId={selectedOrder.id} orderStatus={selectedOrder.status} isPhoneMode={true} />
+               <AdminChatBox order={selectedOrder} isPhoneMode={true} />
             </div>
           </div>
         </div>

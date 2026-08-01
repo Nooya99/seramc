@@ -2,7 +2,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { Send, Loader2, Download } from 'lucide-react';
 
-export default function AdminChatBox({ orderId, orderStatus, isPhoneMode = false }) {
+export default function AdminChatBox({ order, orderId, orderStatus, isPhoneMode = false }) {
+  const actualOrderId = order?.id || orderId;
+  const actualOrderStatus = order?.status || orderStatus;
+
   const [chats, setChats] = useState([]);
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(true);
@@ -10,19 +13,25 @@ export default function AdminChatBox({ orderId, orderStatus, isPhoneMode = false
   const [zoomedImage, setZoomedImage] = useState(null);
   const chatEndRef = useRef(null);
 
+  const formatPrice = (price) => {
+    if (!price) return '0';
+    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  };
+
   useEffect(() => {
     fetchChats();
     const interval = setInterval(fetchChats, 3000);
     return () => clearInterval(interval);
-  }, [orderId]);
+  }, [actualOrderId]);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chats]);
 
   const fetchChats = async () => {
+    if (!actualOrderId) return;
     try {
-      const res = await fetch(`/api/orders/${orderId}/chat`);
+      const res = await fetch(`/api/orders/${actualOrderId}/chat`);
       if (res.ok) {
         const data = await res.json();
         setChats(data);
@@ -36,11 +45,11 @@ export default function AdminChatBox({ orderId, orderStatus, isPhoneMode = false
 
   const sendMessage = async (e) => {
     e.preventDefault();
-    if (!message.trim()) return;
+    if (!message.trim() || !actualOrderId) return;
 
     setSending(true);
     try {
-      const res = await fetch(`/api/orders/${orderId}/chat`, {
+      const res = await fetch(`/api/orders/${actualOrderId}/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: message.trim(), sender: 'ADMIN' })
@@ -77,7 +86,64 @@ export default function AdminChatBox({ orderId, orderStatus, isPhoneMode = false
       )}
 
       <div className="flex-1 p-4 overflow-y-auto custom-scrollbar flex flex-col gap-3">
-        {chats.length === 0 ? (
+        {order && (
+          <>
+            <div className="flex justify-center my-1">
+              <span className={`text-[10px] font-medium px-3 py-1 rounded-full ${isPhoneMode ? 'text-gray-500 bg-[#1a2333]' : 'text-slate-400 bg-slate-800'}`}>Hari ini</span>
+            </div>
+
+            <div className="flex justify-center mb-2">
+              <div className={`${isPhoneMode ? 'bg-[#1a2333]' : 'bg-slate-800'} rounded-2xl p-3 max-w-[90%] w-full text-[11px] text-center shadow-sm`}>
+                <p className={`${isPhoneMode ? 'text-gray-400' : 'text-slate-400'} font-medium mb-1`}>ID: <span className="text-white font-bold">{order.id.split('-')[0].toUpperCase()}</span></p>
+                <p className={`${isPhoneMode ? 'text-gray-400' : 'text-slate-400'} mb-2`}>Tagihan: <span className="text-white font-bold">Rp {formatPrice(order.totalAmount)}</span></p>
+                <div className={`inline-block px-3 py-1 rounded-full text-[10px] font-bold ${
+                  order.status === 'PAID' ? 'bg-emerald-500/20 text-emerald-400' :
+                  order.status === 'CANCELLED' ? (isPhoneMode ? 'bg-[#f2e28a]/10 text-[#f2e28a]' : 'bg-rose-500/20 text-rose-400') :
+                  'bg-yellow-500/20 text-yellow-400'
+                }`}>
+                  {order.status === 'PAID' ? 'LUNAS' : order.status === 'CANCELLED' ? 'DIBATALKAN' : 'MENUNGGU PEMBAYARAN'}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end">
+              <div className={`px-4 py-3 rounded-3xl rounded-tr-sm max-w-[85%] text-[13px] shadow-sm leading-relaxed ${isPhoneMode ? 'bg-[#f2e28a] text-[#0b1121]' : 'bg-cyan-600 text-white'}`}>
+                Halo <b>{order.user?.ign}</b>! Pesanan Anda telah kami terima dengan rincian:
+                <ul className={`mt-2 mb-3 list-disc pl-4 ${isPhoneMode ? 'text-black/80' : 'text-slate-200'}`}>
+                  {order.items && order.items.map((item, idx) => (
+                    <li key={idx}>
+                      {item.product?.name || 'Item'} (x{item.quantity}) - Rp {formatPrice(item.price * item.quantity)}
+                    </li>
+                  ))}
+                </ul>
+                Silakan lakukan pembayaran sebesar <b className={isPhoneMode ? 'text-black' : 'text-white'}>Rp {formatPrice(order.totalAmount)}</b> melalui metode QRIS.
+                <br/><br/>
+                Kirimkan bukti pembayarannya di obrolan ini ya!
+              </div>
+            </div>
+
+            <div className="flex justify-end mt-1">
+              <div className={`p-2 rounded-3xl rounded-tr-sm max-w-[85%] shadow-sm ${isPhoneMode ? 'bg-[#f2e28a]' : 'bg-cyan-600'}`}>
+                <img 
+                  src="/qris_seramc.jpg" 
+                  alt="QRIS Payment" 
+                  className="w-full max-w-[200px] rounded-2xl cursor-pointer hover:opacity-90 transition-opacity" 
+                  onClick={() => setZoomedImage('/qris_seramc.jpg')}
+                />
+                <a 
+                  href="/qris_seramc.jpg" 
+                  download="QRIS_SERAMC.jpg"
+                  className={`mt-2 w-full flex items-center justify-center gap-2 text-white text-xs py-2 rounded-xl transition-colors ${isPhoneMode ? 'bg-[#0b1121] hover:bg-[#1a2333]' : 'bg-slate-900 hover:bg-slate-800'}`}
+                >
+                  <Download className="w-3 h-3" />
+                  Simpan QRIS
+                </a>
+              </div>
+            </div>
+          </>
+        )}
+
+        {chats.length === 0 && !order ? (
           <div className="text-center text-slate-500 text-sm mt-8">
             Belum ada pesan. Ketik pesan pertama Anda di bawah.
           </div>
@@ -132,11 +198,11 @@ export default function AdminChatBox({ orderId, orderStatus, isPhoneMode = false
                 ? 'bg-[#1a2333] text-white border border-transparent focus:border-gray-600 placeholder-gray-500' 
                 : 'bg-slate-900 text-white border border-slate-700 focus:border-cyan-500 placeholder-slate-500'
             }`}
-            disabled={sending || orderStatus === 'CANCELLED'}
+            disabled={sending || actualOrderStatus === 'CANCELLED'}
           />
           <button 
             type="submit" 
-            disabled={sending || !message.trim() || orderStatus === 'CANCELLED'}
+            disabled={sending || !message.trim() || actualOrderStatus === 'CANCELLED'}
             className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors shrink-0 ${
               isPhoneMode
                 ? 'bg-[#f2e28a] text-[#0b1121] hover:bg-[#e0d070]'
