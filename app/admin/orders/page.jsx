@@ -1,28 +1,39 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { 
+  DollarSign, 
   ShoppingBag, 
+  Clock, 
+  CheckCircle2, 
   RefreshCw, 
   Search, 
+  Eye, 
   Trash2, 
+  MessageCircle,
+  TrendingUp,
+  Package,
+  AlertCircle,
   CheckSquare,
   Square
 } from 'lucide-react';
 import { ConfirmModal, Toast } from '@/components/admin/NotificationModal';
+import AdminChatBox from '@/components/admin/AdminChatBox';
 
 export default function AdminOrdersPage() {
+  const router = useRouter();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
-  const [updatingId, setUpdatingId] = useState(null);
+  const [selectedOrder, setSelectedOrder] = useState(null);
 
-  // Select / Delete Mode state (OFF by default)
+  // Multi-select & Batch action state (OFF by default)
   const [selectMode, setSelectMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
 
-  // Modal & Toast states
+  // Confirm Modal state
   const [confirmModal, setConfirmModal] = useState({
     isOpen: false,
     title: '',
@@ -30,6 +41,8 @@ export default function AdminOrdersPage() {
     count: 0,
     onConfirm: null
   });
+
+  // Toast notification state
   const [toast, setToast] = useState(null);
 
   const showToast = (message, type = 'success') => {
@@ -49,21 +62,24 @@ export default function AdminOrdersPage() {
         const data = await res.json();
         setOrders(data);
       }
-    } catch (err) {
-      console.error('Failed to fetch orders:', err);
-      showToast('Gagal memuat daftar pesanan', 'error');
+    } catch (error) {
+      console.error('Failed to fetch orders:', error);
+      showToast('Gagal mengambil data pesanan', 'error');
     } finally {
       setLoading(false);
     }
   };
 
-  const filtered = orders.filter(o => {
-    const matchSearch = 
-      (o.user?.ign || '').toLowerCase().includes(search.toLowerCase()) ||
-      (o.user?.whatsapp || '').toLowerCase().includes(search.toLowerCase()) ||
-      o.id.toLowerCase().includes(search.toLowerCase());
-    const matchStatus = statusFilter === 'ALL' || o.status === statusFilter;
-    return matchSearch && matchStatus;
+  // Filtered list
+  const filteredOrders = orders.filter(order => {
+    const matchesSearch = 
+      (order.user?.ign || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (order.user?.whatsapp || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+      order.id.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesStatus = statusFilter === 'ALL' || order.status === statusFilter;
+
+    return matchesSearch && matchesStatus;
   });
 
   // Click Trash Icon on row -> Activates select mode & selects this order
@@ -76,7 +92,7 @@ export default function AdminOrdersPage() {
     }
   };
 
-  // Toggle single selection
+  // Checkbox toggle
   const toggleSelect = (id) => {
     setSelectedIds(prev => {
       const next = prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id];
@@ -85,42 +101,48 @@ export default function AdminOrdersPage() {
     });
   };
 
-  // Toggle select all
   const toggleSelectAll = () => {
-    if (selectedIds.length === filtered.length) {
+    if (selectedIds.length === filteredOrders.length) {
       setSelectedIds([]);
       setSelectMode(false);
     } else {
-      setSelectedIds(filtered.map(o => o.id));
+      setSelectedIds(filteredOrders.map(o => o.id));
     }
   };
 
-  const handleStatusChange = async (id, status) => {
-    setUpdatingId(id);
+  // Optimistic Status Update
+  const handleUpdateStatus = async (orderId, newStatus) => {
     const previousOrders = [...orders];
-    setOrders(prev => prev.map(o => o.id === id ? { ...o, status } : o));
+
+    setOrders(prev => prev.map(o => {
+      if (o.id === orderId) {
+        const updated = { ...o, status: newStatus };
+        if (selectedOrder && selectedOrder.id === orderId) setSelectedOrder(updated);
+        return updated;
+      }
+      return o;
+    }));
 
     try {
-      const res = await fetch(`/api/orders/${id}`, {
+      const res = await fetch(`/api/orders/${orderId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status })
+        body: JSON.stringify({ status: newStatus })
       });
+
       if (res.ok) {
-        showToast('Status pesanan berhasil diperbarui!');
+        showToast('Status transaksi berhasil diperbarui!');
       } else {
         showToast('Gagal mengupdate status pesanan.', 'error');
         setOrders(previousOrders);
       }
-    } catch (err) {
+    } catch (error) {
       showToast('Terjadi kesalahan jaringan.', 'error');
       setOrders(previousOrders);
-    } finally {
-      setUpdatingId(null);
     }
   };
 
-  // Bulk / Selected Delete
+  // Bulk Delete Confirmation
   const handleBulkDelete = () => {
     if (selectedIds.length === 0) return;
 
@@ -132,7 +154,7 @@ export default function AdminOrdersPage() {
       isOpen: true,
       title: isSingle ? 'Hapus Pesanan' : 'Hapus Pesanan Terpilih',
       message: isSingle
-        ? `Apakah Anda yakin ingin menghapus pesanan dari player "${singleOrder?.user?.ign || 'Unknown'}"?`
+        ? `Apakah Anda yakin ingin menghapus pesanan dari player "${singleOrder?.user?.ign || 'Anonim'}"?`
         : `Apakah Anda yakin ingin menghapus ${count} pesanan yang dipilih secara permanen?`,
       count,
       onConfirm: async () => {
@@ -141,6 +163,7 @@ export default function AdminOrdersPage() {
         const previousOrders = [...orders];
 
         setOrders(prev => prev.filter(o => !idsToDelete.includes(o.id)));
+        if (selectedOrder && idsToDelete.includes(selectedOrder.id)) setSelectedOrder(null);
         setSelectedIds([]);
         setSelectMode(false);
 
@@ -167,10 +190,19 @@ export default function AdminOrdersPage() {
     });
   };
 
-  const allSelected = filtered.length > 0 && selectedIds.length === filtered.length;
+  const formatPrice = (price) => (price || 0).toLocaleString('id-ID');
+
+  // Calculations
+  const paidOrders = orders.filter(o => o.status === 'PAID');
+  const pendingOrders = orders.filter(o => o.status === 'PENDING');
+
+  const totalRevenue = paidOrders.reduce((acc, curr) => acc + (curr.totalAmount || 0), 0);
+  const potentialRevenue = pendingOrders.reduce((acc, curr) => acc + (curr.totalAmount || 0), 0);
+
+  const allSelected = filteredOrders.length > 0 && selectedIds.length === filteredOrders.length;
 
   return (
-    <div className="space-y-6 pb-24 relative">
+    <div className="space-y-8 pb-24 relative">
       {/* Toast & Confirmation Modal */}
       <Toast toast={toast} onClose={() => setToast(null)} />
       <ConfirmModal
@@ -183,169 +215,300 @@ export default function AdminOrdersPage() {
         onCancel={() => setConfirmModal({ isOpen: false })}
       />
 
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#0b101d] p-6 rounded-2xl border border-slate-800">
+      {/* Header Banner */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-cyan-950/40 via-blue-950/20 to-slate-900/60 p-6 md:p-8 rounded-3xl border border-cyan-500/20 backdrop-blur-xl relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl -z-10 pointer-events-none" />
         <div>
-          <h1 className="text-2xl font-extrabold text-white flex items-center gap-2">
-            <ShoppingBag className="w-6 h-6 text-cyan-400" />
-            Kelola Daftar Pesanan
+          <div className="flex items-center gap-2 mb-2">
+            <span className="px-3 py-1 text-xs font-bold rounded-full bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+              Overview Dashboard
+            </span>
+            <span className="text-xs text-slate-400">Live Data Supabase DB</span>
+          </div>
+          <h1 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
+            Ringkasan Transaksi & Performa
           </h1>
-          <p className="text-xs text-slate-400 mt-1">
-            Pantau dan proses semua transaksi pembayaran pemain SERA MC.
+          <p className="text-sm text-slate-400 mt-1 max-w-2xl">
+            Kelola pesanan rank, race, dan statistik pendapatan server SERA MC secara real-time.
           </p>
         </div>
 
         <button
           onClick={fetchOrders}
           disabled={loading}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-semibold border border-slate-700 transition-colors"
+          className="flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 font-semibold text-sm border border-cyan-500/30 transition-all duration-200 shadow-lg shadow-cyan-500/5 active:scale-95 disabled:opacity-50"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-          Refresh
+          <span>Refresh Data</span>
         </button>
       </div>
 
-      {/* Filter Bar */}
-      <div className="flex flex-col sm:flex-row gap-4 justify-between items-center bg-[#0b101d] p-4 rounded-2xl border border-slate-800">
-        <div className="relative w-full sm:w-80">
-          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Cari IGN / Nomor WhatsApp..."
-            className="w-full bg-slate-900 border border-slate-700 rounded-xl pl-10 pr-4 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500"
-          />
+      {/* Metric Cards Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        {/* Metric 1: Total Revenue */}
+        <div className="bg-[#0b101d]/80 border border-slate-800 p-6 rounded-2xl relative overflow-hidden group hover:border-emerald-500/40 transition-all duration-300">
+          <div className="flex justify-between items-start mb-4">
+            <div>
+              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Pendapatan</p>
+              <h3 className="text-2xl md:text-3xl font-black text-emerald-400 mt-1">
+                Rp {formatPrice(totalRevenue)}
+              </h3>
+            </div>
+            <div className="p-3 bg-emerald-500/10 rounded-xl text-emerald-400 border border-emerald-500/20">
+              <DollarSign className="w-6 h-6" />
+            </div>
+          </div>
+          <div className="flex items-center gap-2 text-xs text-slate-400">
+            <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Potential (Pending): <strong className="text-slate-200">Rp {formatPrice(potentialRevenue)}</strong></span>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto">
-          {['ALL', 'PENDING', 'PAID', 'CANCELLED'].map((st) => (
-            <button
-              key={st}
-              onClick={() => setStatusFilter(st)}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                statusFilter === st
-                  ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20'
-                  : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
-              }`}
-            >
-              {st}
-            </button>
-          ))}
+        {/* Metric 2: Total Orders */}
+        <div className="bg-[#0b101d]/80 border border-slate-800 p-6 rounded-2xl relative overflow-hidden group hover:border-cyan-500/40 transition-all duration-300">
+          <div className="flex justify-between items-start mb-4">
+            <div>
+              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Pesanan</p>
+              <h3 className="text-2xl md:text-3xl font-black text-white mt-1">
+                {orders.length} <span className="text-sm font-normal text-slate-400">order</span>
+              </h3>
+            </div>
+            <div className="p-3 bg-cyan-500/10 rounded-xl text-cyan-400 border border-cyan-500/20">
+              <ShoppingBag className="w-6 h-6" />
+            </div>
+          </div>
+          <p className="text-xs text-slate-400">
+            Tercatat di Database Supabase
+          </p>
+        </div>
+
+        {/* Metric 3: Paid Orders */}
+        <div className="bg-[#0b101d]/80 border border-slate-800 p-6 rounded-2xl relative overflow-hidden group hover:border-blue-500/40 transition-all duration-300">
+          <div className="flex justify-between items-start mb-4">
+            <div>
+              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Lunas (PAID)</p>
+              <h3 className="text-2xl md:text-3xl font-black text-blue-400 mt-1">
+                {paidOrders.length}
+              </h3>
+            </div>
+            <div className="p-3 bg-blue-500/10 rounded-xl text-blue-400 border border-blue-500/20">
+              <CheckCircle2 className="w-6 h-6" />
+            </div>
+          </div>
+          <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+            <div 
+              className="bg-blue-500 h-full rounded-full transition-all duration-500"
+              style={{ width: `${orders.length ? (paidOrders.length / orders.length) * 100 : 0}%` }}
+            />
+          </div>
+        </div>
+
+        {/* Metric 4: Pending Action */}
+        <div className="bg-[#0b101d]/80 border border-slate-800 p-6 rounded-2xl relative overflow-hidden group hover:border-amber-500/40 transition-all duration-300">
+          <div className="flex justify-between items-start mb-4">
+            <div>
+              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Menunggu Konfirmasi</p>
+              <h3 className="text-2xl md:text-3xl font-black text-amber-400 mt-1">
+                {pendingOrders.length}
+              </h3>
+            </div>
+            <div className="p-3 bg-amber-500/10 rounded-xl text-amber-400 border border-amber-500/20">
+              <Clock className="w-6 h-6" />
+            </div>
+          </div>
+          <p className="text-xs text-amber-400/80 font-medium flex items-center gap-1">
+            {pendingOrders.length > 0 ? (
+              <>
+                <AlertCircle className="w-3.5 h-3.5" />
+                Perlu tindakan verifikasi payment
+              </>
+            ) : (
+              <span className="text-slate-400">Semua pesanan terproses</span>
+            )}
+          </p>
         </div>
       </div>
 
-      {/* Orders Grid/Table */}
-      <div className="bg-[#0b101d] border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+      {/* Main Table & Filters */}
+      <div className="bg-[#0b101d]/90 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl backdrop-blur-xl">
+        {/* Table Toolbar */}
+        <div className="p-6 border-b border-slate-800/80 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <h2 className="text-lg font-bold text-white tracking-wide">Daftar Transaksi</h2>
+            <span className="px-2.5 py-0.5 text-xs font-bold rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+              {filteredOrders.length} Result
+            </span>
+          </div>
+
+          {/* Search & Filter Inputs */}
+          <div className="flex flex-col sm:flex-row items-center gap-3">
+            <div className="relative w-full sm:w-64">
+              <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Cari Player / WA / ID..."
+                className="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl pl-10 pr-4 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
+              />
+            </div>
+
+            <div className="flex items-center p-1 bg-slate-900/90 border border-slate-700/80 rounded-xl w-full sm:w-auto overflow-x-auto">
+              {['ALL', 'PENDING', 'PAID', 'CANCELLED'].map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setStatusFilter(tab)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold tracking-wider transition-all ${
+                    statusFilter === tab
+                      ? 'bg-cyan-500 text-slate-950 font-bold shadow'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  {tab === 'ALL' ? 'Semua' : tab}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Table Content */}
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse min-w-[850px]">
-            <thead>
-              <tr className="bg-slate-900/80 text-slate-400 text-xs uppercase tracking-wider border-b border-slate-800">
-                {selectMode && (
-                  <th className="p-4 pl-6 w-12">
-                    <button onClick={toggleSelectAll} className="flex items-center">
+          {loading ? (
+            <div className="p-16 text-center text-slate-400 space-y-3">
+              <RefreshCw className="w-8 h-8 animate-spin text-cyan-400 mx-auto" />
+              <p className="text-sm font-medium">Memuat data pesanan dari Supabase Database...</p>
+            </div>
+          ) : filteredOrders.length === 0 ? (
+            <div className="p-16 text-center text-slate-400 space-y-3">
+              <Package className="w-12 h-12 text-slate-600 mx-auto" />
+              <p className="text-base font-semibold text-slate-300">Tidak ada pesanan ditemukan.</p>
+              <p className="text-xs text-slate-500">Coba ubah kata kunci pencarian atau filter status.</p>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-3 w-full max-w-4xl mx-auto">
+              {selectMode && (
+                <div className="flex items-center justify-between p-3 bg-slate-900/60 border border-slate-800 rounded-2xl mb-2">
+                  <div className="flex items-center gap-3">
+                    <button onClick={toggleSelectAll} className="p-1">
                       {allSelected ? (
                         <CheckSquare className="w-5 h-5 text-cyan-400" />
                       ) : (
                         <Square className="w-5 h-5 text-slate-600" />
                       )}
                     </button>
-                  </th>
-                )}
-                <th className={`p-4 ${selectMode ? '' : 'pl-6'}`}>IGN Player</th>
-                <th className="p-4">WhatsApp</th>
-                <th className="p-4">Pesanan Item</th>
-                <th className="p-4">Total</th>
-                <th className="p-4">Tanggal</th>
-                <th className="p-4">Status</th>
-                <th className="p-4 pr-6 text-right">Aksi</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-800/60 text-sm">
-              {loading ? (
-                <tr>
-                  <td colSpan={selectMode ? 8 : 7} className="p-12 text-center text-slate-400">Loading pesanan...</td>
-                </tr>
-              ) : filtered.length === 0 ? (
-                <tr>
-                  <td colSpan={selectMode ? 8 : 7} className="p-12 text-center text-slate-400">Belum ada data pesanan.</td>
-                </tr>
-              ) : (
-                filtered.map((order) => {
-                  const isSelected = selectedIds.includes(order.id);
-                  return (
-                    <tr 
-                      key={order.id} 
-                      onClick={() => {
-                        if (selectMode) toggleSelect(order.id);
-                      }}
-                      className={`hover:bg-slate-800/40 transition-colors ${
-                        selectMode ? 'cursor-pointer' : ''
-                      } ${isSelected ? 'bg-cyan-950/30' : ''}`}
-                    >
-                      {selectMode && (
-                        <td className="p-4 pl-6" onClick={(e) => e.stopPropagation()}>
-                          <button onClick={() => toggleSelect(order.id)}>
-                            {isSelected ? (
-                              <CheckSquare className="w-5 h-5 text-cyan-400" />
-                            ) : (
-                              <Square className="w-5 h-5 text-slate-600" />
-                            )}
-                          </button>
-                        </td>
-                      )}
-                      <td className={`p-4 font-bold text-white ${selectMode ? '' : 'pl-6'}`}>
-                        {order.user?.ign || 'Unknown'}
-                      </td>
-                      <td className="p-4 text-xs text-slate-300">
-                        {order.user?.whatsapp || '-'}
-                      </td>
-                      <td className="p-4 text-xs text-slate-300">
-                        {(order.items || []).map((i, idx) => (
-                          <div key={idx}>{i.quantity}x {i.product?.name || 'Item'} ({i.duration})</div>
-                        ))}
-                      </td>
-                      <td className="p-4 font-mono font-bold text-emerald-400">
-                        Rp {(order.totalAmount || 0).toLocaleString('id-ID')}
-                      </td>
-                      <td className="p-4 text-xs text-slate-400">
-                        {new Date(order.createdAt).toLocaleDateString('id-ID')}
-                      </td>
-                      <td className="p-4" onClick={(e) => e.stopPropagation()}>
-                        <select
-                          value={order.status}
-                          disabled={updatingId === order.id}
-                          onChange={(e) => handleStatusChange(order.id, e.target.value)}
-                          className={`text-xs font-bold rounded-lg px-2.5 py-1 border ${
-                            order.status === 'PAID' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' :
-                            order.status === 'PENDING' ? 'bg-amber-500/10 text-amber-400 border-amber-500/30' :
-                            'bg-rose-500/10 text-rose-400 border-rose-500/30'
-                          }`}
-                        >
-                          <option value="PENDING" className="bg-slate-900">PENDING</option>
-                          <option value="PAID" className="bg-slate-900">PAID</option>
-                          <option value="CANCELLED" className="bg-slate-900">CANCELLED</option>
-                        </select>
-                      </td>
-                      <td className="p-4 pr-6 text-right" onClick={(e) => e.stopPropagation()}>
-                        <button
-                          onClick={() => handleTrashClick(order.id)}
-                          className={`p-2 rounded-lg transition-colors ${
-                            isSelected 
-                              ? 'bg-rose-600 text-white' 
-                              : 'text-slate-400 hover:text-rose-400 hover:bg-rose-500/10'
-                          }`}
-                          title="Klik untuk memilih & hapus pesanan"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })
+                    <span className="text-sm font-bold text-slate-300">Pilih Semua</span>
+                  </div>
+                </div>
               )}
-            </tbody>
-          </table>
+              {filteredOrders.map((order) => {
+                const isSelected = selectedIds.includes(order.id);
+                // Get latest chat if available
+                const latestChat = order.chats && order.chats.length > 0 
+                  ? [...order.chats].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0] 
+                  : null;
+
+                return (
+                  <div 
+                    key={order.id} 
+                    onClick={() => {
+                      if (selectMode) {
+                        toggleSelect(order.id);
+                      } else {
+                        setSelectedOrder(order);
+                      }
+                    }}
+                    className={`relative flex items-center p-4 rounded-[1.5rem] cursor-pointer transition-all ${
+                      isSelected 
+                        ? 'bg-cyan-950/40 border border-cyan-500/50 shadow-lg shadow-cyan-900/20' 
+                        : 'bg-slate-900/80 border border-slate-800/80 hover:bg-slate-800/80 hover:border-slate-700/80'
+                    }`}
+                  >
+                    {/* Bulk Delete Checkbox */}
+                    {selectMode && (
+                      <div className="mr-4" onClick={(e) => e.stopPropagation()}>
+                        <button onClick={() => toggleSelect(order.id)}>
+                          {isSelected ? (
+                            <CheckSquare className="w-6 h-6 text-cyan-400" />
+                          ) : (
+                            <Square className="w-6 h-6 text-slate-600" />
+                          )}
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Avatar */}
+                    <img 
+                      src={`https://minotar.net/helm/${order.user?.ign || 'steve'}/100.png`} 
+                      alt="Avatar"
+                      className="w-12 h-12 rounded-full border border-slate-700 object-cover mr-4 shrink-0"
+                    />
+
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-center mb-0.5">
+                        <h4 className="font-bold text-slate-200 text-sm truncate pr-2 flex items-center gap-2">
+                          {order.user?.ign || 'Anonim'}
+                          {order.user?.whatsapp && (
+                            <a
+                              href={`https://wa.me/${order.user.whatsapp.replace(/[^0-9]/g, '')}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={(e) => e.stopPropagation()}
+                              className="inline-flex items-center gap-1 text-[10px] text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded-md hover:bg-emerald-500/20 transition-colors font-medium"
+                              title="Hubungi WA"
+                            >
+                              <MessageCircle className="w-3 h-3" />
+                            </a>
+                          )}
+                        </h4>
+                        <span className="text-[11px] text-slate-500 font-medium shrink-0">
+                          {latestChat 
+                            ? new Date(latestChat.createdAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+                            : new Date(order.createdAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' })
+                          }
+                        </span>
+                      </div>
+                      
+                      <div className="flex justify-between items-end gap-4">
+                        <div className="text-xs text-slate-400 truncate max-w-full">
+                          {latestChat 
+                            ? (latestChat.message.startsWith('[IMAGE_BASE64]') ? '📷 Mengirim foto bukti pembayaran' : latestChat.message)
+                            : <span className="italic text-slate-500">Belum ada chat.</span>}
+                        </div>
+                        
+                        {/* Status Label & Actions */}
+                        <div className="flex items-center gap-2 shrink-0" onClick={(e) => e.stopPropagation()}>
+                          <select
+                            value={order.status}
+                            onChange={(e) => handleUpdateStatus(order.id, e.target.value)}
+                            className={`text-[10px] font-bold rounded-full px-2 py-1 border focus:outline-none transition-all cursor-pointer ${
+                              order.status === 'PAID'
+                                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20'
+                                : order.status === 'PENDING'
+                                ? 'bg-amber-500/10 text-amber-400 border-amber-500/30 hover:bg-amber-500/20'
+                                : 'bg-rose-500/10 text-rose-400 border-rose-500/30 hover:bg-rose-500/20'
+                            }`}
+                          >
+                            <option value="PENDING" className="bg-slate-900 text-amber-400">PENDING</option>
+                            <option value="PAID" className="bg-slate-900 text-emerald-400">PAID</option>
+                            <option value="CANCELLED" className="bg-slate-900 text-rose-400">CANCELLED</option>
+                          </select>
+                          
+                          <button
+                            onClick={() => handleTrashClick(order.id)}
+                            className="p-1.5 rounded-full text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+                            title="Hapus"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
 
@@ -364,7 +527,7 @@ export default function AdminOrdersPage() {
               onClick={toggleSelectAll}
               className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 text-xs font-bold border border-slate-700 whitespace-nowrap"
             >
-              {allSelected ? 'Unselect All' : 'Select All (' + filtered.length + ')'}
+              {allSelected ? 'Unselect All' : 'Select All (' + filteredOrders.length + ')'}
             </button>
 
             <button
@@ -384,6 +547,101 @@ export default function AdminOrdersPage() {
               <Trash2 className="w-4 h-4" />
               Hapus ({selectedIds.length}) Terpilih
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Detail Pesanan */}
+      {selectedOrder && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-[#0b101d] border border-slate-800 rounded-3xl max-w-xl w-full p-6 sm:p-8 space-y-6 shadow-2xl relative overflow-y-auto max-h-[90vh] animate-in fade-in zoom-in duration-200">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+              <div>
+                <h3 className="text-xl font-bold text-white">Detail Pesanan #{selectedOrder.id.slice(0, 8)}</h3>
+                <p className="text-xs text-slate-400">
+                  {new Date(selectedOrder.createdAt).toLocaleString('id-ID')}
+                </p>
+              </div>
+              <button
+                onClick={() => setSelectedOrder(null)}
+                className="p-2 text-slate-400 hover:text-white rounded-xl bg-slate-800 border border-slate-700"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-slate-400">Player IGN:</span>
+                <span className="font-bold text-cyan-300">{selectedOrder.user?.ign}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-400">WhatsApp:</span>
+                <span className="font-medium text-white">{selectedOrder.user?.whatsapp || '-'}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-400">Metode Pembayaran:</span>
+                <span className="font-bold text-slate-200">{selectedOrder.paymentMethod || 'QRIS'}</span>
+              </div>
+              <div className="flex justify-between items-center pt-2 border-t border-slate-800">
+                <span className="text-slate-400">Status Pembayaran:</span>
+                <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                  selectedOrder.status === 'PAID' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' :
+                  selectedOrder.status === 'PENDING' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' :
+                  'bg-rose-500/20 text-rose-400 border border-rose-500/30'
+                }`}>
+                  {selectedOrder.status}
+                </span>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">Item Dipesan</h4>
+              <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                {(selectedOrder.items || []).map((item, idx) => (
+                  <div key={idx} className="flex justify-between items-center p-3 rounded-xl bg-slate-900/60 border border-slate-800 text-sm">
+                    <div>
+                      <p className="font-bold text-white">{item.quantity}x {item.product?.name || 'Item Store'}</p>
+                      <p className="text-xs text-slate-400">Durasi: {item.duration}</p>
+                    </div>
+                    <p className="font-mono font-bold text-emerald-400">
+                      Rp {formatPrice(item.price * item.quantity)}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex justify-between items-center pt-4 border-t border-slate-800">
+              <span className="text-slate-300 font-semibold">Total Pembayaran</span>
+              <span className="text-2xl font-black text-emerald-400 font-mono">
+                Rp {formatPrice(selectedOrder.totalAmount)}
+              </span>
+            </div>
+
+            <div className="pt-2">
+              <AdminChatBox orderId={selectedOrder.id} orderStatus={selectedOrder.status} />
+            </div>
+
+            <div className="flex gap-3 pt-2">
+              {selectedOrder.user?.whatsapp && (
+                <a
+                  href={`https://wa.me/${selectedOrder.user.whatsapp.replace(/[^0-9]/g, '')}?text=Halo%20${encodeURIComponent(selectedOrder.user.ign)},%20mengenai%20pesanan%20SERA%20MC%20kamu...`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-center text-sm flex items-center justify-center gap-2 transition-colors shadow-lg shadow-emerald-600/20"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  Hubungi WA Pemain
+                </a>
+              )}
+              <button
+                onClick={() => setSelectedOrder(null)}
+                className="px-5 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-xl text-sm transition-colors"
+              >
+                Tutup
+              </button>
+            </div>
           </div>
         </div>
       )}
