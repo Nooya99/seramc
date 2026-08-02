@@ -10,7 +10,7 @@ export async function POST(request) {
     }
 
     const isPermanen = text.toLowerCase().includes('#rankpermanen');
-    const regex = /-\s*\*(.*?)\*\s*~?Rp\.?([\d.]+)~?\s*(?:`Rp\.?([\d.]+)`|Rp\.?([\d.]+))/ig;
+    const regex = /-\s*\*(.*?)\*\s*~?Rp\.?\s*([\d.]+)~?\s*(?:`Rp\.?\s*([\d.]+)`|Rp\.?\s*([\d.]+))/ig;
 
     const products = await prisma.product.findMany();
     let updatedCount = 0;
