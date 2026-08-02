@@ -443,9 +443,11 @@ export default function AdminDashboard() {
 
                       <td className="p-4">
                         <div className="flex items-center gap-2">
-                          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 flex items-center justify-center font-bold text-cyan-300 text-xs">
-                            {(order.user?.ign || 'P')[0].toUpperCase()}
-                          </div>
+                          <img 
+                            src={`https://minotar.net/helm/${order.user?.ign || 'steve'}/100.png`} 
+                            alt="Avatar"
+                            className="w-8 h-8 rounded-lg border border-cyan-500/30 object-cover shadow-sm"
+                          />
                           <span className="font-bold text-white group-hover:text-cyan-300 transition-colors">
                             {order.user?.ign || 'Anonim'}
                           </span>

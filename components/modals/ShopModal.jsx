@@ -505,7 +505,7 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
               const style = getRankStyle(baseName);
               const sortedPrices = items.sort((a, b) => a.price - b.price).map(p => {
                 const isDiscounted = p.discount > 0;
-                const finalPrice = isDiscounted ? p.price * (1 - p.discount / 100) : p.price;
+                const finalPrice = isDiscounted ? Math.round(p.price * (1 - p.discount / 100)) : p.price;
                 return {
                   duration: p.duration || 'Permanen',
                   originalPrice: isDiscounted ? p.price.toLocaleString('id-ID') : null,
@@ -541,7 +541,7 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
             const updatedKeys = keyItems.map(p => {
               const style = getKeyStyle(p.name);
               const isDiscounted = p.discount > 0;
-              const finalPrice = isDiscounted ? p.price * (1 - p.discount / 100) : p.price;
+              const finalPrice = isDiscounted ? Math.round(p.price * (1 - p.discount / 100)) : p.price;
               return {
                 name: p.name,
                 ...style,
@@ -567,7 +567,7 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
             const updatedOthers = otherItems.map(p => {
               const style = getOtherStyle(p.name);
               const isDiscounted = p.discount > 0;
-              const finalPrice = isDiscounted ? p.price * (1 - p.discount / 100) : p.price;
+              const finalPrice = isDiscounted ? Math.round(p.price * (1 - p.discount / 100)) : p.price;
               return {
                 name: p.name,
                 ...style,
@@ -593,7 +593,7 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
             const updatedRaces = raceItems.map(p => {
               const style = getRaceStyle(p.name);
               const isDiscounted = p.discount > 0;
-              const finalPrice = isDiscounted ? p.price * (1 - p.discount / 100) : p.price;
+              const finalPrice = isDiscounted ? Math.round(p.price * (1 - p.discount / 100)) : p.price;
               return {
                 name: p.name,
                 ...style,
