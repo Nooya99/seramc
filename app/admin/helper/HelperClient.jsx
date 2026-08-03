@@ -185,7 +185,15 @@ export default function HelperClient() {
                     className="hover:bg-slate-800/50 cursor-pointer transition-colors group"
                   >
                     <td className="px-6 py-4">
-                      <div className="font-medium text-white group-hover:text-cyan-400 transition-colors">{app.nickname}</div>
+                      <div className="flex items-center gap-2">
+                        <button 
+                          onClick={(e) => toggleStar(app.id, e)}
+                          className="p-1.5 rounded hover:bg-slate-700 transition-colors group/star"
+                        >
+                          <Star className={`w-4 h-4 ${app.isStarred ? 'fill-yellow-400 text-yellow-400' : 'text-slate-500 group-hover/star:text-slate-300'}`} />
+                        </button>
+                        <div className="font-medium text-white group-hover:text-cyan-400 transition-colors">{app.nickname}</div>
+                      </div>
                     </td>
                     <td className="px-6 py-4">
                       <span className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider ${
@@ -321,7 +329,7 @@ export default function HelperClient() {
 
       {/* Toast Notification */}
       {toast && (
-        <div className={`fixed bottom-6 right-6 px-6 py-3 rounded-xl shadow-xl z-[200] animate-in slide-in-from-bottom-5 fade-in duration-300 flex items-center gap-2 font-medium ${
+        <div className={`fixed top-6 right-6 px-6 py-3 rounded-xl shadow-xl z-[200] animate-in slide-in-from-top-5 fade-in duration-300 flex items-center gap-2 font-medium ${
           toast.type === 'success' 
             ? 'bg-emerald-500/90 text-white border border-emerald-400' 
             : 'bg-rose-500/90 text-white border border-rose-400'
