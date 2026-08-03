@@ -10,7 +10,13 @@ export default function HelperClient() {
   const [isLoading, setIsLoading] = useState(true);
   const [isToggling, setIsToggling] = useState(false);
   const [selectedApp, setSelectedApp] = useState(null);
+  const [toast, setToast] = useState(null);
   const router = useRouter();
+
+  const showToast = (message, type = 'error') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
 
   const fetchApplications = async () => {
     try {
@@ -58,9 +64,10 @@ export default function HelperClient() {
       
       const data = await res.json();
       setIsOpen(data.isOpen);
+      showToast(data.isOpen ? 'Pendaftaran berhasil dibuka' : 'Pendaftaran berhasil ditutup', 'success');
     } catch (err) {
       console.error(err);
-      alert('Gagal mengubah status pendaftaran');
+      showToast('Gagal mengubah status pendaftaran');
     } finally {
       setIsToggling(false);
     }
@@ -81,9 +88,31 @@ export default function HelperClient() {
       if (selectedApp?.id === id) {
         setSelectedApp(null);
       }
+      showToast('Pendaftaran berhasil dihapus', 'success');
     } catch (err) {
       console.error(err);
-      alert('Gagal menghapus pendaftaran');
+      showToast('Gagal menghapus pendaftaran');
+    }
+  };
+
+  const toggleStar = async (id, e) => {
+    e.stopPropagation();
+    try {
+      const res = await fetch(`/api/admin/helper/${id}/star`, {
+        method: 'POST',
+      });
+      
+      if (!res.ok) throw new Error('Failed to toggle');
+      
+      const data = await res.json();
+      setApplications(prev => prev.map(app => app.id === id ? { ...app, isStarred: data.isStarred } : app));
+      if (selectedApp?.id === id) {
+        setSelectedApp(prev => ({ ...prev, isStarred: data.isStarred }));
+      }
+      showToast(data.isStarred ? 'Pendaftaran ditandai' : 'Tanda dihapus', 'success');
+    } catch (err) {
+      console.error(err);
+      showToast('Gagal menandai pendaftaran');
     }
   };
 
@@ -287,6 +316,17 @@ export default function HelperClient() {
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Toast Notification */}
+      {toast && (
+        <div className={`fixed bottom-6 right-6 px-6 py-3 rounded-xl shadow-xl z-[200] animate-in slide-in-from-bottom-5 fade-in duration-300 flex items-center gap-2 font-medium ${
+          toast.type === 'success' 
+            ? 'bg-emerald-500/90 text-white border border-emerald-400' 
+            : 'bg-rose-500/90 text-white border border-rose-400'
+        }`}>
+          {toast.message}
         </div>
       )}
     </div>
