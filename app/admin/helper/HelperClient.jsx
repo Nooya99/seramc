@@ -19,11 +19,7 @@ export default function HelperClient() {
         return;
       }
       
-      const res = await fetch('/api/admin/helper', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      const res = await fetch('/api/admin/helper');
       
       if (!res.ok) {
         if (res.status === 401) router.push('/admin/login');
@@ -49,12 +45,10 @@ export default function HelperClient() {
     
     setIsToggling(true);
     try {
-      const token = localStorage.getItem('sera_admin_auth');
       const res = await fetch('/api/admin/helper/toggle', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({ isOpen: !isOpen })
       });

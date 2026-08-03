@@ -1,12 +1,14 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import { cookies } from 'next/headers';
 
 const prisma = new PrismaClient();
 
 export async function GET(req) {
   try {
-    const authHeader = req.headers.get('authorization');
-    if (!authHeader || authHeader !== `Bearer ${process.env.ADMIN_TOKEN}`) {
+    const cookieStore = cookies();
+    const token = cookieStore.get('admin_token');
+    if (!token || token.value !== 'authenticated') {
       return new NextResponse('Unauthorized', { status: 401 });
     }
 
