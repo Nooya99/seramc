@@ -108,6 +108,7 @@ model HelperApplication {
   skills         String
   reason         String
   status         String   @default("PENDING") // PENDING, ACCEPTED, REJECTED
+  isStarred      Boolean  @default(false)
   createdAt      DateTime @default(now())
 }
 

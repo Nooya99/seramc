@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Users, Power, PowerOff, Loader2, X, Trash2 } from 'lucide-react';
+import { Users, Power, PowerOff, Loader2, X, Trash2, Star } from 'lucide-react';
 
 export default function HelperClient() {
   const [applications, setApplications] = useState([]);
@@ -87,6 +87,28 @@ export default function HelperClient() {
     }
   };
 
+  const toggleStar = async (id, e) => {
+    e.stopPropagation();
+    try {
+      const res = await fetch(`/api/admin/helper/${id}/star`, {
+        method: 'POST',
+      });
+      if (!res.ok) throw new Error('Failed to toggle star');
+      
+      const data = await res.json();
+      setApplications(prev => prev.map(app => 
+        app.id === id ? { ...app, isStarred: data.isStarred } : app
+      ));
+      
+      if (selectedApp?.id === id) {
+        setSelectedApp(prev => ({ ...prev, isStarred: data.isStarred }));
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Gagal menandai pendaftaran');
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -156,7 +178,15 @@ export default function HelperClient() {
                     className="hover:bg-slate-800/50 cursor-pointer transition-colors group"
                   >
                     <td className="px-6 py-4">
-                      <div className="font-medium text-white group-hover:text-cyan-400 transition-colors">{app.nickname}</div>
+                      <div className="flex items-center gap-2">
+                        <button 
+                          onClick={(e) => toggleStar(app.id, e)}
+                          className="p-1.5 rounded hover:bg-slate-700 transition-colors group/star"
+                        >
+                          <Star className={`w-4 h-4 ${app.isStarred ? 'fill-yellow-400 text-yellow-400' : 'text-slate-500 group-hover/star:text-slate-300'}`} />
+                        </button>
+                        <div className="font-medium text-white group-hover:text-cyan-400 transition-colors">{app.nickname}</div>
+                      </div>
                     </td>
                     <td className="px-6 py-4">
                       <span className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider ${
@@ -215,9 +245,17 @@ export default function HelperClient() {
                 <Users className="w-6 h-6 text-slate-400" />
               </div>
               <div>
-                <h3 className="text-xl font-bold text-white">
-                  {selectedApp.nickname}
-                </h3>
+                <div className="flex items-center gap-3">
+                  <h3 className="text-xl font-bold text-white">
+                    {selectedApp.nickname}
+                  </h3>
+                  <button 
+                    onClick={(e) => toggleStar(selectedApp.id, e)}
+                    className="p-1 rounded hover:bg-slate-700 transition-colors group/star"
+                  >
+                    <Star className={`w-5 h-5 ${selectedApp.isStarred ? 'fill-yellow-400 text-yellow-400' : 'text-slate-500 group-hover/star:text-slate-300'}`} />
+                  </button>
+                </div>
                 <div className="text-xs text-cyan-400 font-mono tracking-wider uppercase mt-0.5 flex items-center gap-2">
                   <span className={`px-2 py-0.5 rounded text-[10px] ${selectedApp.platform === 'java' ? 'bg-orange-500/10 text-orange-400' : 'bg-blue-500/10 text-blue-400'}`}>
                     {selectedApp.platform}
