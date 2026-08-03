@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Users, Power, PowerOff, Loader2, X } from 'lucide-react';
+import { Users, Power, PowerOff, Loader2, X, Trash2 } from 'lucide-react';
 
 export default function HelperClient() {
   const [applications, setApplications] = useState([]);
@@ -66,6 +66,27 @@ export default function HelperClient() {
     }
   };
 
+  const deleteApplication = async (id, e) => {
+    e.stopPropagation();
+    if (!confirm('Yakin ingin menghapus pendaftaran ini?')) return;
+    
+    try {
+      const res = await fetch(`/api/admin/helper/${id}`, {
+        method: 'DELETE',
+      });
+      
+      if (!res.ok) throw new Error('Failed to delete');
+      
+      setApplications(prev => prev.filter(app => app.id !== id));
+      if (selectedApp?.id === id) {
+        setSelectedApp(null);
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Gagal menghapus pendaftaran');
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -117,12 +138,13 @@ export default function HelperClient() {
                 <th className="px-6 py-4 font-semibold">Kontak</th>
                 <th className="px-6 py-4 font-semibold w-1/3">Detail</th>
                 <th className="px-6 py-4 font-semibold">Waktu Daftar</th>
+                <th className="px-6 py-4 font-semibold text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/80">
               {applications.length === 0 ? (
                 <tr>
-                  <td colSpan="5" className="px-6 py-8 text-center text-slate-400">
+                  <td colSpan="6" className="px-6 py-8 text-center text-slate-400">
                     Belum ada yang mendaftar.
                   </td>
                 </tr>
@@ -156,6 +178,15 @@ export default function HelperClient() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-slate-400 text-xs">
                       {new Date(app.createdAt).toLocaleString('id-ID')}
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <button 
+                        onClick={(e) => deleteApplication(app.id, e)}
+                        className="p-2 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors"
+                        title="Hapus Pendaftaran"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
                     </td>
                   </tr>
                 ))

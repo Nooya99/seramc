@@ -69,7 +69,6 @@ export default function Hero({ onOpenModal }) {
               onClick={() => onOpenModal('helperReq')} 
               className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold px-8 py-4 text-[15px] md:text-[17px] rounded-2xl shadow-[0_0_20px_rgba(6,182,212,0.4)] active:scale-95 transition-all duration-300 ease-in-out hover:shadow-[0_0_30px_rgba(6,182,212,0.6)] border border-cyan-400/30 overflow-hidden group"
             >
-              <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
               <span className="relative z-10 flex items-center gap-2">
                 <span className="animate-pulse">✨</span> 
                 Daftar Sebagai Helper!
