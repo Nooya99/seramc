@@ -130,31 +130,41 @@ export default function HelperRegistrationModal({ isOpen, onClose }) {
           <form id="helper-form" onSubmit={handleSubmit} className="space-y-4">
             
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-slate-300">Platform</label>
-              <div className="flex gap-4">
-                <label className="flex items-center gap-2 text-slate-300 cursor-pointer">
-                  <input type="radio" name="platform" value="java" checked={formData.platform === 'java'} onChange={handleChange} className="accent-cyan-500" />
-                  Java
-                </label>
-                <label className="flex items-center gap-2 text-slate-300 cursor-pointer">
-                  <input type="radio" name="platform" value="bedrock" checked={formData.platform === 'bedrock'} onChange={handleChange} className="accent-cyan-500" />
-                  Bedrock
-                </label>
-              </div>
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-slate-300">Nickname (In-Game)</label>
+              <label className="text-sm font-bold text-gray-300">Nickname Minecraft</label>
               <input 
                 type="text" 
                 name="nickname"
                 required
                 value={formData.nickname}
                 onChange={handleChange}
-                placeholder={formData.platform === 'bedrock' ? "_Nickname" : "Nickname"}
-                className="w-full bg-slate-900/50 border border-slate-700/50 rounded-xl px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 transition-all"
+                placeholder="Masukkan Nickname Anda"
+                className="w-full bg-slate-900/50 border border-slate-700/50 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 transition-all"
               />
-              {formData.platform === 'bedrock' && <p className="text-xs text-slate-400 mt-1">Bedrock diawali dengan underscore (_)</p>}
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-sm font-bold text-gray-300">Pilih Platform</label>
+              <div className="grid grid-cols-2 gap-3">
+                <div 
+                  onClick={() => handleChange({ target: { name: 'platform', value: 'java' }})}
+                  className={`flex items-center justify-center gap-2 p-3 rounded-xl border cursor-pointer transition-all duration-300 ${formData.platform === 'java' ? 'bg-[#f2e28a]/20 border-[#f2e28a] text-[#f2e28a]' : 'bg-slate-900/50 border-slate-700/50 text-gray-400 hover:border-slate-500/50'}`}
+                >
+                  <PixelIcon name="monitor" className="w-5 h-5" />
+                  <span className="font-bold text-sm">Java Edition</span>
+                </div>
+                <div 
+                  onClick={() => handleChange({ target: { name: 'platform', value: 'bedrock' }})}
+                  className={`flex items-center justify-center gap-2 p-3 rounded-xl border cursor-pointer transition-all duration-300 ${formData.platform === 'bedrock' ? 'bg-[#f2e28a]/20 border-[#f2e28a] text-[#f2e28a]' : 'bg-slate-900/50 border-slate-700/50 text-gray-400 hover:border-slate-500/50'}`}
+                >
+                  <PixelIcon name="device-phone" className="w-5 h-5" />
+                  <span className="font-bold text-sm">Bedrock Edition</span>
+                </div>
+              </div>
+              {formData.platform === 'bedrock' && (
+                <p className="text-xs text-yellow-400/80 mt-2 text-center">
+                  *Simbol _ (underscore) akan otomatis ditambahkan di awal nama.
+                </p>
+              )}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
