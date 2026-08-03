@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Users, Power, PowerOff, Loader2, X, Trash2 } from 'lucide-react';
+import { Users, Power, PowerOff, Loader2, X, Trash2, Star } from 'lucide-react';
 
 export default function HelperClient() {
   const [applications, setApplications] = useState([]);
@@ -252,8 +252,9 @@ export default function HelperClient() {
                 <Users className="w-6 h-6 text-slate-400" />
               </div>
               <div>
-                <h3 className="text-xl font-bold text-white">
+                <h3 className="text-xl font-bold text-white flex items-center gap-2">
                   {selectedApp.nickname}
+                  {selectedApp.isStarred && <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />}
                 </h3>
                 <div className="text-xs text-cyan-400 font-mono tracking-wider uppercase mt-0.5 flex items-center gap-2">
                   <span className={`px-2 py-0.5 rounded text-[10px] ${selectedApp.platform === 'java' ? 'bg-orange-500/10 text-orange-400' : 'bg-blue-500/10 text-blue-400'}`}>
