@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Users, Power, PowerOff, Loader2 } from 'lucide-react';
+import { Users, Power, PowerOff, Loader2, X } from 'lucide-react';
 
 export default function HelperClient() {
   const [applications, setApplications] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isToggling, setIsToggling] = useState(false);
+  const [selectedApp, setSelectedApp] = useState(null);
   const router = useRouter();
 
   const fetchApplications = async () => {
@@ -127,9 +128,13 @@ export default function HelperClient() {
                 </tr>
               ) : (
                 applications.map((app) => (
-                  <tr key={app.id} className="hover:bg-slate-800/30 transition-colors">
+                  <tr 
+                    key={app.id} 
+                    onClick={() => setSelectedApp(app)}
+                    className="hover:bg-slate-800/50 cursor-pointer transition-colors group"
+                  >
                     <td className="px-6 py-4">
-                      <div className="font-medium text-white">{app.nickname}</div>
+                      <div className="font-medium text-white group-hover:text-cyan-400 transition-colors">{app.nickname}</div>
                     </td>
                     <td className="px-6 py-4">
                       <span className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider ${
@@ -145,19 +150,8 @@ export default function HelperClient() {
                       <div className="text-xs"><span className="text-slate-500">DC:</span> {app.discord}</div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="space-y-2 max-w-sm">
-                        <div className="text-xs">
-                          <span className="font-medium text-slate-400">Tau SERA MC:</span> {app.discovery}
-                        </div>
-                        <div className="text-xs">
-                          <span className="font-medium text-slate-400">Server sblm:</span> {app.previousServer}
-                        </div>
-                        <div className="text-xs">
-                          <span className="font-medium text-slate-400">Keahlian:</span> <p className="line-clamp-2 mt-0.5">{app.skills}</p>
-                        </div>
-                        <div className="text-xs">
-                          <span className="font-medium text-slate-400">Alasan:</span> <p className="line-clamp-2 mt-0.5">{app.reason}</p>
-                        </div>
+                      <div className="text-xs text-slate-400 italic">
+                        Klik baris ini untuk melihat detail lengkap pendaftaran...
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-slate-400 text-xs">
@@ -170,6 +164,90 @@ export default function HelperClient() {
           </table>
         </div>
       </div>
+
+      {/* Modal Detail Pendaftaran */}
+      {selectedApp && (
+        <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setSelectedApp(null)}>
+          <div 
+            className="bg-[#0b101d] border border-slate-700 w-full max-w-2xl rounded-2xl p-6 relative animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button 
+              onClick={() => setSelectedApp(null)}
+              className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            
+            <div className="flex items-center gap-4 mb-6 pr-8 border-b border-slate-800 pb-4">
+              <div className="w-12 h-12 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center">
+                <Users className="w-6 h-6 text-slate-400" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-white">
+                  {selectedApp.nickname}
+                </h3>
+                <div className="text-xs text-cyan-400 font-mono tracking-wider uppercase mt-0.5 flex items-center gap-2">
+                  <span className={`px-2 py-0.5 rounded text-[10px] ${selectedApp.platform === 'java' ? 'bg-orange-500/10 text-orange-400' : 'bg-blue-500/10 text-blue-400'}`}>
+                    {selectedApp.platform}
+                  </span>
+                  <span>{new Date(selectedApp.createdAt).toLocaleString('id-ID')}</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="overflow-y-auto custom-scrollbar flex-1 pr-2 space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-[#070b14] border border-slate-800/80 rounded-xl p-3">
+                  <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">WhatsApp</div>
+                  <div className="text-sm text-slate-200 font-mono">{selectedApp.whatsapp}</div>
+                </div>
+                <div className="bg-[#070b14] border border-slate-800/80 rounded-xl p-3">
+                  <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Discord</div>
+                  <div className="text-sm text-slate-200 font-mono">{selectedApp.discord}</div>
+                </div>
+              </div>
+
+              <div className="bg-[#070b14] border border-slate-800/80 rounded-xl p-4 space-y-4">
+                <div>
+                  <div className="text-[10px] text-cyan-500 uppercase tracking-wider mb-1 font-semibold">Tau SERA MC Dari Mana?</div>
+                  <div className="text-sm text-slate-300">{selectedApp.discovery}</div>
+                </div>
+                
+                <div className="w-full h-px bg-slate-800/50"></div>
+                
+                <div>
+                  <div className="text-[10px] text-cyan-500 uppercase tracking-wider mb-1 font-semibold">Server Sebelumnya</div>
+                  <div className="text-sm text-slate-300">{selectedApp.previousServer}</div>
+                </div>
+
+                <div className="w-full h-px bg-slate-800/50"></div>
+
+                <div>
+                  <div className="text-[10px] text-cyan-500 uppercase tracking-wider mb-2 font-semibold">Keahlian</div>
+                  <div className="text-sm text-slate-300 bg-black/40 p-3 rounded-lg whitespace-pre-wrap">{selectedApp.skills}</div>
+                </div>
+
+                <div className="w-full h-px bg-slate-800/50"></div>
+
+                <div>
+                  <div className="text-[10px] text-cyan-500 uppercase tracking-wider mb-2 font-semibold">Alasan Mendaftar</div>
+                  <div className="text-sm text-slate-300 bg-black/40 p-3 rounded-lg whitespace-pre-wrap">{selectedApp.reason}</div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="mt-6 pt-4 border-t border-slate-800 flex justify-end">
+              <button 
+                onClick={() => setSelectedApp(null)}
+                className="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-white text-sm font-semibold rounded-xl transition-colors"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
