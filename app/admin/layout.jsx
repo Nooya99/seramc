@@ -13,7 +13,8 @@ import {
   Sparkles,
   ExternalLink,
   ChevronRight,
-  MessageSquare
+  MessageSquare,
+  Users
 } from 'lucide-react';
 
 export default function AdminLayout({ children }) {
@@ -61,6 +62,12 @@ export default function AdminLayout({ children }) {
       href: '/admin/feedback',
       icon: MessageSquare,
       active: pathname === '/admin/feedback'
+    },
+    {
+      name: 'Pendaftaran Helper',
+      href: '/admin/helper',
+      icon: Users,
+      active: pathname === '/admin/helper'
     }
   ];
 

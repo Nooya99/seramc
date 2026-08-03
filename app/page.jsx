@@ -25,6 +25,8 @@ import CheckoutModal from '@/components/modals/CheckoutModal';
 import PlayerLoginModal from '@/components/modals/PlayerLoginModal';
 import OrderStatusModal from '@/components/modals/OrderStatusModal';
 import LiveChatWidget from '@/components/LiveChatWidget';
+import HelperRequirementsModal from '@/components/modals/HelperRequirementsModal';
+import HelperRegistrationModal from '@/components/modals/HelperRegistrationModal';
 
 export default function Home() {
   const [activeModal, setActiveModal] = useState(null);
@@ -270,6 +272,15 @@ export default function Home() {
         isOpen={activeModal === 'status'}
         onClose={() => setActiveModal('shop')}
         playerContext={playerContext}
+      />
+      <HelperRequirementsModal
+        isOpen={activeModal === 'helperReq'}
+        onClose={handleCloseModal}
+        onUnderstood={() => setActiveModal('helperForm')}
+      />
+      <HelperRegistrationModal
+        isOpen={activeModal === 'helperForm'}
+        onClose={handleCloseModal}
       />
 
       {/* TOAST NOTIFICATIONS */}

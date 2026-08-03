@@ -94,3 +94,22 @@ model OrderChat {
   message   String
   createdAt DateTime @default(now())
 }
+
+model HelperApplication {
+  id             String   @id @default(uuid())
+  platform       String   // java or bedrock
+  nickname       String
+  whatsapp       String
+  discord        String
+  discovery      String
+  previousServer String
+  skills         String
+  reason         String
+  status         String   @default("PENDING") // PENDING, ACCEPTED, REJECTED
+  createdAt      DateTime @default(now())
+}
+
+model Setting {
+  key   String @id
+  value String
+}

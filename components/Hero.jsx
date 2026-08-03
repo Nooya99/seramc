@@ -50,6 +50,13 @@ export default function Hero({ onOpenModal }) {
           >
             Rules
           </button>
+          
+          <button 
+            onClick={() => onOpenModal('helperReq')} 
+            className="bg-cyan-500 hover:bg-cyan-400 text-white font-bold px-6 md:px-10 py-3 md:py-[14px] text-[12px] md:text-[14.5px] rounded-full shadow-[0_0_15px_rgba(6,182,212,0.4)] active:scale-95 transition-all duration-300 ease-in-out hover:shadow-[0_0_25px_rgba(6,182,212,0.6)] animate-pulse"
+          >
+            Daftar Helper
+          </button>
         </div>
       </div>
     </section>

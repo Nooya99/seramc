@@ -24,7 +24,6 @@ import {
 import { ConfirmModal, Toast } from '@/components/admin/NotificationModal';
 import AdminVoucherModal from '@/components/modals/AdminVoucherModal';
 import AdminDiscountModal from '@/components/modals/AdminDiscountModal';
-import AdminPromoPasteModal from '@/components/modals/AdminPromoPasteModal';
 
 const DiscountCountdownButton = ({ expiresAt, onClick }) => {
   const [timeLeft, setTimeLeft] = useState('');
@@ -87,7 +86,6 @@ export default function AdminProductsPage() {
   const [showProductModal, setShowProductModal] = useState(false);
   const [showDiscountModal, setShowDiscountModal] = useState(false);
   const [showVoucherModal, setShowVoucherModal] = useState(false);
-  const [showPromoModal, setShowPromoModal] = useState(false);
   const [showTutorialModal, setShowTutorialModal] = useState(false);
   
   const [globalDiscount, setGlobalDiscount] = useState('');
@@ -625,14 +623,6 @@ export default function AdminProductsPage() {
           </button>
 
           <button
-            onClick={() => setShowPromoModal(true)}
-            className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-fuchsia-500 hover:bg-fuchsia-400 text-slate-950 text-sm font-bold shadow-lg shadow-fuchsia-500/20 transition-all active:scale-95"
-          >
-            <Sparkles className="w-5 h-5" />
-            Auto Promo
-          </button>
-
-          <button
             onClick={() => handleOpenModal()}
             className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-sm font-bold shadow-lg shadow-cyan-500/20 transition-all active:scale-95"
           >
@@ -810,14 +800,7 @@ export default function AdminProductsPage() {
       )}
 
       {/* Modals */}
-      <AdminPromoPasteModal
-        isOpen={showPromoModal}
-        onClose={() => setShowPromoModal(false)}
-        onSuccess={(msg) => {
-          showToast(msg);
-          fetchProducts();
-        }}
-      />
+
       {selectMode && selectedIds.length > 0 && (
         <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-40 bg-[#0b101d]/95 border border-cyan-500/40 p-4 rounded-2xl backdrop-blur-2xl shadow-2xl shadow-cyan-500/10 flex items-center gap-4 sm:gap-6 animate-in slide-in-from-bottom-5 duration-200">
           <div className="flex items-center gap-2">
