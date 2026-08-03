@@ -5,6 +5,7 @@ import { playSound } from '@/utils/sound';
 
 export default function HelperRegistrationModal({ isOpen, onClose }) {
   const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
     platform: 'java',
     nickname: '',
     whatsapp: '',
