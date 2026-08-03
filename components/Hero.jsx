@@ -1,8 +1,18 @@
 'use client';
 
 import Image from 'next/image';
+import { useState, useEffect } from 'react';
 
 export default function Hero({ onOpenModal }) {
+  const [isHelperOpen, setIsHelperOpen] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/helper/status')
+      .then(res => res.json())
+      .then(data => setIsHelperOpen(data.isOpen))
+      .catch(console.error);
+  }, []);
+
   return (
     <section id="home" className="relative min-h-screen w-full flex flex-col justify-center items-center text-center pt-20 overflow-hidden">
       <div className="relative z-10 w-full flex flex-col items-center px-4 md:px-6 max-w-6xl mx-auto mt-10">
@@ -50,14 +60,24 @@ export default function Hero({ onOpenModal }) {
           >
             Rules
           </button>
-          
-          <button 
-            onClick={() => onOpenModal('helperReq')} 
-            className="bg-cyan-500 hover:bg-cyan-400 text-white font-bold px-6 md:px-10 py-3 md:py-[14px] text-[12px] md:text-[14.5px] rounded-full shadow-[0_0_15px_rgba(6,182,212,0.4)] active:scale-95 transition-all duration-300 ease-in-out hover:shadow-[0_0_25px_rgba(6,182,212,0.6)] animate-pulse"
-          >
-            Daftar Helper
-          </button>
         </div>
+
+        {/* HELPER REGISTRATION - PROMINENT */}
+        {isHelperOpen && (
+          <div className="mt-8 relative w-full max-w-sm mx-auto px-4">
+            <button 
+              onClick={() => onOpenModal('helperReq')} 
+              className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold px-8 py-4 text-[15px] md:text-[17px] rounded-2xl shadow-[0_0_20px_rgba(6,182,212,0.4)] active:scale-95 transition-all duration-300 ease-in-out hover:shadow-[0_0_30px_rgba(6,182,212,0.6)] border border-cyan-400/30 overflow-hidden group"
+            >
+              <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+              <span className="relative z-10 flex items-center gap-2">
+                <span className="animate-pulse">✨</span> 
+                Daftar Sebagai Helper!
+                <span className="animate-pulse">✨</span>
+              </span>
+            </button>
+          </div>
+        )}
       </div>
     </section>
   );
