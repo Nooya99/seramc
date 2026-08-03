@@ -7,9 +7,9 @@ const prisma = new PrismaClient();
 export async function DELETE(req, { params }) {
   try {
     const cookieStore = cookies();
-    const token = cookieStore.get('admin_token')?.value;
+    const token = cookieStore.get('admin_token');
 
-    if (!token || token !== process.env.ADMIN_PASSWORD) {
+    if (!token || token.value !== 'authenticated') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
