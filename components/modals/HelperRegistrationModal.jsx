@@ -5,11 +5,12 @@ import { playSound } from '@/utils/sound';
 
 export default function HelperRegistrationModal({ isOpen, onClose }) {
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
     platform: 'java',
     nickname: '',
     whatsapp: '',
     discord: '',
+    age: '',
+    interview: false,
     discovery: '',
     previousServer: '',
     skills: '',
@@ -70,6 +71,8 @@ export default function HelperRegistrationModal({ isOpen, onClose }) {
         nickname: '',
         whatsapp: '',
         discord: '',
+        age: '',
+        interview: false,
         discovery: '',
         previousServer: '',
         skills: '',
@@ -167,7 +170,7 @@ export default function HelperRegistrationModal({ isOpen, onClose }) {
               )}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-1.5">
                 <label className="text-sm font-medium text-slate-300">No. WhatsApp</label>
                 <input 
@@ -176,7 +179,7 @@ export default function HelperRegistrationModal({ isOpen, onClose }) {
                   required
                   value={formData.whatsapp}
                   onChange={handleChange}
-                  placeholder="08123456789"
+                  placeholder="0812..."
                   className="w-full bg-slate-900/50 border border-slate-700/50 rounded-xl px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 transition-all"
                 />
               </div>
@@ -188,9 +191,43 @@ export default function HelperRegistrationModal({ isOpen, onClose }) {
                   required
                   value={formData.discord}
                   onChange={handleChange}
-                  placeholder="username#1234"
+                  placeholder="user#1234"
                   className="w-full bg-slate-900/50 border border-slate-700/50 rounded-xl px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 transition-all"
                 />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-slate-300">Umur</label>
+                <input 
+                  type="number" 
+                  name="age"
+                  required
+                  min="1"
+                  max="99"
+                  value={formData.age}
+                  onChange={handleChange}
+                  placeholder="Umur"
+                  className="w-full bg-slate-900/50 border border-slate-700/50 rounded-xl px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 transition-all"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-slate-300">Bersedia di interview (Tanggal 7 & 8)?</label>
+              <div className="flex gap-4 mt-1">
+                <button
+                  type="button"
+                  onClick={() => setFormData(prev => ({ ...prev, interview: true }))}
+                  className={`flex-1 py-2.5 rounded-xl border transition-all ${formData.interview === true ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400 font-bold' : 'bg-slate-900/50 border-slate-700/50 text-slate-400 hover:border-slate-500'}`}
+                >
+                  Ya, Bersedia
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormData(prev => ({ ...prev, interview: false }))}
+                  className={`flex-1 py-2.5 rounded-xl border transition-all ${formData.interview === false ? 'bg-rose-500/20 border-rose-500 text-rose-400 font-bold' : 'bg-slate-900/50 border-slate-700/50 text-slate-400 hover:border-slate-500'}`}
+                >
+                  Tidak
+                </button>
               </div>
             </div>
 

@@ -101,6 +101,8 @@ model HelperApplication {
   nickname       String
   whatsapp       String
   discord        String
+  age            Int      @default(0)
+  interview      Boolean  @default(false)
   discovery      String
   previousServer String
   skills         String

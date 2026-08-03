@@ -17,11 +17,15 @@ export async function POST(req) {
     const data = await req.json();
     
     // Validate required fields
-    const requiredFields = ['platform', 'nickname', 'whatsapp', 'discord', 'discovery', 'previousServer', 'skills', 'reason'];
+    const requiredFields = ['platform', 'nickname', 'whatsapp', 'discord', 'age', 'discovery', 'previousServer', 'skills', 'reason'];
     for (const field of requiredFields) {
-      if (!data[field]) {
+      if (data[field] === undefined || data[field] === '') {
         return NextResponse.json({ error: `Field ${field} is required` }, { status: 400 });
       }
+    }
+    
+    if (data.interview !== true) {
+      return NextResponse.json({ error: `Anda harus bersedia di interview` }, { status: 400 });
     }
 
     // Save to database
@@ -31,6 +35,8 @@ export async function POST(req) {
         nickname: data.nickname,
         whatsapp: data.whatsapp,
         discord: data.discord,
+        age: parseInt(data.age, 10),
+        interview: data.interview,
         discovery: data.discovery,
         previousServer: data.previousServer,
         skills: data.skills,

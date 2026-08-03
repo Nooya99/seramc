@@ -206,6 +206,16 @@ export default function HelperClient() {
                   <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Discord</div>
                   <div className="text-sm text-slate-200 font-mono">{selectedApp.discord}</div>
                 </div>
+                <div className="bg-[#070b14] border border-slate-800/80 rounded-xl p-3">
+                  <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Umur</div>
+                  <div className="text-sm text-slate-200 font-mono">{selectedApp.age} Tahun</div>
+                </div>
+                <div className="bg-[#070b14] border border-slate-800/80 rounded-xl p-3">
+                  <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Siap Interview?</div>
+                  <div className={`text-sm font-bold ${selectedApp.interview ? 'text-emerald-400' : 'text-rose-400'}`}>
+                    {selectedApp.interview ? 'YA, BERSEDIA' : 'TIDAK BERSEDIA'}
+                  </div>
+                </div>
               </div>
 
               <div className="bg-[#070b14] border border-slate-800/80 rounded-xl p-4 space-y-4">
