@@ -41,7 +41,7 @@ export default function Navbar({ onOpenModal }) {
           
           <button 
             onClick={() => onOpenModal('shop')} 
-            className="flex items-center gap-1.5 neo-button-light px-3 md:px-4 py-2 md:py-2.5 text-[13px] md:text-[15px]"
+            className="flex items-center gap-1.5 bg-[#f2e28a] hover:bg-[#e6d680] text-gray-900 font-bold px-3 md:px-4 py-2 md:py-2.5 text-[13px] md:text-[15px] rounded-full shadow-md active:scale-95 transition-all duration-300 ease-in-out"
           >
             <PixelIcon name="shopping-cart" className="w-4 h-4 md:w-5 md:h-5" /> 
             <span>Shop</span>
