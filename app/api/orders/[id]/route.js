@@ -62,8 +62,11 @@ export async function DELETE(request, { params }) {
   try {
     const { id } = params;
 
-    // Delete order items first, then order
+    // Delete order chats first to avoid foreign key errors and DB accumulation
+    await supabaseAdmin.from('OrderChat').delete().eq('orderId', id);
+    // Delete order items
     await supabaseAdmin.from('OrderItem').delete().eq('orderId', id);
+    // Delete order
     const { error } = await supabaseAdmin.from('Order').delete().eq('id', id);
 
     if (error) {

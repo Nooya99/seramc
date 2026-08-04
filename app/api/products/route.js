@@ -124,8 +124,11 @@ export async function DELETE(request) {
     const { ids } = await request.json();
 
     if (!ids || !Array.isArray(ids) || ids.length === 0) {
-      return NextResponse.json({ error: 'IDs array is required' }, { status: 400 });
+      return NextResponse.json({ error: 'IDs produk wajib disertakan' }, { status: 400 });
     }
+
+    // Delete related OrderItems first so that they do not pile up and to avoid foreign key errors
+    await supabaseAdmin.from('OrderItem').delete().in('productId', ids);
 
     const { error } = await supabaseAdmin
       .from('Product')

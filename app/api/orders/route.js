@@ -167,7 +167,10 @@ export async function DELETE(request) {
       return NextResponse.json({ error: 'IDs array required' }, { status: 400 });
     }
 
-    // Delete OrderItems first
+    // Delete OrderChats first to avoid foreign key errors and DB accumulation
+    await supabaseAdmin.from('OrderChat').delete().in('orderId', ids);
+
+    // Delete OrderItems
     await supabaseAdmin.from('OrderItem').delete().in('orderId', ids);
 
     // Delete Orders
