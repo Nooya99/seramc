@@ -2,15 +2,19 @@ import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
-const ipMap = new Map(); // Simple in-memory IP tracker
 
 export async function POST(req) {
   try {
     const ip = req.headers.get('x-forwarded-for') || req.ip || 'unknown';
     
-    // Check IP rate limit (prevent multiple submissions from same IP in memory)
-    if (ip !== 'unknown' && ipMap.has(ip)) {
-      return NextResponse.json({ error: 'Anda sudah pernah mengisi formulir pendaftaran dari perangkat ini.' }, { status: 429 });
+    // Check IP rate limit in Database
+    if (ip !== 'unknown') {
+      const existingIp = await prisma.helperApplication.findFirst({
+        where: { ipAddress: ip }
+      });
+      if (existingIp) {
+        return NextResponse.json({ error: 'Anda sudah pernah mengisi formulir pendaftaran dari perangkat ini.' }, { status: 429 });
+      }
     }
 
     // Check if registration is open
@@ -63,14 +67,10 @@ export async function POST(req) {
         discovery: data.discovery,
         previousServer: data.previousServer,
         skills: data.skills,
-        reason: data.reason
+        reason: data.reason,
+        ipAddress: ip !== 'unknown' ? ip : null
       }
     });
-
-    // Mark IP as having submitted
-    if (ip !== 'unknown') {
-      ipMap.set(ip, Date.now());
-    }
 
     return NextResponse.json({ success: true, application }, { status: 201 });
 
