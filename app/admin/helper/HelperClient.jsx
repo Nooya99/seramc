@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Users, Power, PowerOff, Loader2, X, Trash2, Star } from 'lucide-react';
+import { Users, Power, PowerOff, Loader2, X, Trash2, Star, AlertTriangle } from 'lucide-react';
 
 export default function HelperClient() {
   const [applications, setApplications] = useState([]);
@@ -11,6 +11,17 @@ export default function HelperClient() {
   const [isToggling, setIsToggling] = useState(false);
   const [selectedApp, setSelectedApp] = useState(null);
   const [toast, setToast] = useState(null);
+  
+  // Custom confirm dialog state
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    isDanger: false,
+    onConfirm: null,
+    isLoading: false
+  });
+  
   const router = useRouter();
 
   const showToast = (message, type = 'error') => {
@@ -47,52 +58,69 @@ export default function HelperClient() {
     fetchApplications();
   }, [router]);
 
-  const toggleRegistration = async () => {
-    if (!confirm(`Yakin ingin ${isOpen ? 'menutup' : 'membuka'} pendaftaran Helper?`)) return;
-    
-    setIsToggling(true);
-    try {
-      const res = await fetch('/api/admin/helper/toggle', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ isOpen: !isOpen })
-      });
-      
-      if (!res.ok) throw new Error('Failed to toggle');
-      
-      const data = await res.json();
-      setIsOpen(data.isOpen);
-      showToast(data.isOpen ? 'Pendaftaran berhasil dibuka' : 'Pendaftaran berhasil ditutup', 'success');
-    } catch (err) {
-      console.error(err);
-      showToast('Gagal mengubah status pendaftaran');
-    } finally {
-      setIsToggling(false);
-    }
+  const toggleRegistration = () => {
+    setConfirmDialog({
+      isOpen: true,
+      title: isOpen ? 'Tutup Pendaftaran?' : 'Buka Pendaftaran?',
+      message: `Apakah Anda yakin ingin ${isOpen ? 'menutup' : 'membuka'} pendaftaran Helper saat ini?`,
+      isDanger: isOpen,
+      isLoading: false,
+      onConfirm: async () => {
+        setConfirmDialog(prev => ({ ...prev, isLoading: true }));
+        try {
+          const res = await fetch('/api/admin/helper/toggle', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ isOpen: !isOpen })
+          });
+          
+          if (!res.ok) throw new Error('Failed to toggle');
+          
+          const data = await res.json();
+          setIsOpen(data.isOpen);
+          showToast(data.isOpen ? 'Pendaftaran berhasil dibuka' : 'Pendaftaran berhasil ditutup', 'success');
+        } catch (err) {
+          console.error(err);
+          showToast('Gagal mengubah status pendaftaran');
+        } finally {
+          setConfirmDialog(prev => ({ ...prev, isOpen: false }));
+        }
+      }
+    });
   };
 
-  const deleteApplication = async (id, e) => {
+  const deleteApplication = (id, e) => {
     e.stopPropagation();
-    if (!confirm('Yakin ingin menghapus pendaftaran ini?')) return;
-    
-    try {
-      const res = await fetch(`/api/admin/helper/${id}`, {
-        method: 'DELETE',
-      });
-      
-      if (!res.ok) throw new Error('Failed to delete');
-      
-      setApplications(prev => prev.filter(app => app.id !== id));
-      if (selectedApp?.id === id) {
-        setSelectedApp(null);
+    setConfirmDialog({
+      isOpen: true,
+      title: 'Hapus Pendaftaran?',
+      message: 'Pendaftaran ini akan dihapus secara permanen dan tidak dapat dikembalikan. Yakin ingin melanjutkan?',
+      isDanger: true,
+      isLoading: false,
+      onConfirm: async () => {
+        setConfirmDialog(prev => ({ ...prev, isLoading: true }));
+        try {
+          const res = await fetch(`/api/admin/helper/${id}`, {
+            method: 'DELETE',
+          });
+          
+          if (!res.ok) throw new Error('Failed to delete');
+          
+          setApplications(prev => prev.filter(app => app.id !== id));
+          if (selectedApp?.id === id) {
+            setSelectedApp(null);
+          }
+          showToast('Pendaftaran berhasil dihapus', 'success');
+        } catch (err) {
+          console.error(err);
+          showToast('Gagal menghapus pendaftaran');
+        } finally {
+          setConfirmDialog(prev => ({ ...prev, isOpen: false }));
+        }
       }
-      showToast('Pendaftaran berhasil dihapus', 'success');
-    } catch (err) {
-      console.error(err);
-      showToast('Gagal menghapus pendaftaran');
-    }
+    });
   };
 
   const toggleStar = async (id, e) => {
@@ -328,9 +356,45 @@ export default function HelperClient() {
         </div>
       )}
 
+      {/* Custom Confirm Dialog Modal */}
+      {confirmDialog.isOpen && (
+        <div className="fixed inset-0 z-[200] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-[#0b101d] border border-slate-800 w-full max-w-sm rounded-2xl p-6 shadow-2xl relative animate-in zoom-in-95 duration-200">
+            <div className="flex flex-col items-center text-center">
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-4 ${confirmDialog.isDanger ? 'bg-rose-500/10 text-rose-500' : 'bg-emerald-500/10 text-emerald-500'}`}>
+                <AlertTriangle className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-bold text-white mb-2">{confirmDialog.title}</h3>
+              <p className="text-sm text-slate-400 mb-6">{confirmDialog.message}</p>
+              
+              <div className="flex gap-3 w-full">
+                <button 
+                  onClick={() => setConfirmDialog(prev => ({ ...prev, isOpen: false }))}
+                  disabled={confirmDialog.isLoading}
+                  className="flex-1 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-sm font-medium rounded-xl transition-colors disabled:opacity-50"
+                >
+                  Batal
+                </button>
+                <button 
+                  onClick={confirmDialog.onConfirm}
+                  disabled={confirmDialog.isLoading}
+                  className={`flex-1 px-4 py-2 text-white text-sm font-medium rounded-xl transition-all flex items-center justify-center gap-2 ${
+                    confirmDialog.isDanger 
+                      ? 'bg-rose-600 hover:bg-rose-500 shadow-[0_0_15px_rgba(225,29,72,0.3)]' 
+                      : 'bg-emerald-600 hover:bg-emerald-500 shadow-[0_0_15px_rgba(5,150,105,0.3)]'
+                  } disabled:opacity-50`}
+                >
+                  {confirmDialog.isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Ya, Lanjutkan'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Toast Notification */}
       {toast && (
-        <div className={`fixed top-6 right-6 px-6 py-3 rounded-xl shadow-xl z-[200] animate-in slide-in-from-top-5 fade-in duration-300 flex items-center gap-2 font-medium ${
+        <div className={`fixed top-6 right-6 px-6 py-3 rounded-xl shadow-xl z-[300] animate-in slide-in-from-top-5 fade-in duration-300 flex items-center gap-2 font-medium ${
           toast.type === 'success' 
             ? 'bg-emerald-500/90 text-white border border-emerald-400' 
             : 'bg-rose-500/90 text-white border border-rose-400'
