@@ -7,7 +7,7 @@ export default function Hero({ onOpenModal }) {
   const [isHelperOpen, setIsHelperOpen] = useState(false);
 
   useEffect(() => {
-    fetch('/api/helper/status')
+    fetch('/api/helper/status', { cache: 'no-store' })
       .then(res => res.json())
       .then(data => setIsHelperOpen(data.isOpen))
       .catch(console.error);
