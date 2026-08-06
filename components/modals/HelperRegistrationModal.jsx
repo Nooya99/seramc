@@ -20,6 +20,22 @@ export default function HelperRegistrationModal({ isOpen, onClose }) {
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
 
+  const [config, setConfig] = useState({ title: 'Helper', interviewText: 'Tanggal 7 & 8' });
+
+  React.useEffect(() => {
+    if (isOpen) {
+      fetch('/api/helper/status', { cache: 'no-store' })
+        .then(res => res.json())
+        .then(data => {
+          setConfig({ 
+            title: data.title || 'Helper',
+            interviewText: data.interviewText || 'Tanggal 7 & 8'
+          });
+        })
+        .catch(console.error);
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const handleChange = (e) => {
@@ -106,7 +122,7 @@ export default function HelperRegistrationModal({ isOpen, onClose }) {
               <PixelIcon name="edit" className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-xl md:text-2xl font-bold text-white tracking-tight">Formulir Pendaftaran</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-white tracking-tight">Pendaftaran {config.title}</h2>
               <p className="text-sm text-slate-400">Isi data di bawah ini dengan benar.</p>
             </div>
           </div>
@@ -213,7 +229,7 @@ export default function HelperRegistrationModal({ isOpen, onClose }) {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-slate-300">Bersedia di interview (Tanggal 7 & 8)?</label>
+              <label className="text-sm font-medium text-slate-300">Bersedia di interview ({config.interviewText})?</label>
               <div className="flex gap-4 mt-1">
                 <button
                   type="button"
@@ -278,7 +294,7 @@ export default function HelperRegistrationModal({ isOpen, onClose }) {
                 required
                 value={formData.reason}
                 onChange={handleChange}
-                placeholder="Berikan alasan yang jelas mengapa Anda ingin menjadi Helper"
+                placeholder={`Berikan alasan yang jelas mengapa Anda ingin menjadi ${config.title}`}
                 rows="4"
                 className="w-full bg-slate-900/50 border border-slate-700/50 rounded-xl px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 transition-all resize-none"
               />

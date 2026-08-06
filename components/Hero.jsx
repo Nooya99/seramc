@@ -4,12 +4,12 @@ import Image from 'next/image';
 import { useState, useEffect } from 'react';
 
 export default function Hero({ onOpenModal }) {
-  const [isHelperOpen, setIsHelperOpen] = useState(false);
+  const [config, setConfig] = useState({ isOpen: false, title: 'Helper' });
 
   useEffect(() => {
     fetch('/api/helper/status', { cache: 'no-store' })
       .then(res => res.json())
-      .then(data => setIsHelperOpen(data.isOpen))
+      .then(data => setConfig({ isOpen: data.isOpen, title: data.title || 'Helper' }))
       .catch(console.error);
   }, []);
 
@@ -63,7 +63,7 @@ export default function Hero({ onOpenModal }) {
         </div>
 
         {/* HELPER REGISTRATION - PROMINENT */}
-        {isHelperOpen && (
+        {config.isOpen && (
           <div className="mt-8 relative w-full max-w-sm mx-auto px-4">
             <button 
               onClick={() => onOpenModal('helperReq')} 
@@ -71,7 +71,7 @@ export default function Hero({ onOpenModal }) {
             >
               <span className="relative z-10 flex items-center gap-2">
                 <span className="animate-pulse">✨</span> 
-                Daftar Sebagai Helper!
+                Daftar Sebagai {config.title}!
                 <span className="animate-pulse">✨</span>
               </span>
             </button>

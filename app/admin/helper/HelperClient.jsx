@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Users, Power, PowerOff, Loader2, X, Trash2, Star, AlertTriangle } from 'lucide-react';
+import { Users, Power, PowerOff, Loader2, X, Trash2, Star, AlertTriangle, Settings } from 'lucide-react';
 
 export default function HelperClient() {
   const [applications, setApplications] = useState([]);
@@ -11,6 +11,19 @@ export default function HelperClient() {
   const [isToggling, setIsToggling] = useState(false);
   const [selectedApp, setSelectedApp] = useState(null);
   const [toast, setToast] = useState(null);
+  
+  const [config, setConfig] = useState({
+    title: 'Helper',
+    interviewText: 'Tanggal 7 & 8',
+    requirements: ''
+  });
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isSavingSettings, setIsSavingSettings] = useState(false);
+  const [settingsForm, setSettingsForm] = useState({
+    title: '',
+    interviewText: '',
+    requirements: ''
+  });
   
   // Custom confirm dialog state
   const [confirmDialog, setConfirmDialog] = useState({
@@ -47,6 +60,11 @@ export default function HelperClient() {
       const data = await res.json();
       setApplications(data.applications);
       setIsOpen(data.isOpen);
+      setConfig({
+        title: data.title || 'Helper',
+        interviewText: data.interviewText || 'Tanggal 7 & 8',
+        requirements: data.requirements || ''
+      });
     } catch (err) {
       console.error(err);
     } finally {
@@ -144,6 +162,31 @@ export default function HelperClient() {
     }
   };
 
+  const saveSettings = async (e) => {
+    e.preventDefault();
+    setIsSavingSettings(true);
+    try {
+      const res = await fetch('/api/admin/helper/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          registrationTitle: settingsForm.title,
+          registrationInterviewText: settingsForm.interviewText,
+          registrationRequirements: settingsForm.requirements
+        })
+      });
+      if (!res.ok) throw new Error('Failed to save settings');
+      setConfig(settingsForm);
+      setIsSettingsOpen(false);
+      showToast('Pengaturan berhasil disimpan', 'success');
+    } catch (err) {
+      console.error(err);
+      showToast('Gagal menyimpan pengaturan');
+    } finally {
+      setIsSavingSettings(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -158,14 +201,26 @@ export default function HelperClient() {
         <div>
           <h1 className="text-2xl font-bold text-white flex items-center gap-2">
             <Users className="w-6 h-6 text-cyan-400" />
-            Pendaftaran Helper
+            Pendaftaran {config.title}
           </h1>
           <p className="text-sm text-slate-400 mt-1">
-            Kelola aplikasi pendaftaran Helper. Pendaftaran sampai tanggal 6, interview tanggal 7 & 8.
+            Kelola aplikasi pendaftaran {config.title}.
           </p>
         </div>
         
-        <button
+        <div className="flex gap-2">
+          <button
+            onClick={() => {
+              setSettingsForm(config);
+              setIsSettingsOpen(true);
+            }}
+            className="flex items-center gap-2 px-4 py-2 bg-slate-800/50 hover:bg-slate-700/50 text-slate-300 border border-slate-700/50 rounded-xl font-medium transition-all shadow-lg active:scale-95"
+          >
+            <Settings className="w-5 h-5" />
+            <span className="hidden sm:inline">Pengaturan</span>
+          </button>
+          
+          <button
           onClick={toggleRegistration}
           disabled={isToggling}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all shadow-lg active:scale-95 disabled:opacity-50 disabled:pointer-events-none ${
@@ -182,7 +237,8 @@ export default function HelperClient() {
             <Power className="w-5 h-5" />
           )}
           {isOpen ? 'Tutup Pendaftaran' : 'Buka Pendaftaran'}
-        </button>
+          </button>
+        </div>
       </div>
 
       <div className="bg-[#0b101d]/80 border border-slate-800/80 rounded-2xl overflow-hidden backdrop-blur-xl shadow-xl">
@@ -400,6 +456,80 @@ export default function HelperClient() {
             : 'bg-rose-500/90 text-white border border-rose-400'
         }`}>
           {toast.message}
+        </div>
+      )}
+
+      {/* Settings Modal */}
+      {isSettingsOpen && (
+        <div className="fixed inset-0 z-[150] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-[#0b101d] border border-slate-700 w-full max-w-xl rounded-2xl p-6 relative flex flex-col max-h-[90vh]">
+            <div className="flex items-center justify-between mb-6 border-b border-slate-800 pb-4">
+              <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                <Settings className="w-6 h-6 text-cyan-400" />
+                Pengaturan Formulir Pendaftaran
+              </h3>
+              <button 
+                onClick={() => setIsSettingsOpen(false)}
+                className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <form id="settings-form" onSubmit={saveSettings} className="overflow-y-auto custom-scrollbar flex-1 pr-2 space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-slate-300">Nama Posisi / Role</label>
+                <input 
+                  type="text" 
+                  required
+                  value={settingsForm.title}
+                  onChange={(e) => setSettingsForm(prev => ({ ...prev, title: e.target.value }))}
+                  placeholder="Contoh: Helper, Moderator, Event Staff"
+                  className="w-full bg-slate-900/50 border border-slate-700/50 rounded-xl px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 transition-all"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-slate-300">Teks Pertanyaan Interview</label>
+                <input 
+                  type="text" 
+                  required
+                  value={settingsForm.interviewText}
+                  onChange={(e) => setSettingsForm(prev => ({ ...prev, interviewText: e.target.value }))}
+                  placeholder="Contoh: Tanggal 7 & 8, atau Segera"
+                  className="w-full bg-slate-900/50 border border-slate-700/50 rounded-xl px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 transition-all"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-slate-300">Persyaratan Khusus (1 baris = 1 poin)</label>
+                <textarea 
+                  required
+                  value={settingsForm.requirements}
+                  onChange={(e) => setSettingsForm(prev => ({ ...prev, requirements: e.target.value }))}
+                  placeholder="Minimal umur 15 tahun&#10;Diutamakan player java"
+                  rows="8"
+                  className="w-full bg-slate-900/50 border border-slate-700/50 rounded-xl px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 transition-all resize-none"
+                />
+              </div>
+            </form>
+            
+            <div className="mt-6 pt-4 border-t border-slate-800 flex justify-end gap-3">
+              <button 
+                type="button"
+                onClick={() => setIsSettingsOpen(false)}
+                className="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-white text-sm font-medium rounded-xl transition-colors"
+              >
+                Batal
+              </button>
+              <button 
+                type="submit"
+                form="settings-form"
+                disabled={isSavingSettings}
+                className="flex items-center gap-2 px-5 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white text-sm font-medium rounded-xl transition-all shadow-[0_0_15px_rgba(8,145,178,0.3)] disabled:opacity-50"
+              >
+                {isSavingSettings ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Simpan Pengaturan'}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

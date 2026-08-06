@@ -4,12 +4,49 @@ import PixelIcon from '@/components/PixelIcon';
 import { playSound } from '@/utils/sound';
 
 export default function HelperRequirementsModal({ isOpen, onClose, onUnderstood }) {
+  const [config, setConfig] = React.useState({ title: 'Helper', requirements: '' });
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    if (isOpen) {
+      setIsLoading(true);
+      fetch('/api/helper/status', { cache: 'no-store' })
+        .then(res => res.json())
+        .then(data => {
+          setConfig({ 
+            title: data.title || 'Helper', 
+            requirements: data.requirements || ''
+          });
+        })
+        .catch(console.error)
+        .finally(() => setIsLoading(false));
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const handleUnderstoodClick = () => {
     playSound('click');
     onUnderstood();
   };
+
+  const requirementsList = config.requirements 
+    ? config.requirements.split('\n').filter(req => req.trim() !== '')
+    : [
+        'Minimal umur tahun ini 15 tahun',
+        'Diutamakan player java / pc',
+        'Dewasa secara pikiran',
+        'Bersedia mengikuti arahan dari Admin',
+        'Tidak menyalahgunakan kekuasaan',
+        'Memiliki sikap ramah, sabar, jujur, dan bertanggungjawab',
+        'Mampu berkomunikasi dengan baik dengan pemain dan staff',
+        'Mampu membantu pemain baru dan menjawab pertanyaan dasar',
+        'Mampu menangani konflik dengan tenang dan tidak memihak',
+        'Sudah bergabung di server minimal 1 minggu',
+        'Tidak memiliki riwayat terkena banned di dalam server',
+        'Memahami dan menaati seluruh peraturan server',
+        'Memahami konsep permainan minecraft dan server sera mc'
+      ];
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
@@ -26,7 +63,7 @@ export default function HelperRequirementsModal({ isOpen, onClose, onUnderstood 
               <PixelIcon name="info" className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-xl md:text-2xl font-bold text-white tracking-tight">Persyaratan Helper</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-white tracking-tight">Persyaratan {config.title}</h2>
               <p className="text-sm text-slate-400">Baca dengan teliti sebelum mendaftar.</p>
             </div>
           </div>
@@ -40,47 +77,19 @@ export default function HelperRequirementsModal({ isOpen, onClose, onUnderstood 
 
         {/* Content */}
         <div className="p-4 md:p-6 overflow-y-auto custom-scrollbar flex-1">
-          <ul className="space-y-3 text-slate-300 text-sm md:text-base">
-            <li className="flex items-start gap-2">
-              <span className="text-cyan-400 mt-1">•</span> Minimal umur tahun ini 15 tahun
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-cyan-400 mt-1">•</span> Diutamakan player java / pc
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-cyan-400 mt-1">•</span> Dewasa secara pikiran
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-cyan-400 mt-1">•</span> Bersedia mengikuti arahan dari Admin
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-cyan-400 mt-1">•</span> Tidak menyalahgunakan kekuasaan
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-cyan-400 mt-1">•</span> Memiliki sikap ramah, sabar, jujur, dan bertanggungjawab
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-cyan-400 mt-1">•</span> Mampu berkomunikasi dengan baik dengan pemain dan staff
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-cyan-400 mt-1">•</span> Mampu membantu pemain baru dan menjawab pertanyaan dasar
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-cyan-400 mt-1">•</span> Mampu menangani konflik dengan tenang dan tidak memihak
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-cyan-400 mt-1">•</span> Sudah bergabung di server minimal 1 minggu
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-cyan-400 mt-1">•</span> Tidak memiliki riwayat terkena banned di dalam server
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-cyan-400 mt-1">•</span> Memahami dan menaati seluruh peraturan server
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-cyan-400 mt-1">•</span> Memahami konsep permainan minecraft dan server sera mc
-            </li>
-          </ul>
+          {isLoading ? (
+            <div className="flex items-center justify-center py-10">
+              <div className="w-8 h-8 border-4 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin"></div>
+            </div>
+          ) : (
+            <ul className="space-y-3 text-slate-300 text-sm md:text-base">
+              {requirementsList.map((req, index) => (
+                <li key={index} className="flex items-start gap-2">
+                  <span className="text-cyan-400 mt-1">•</span> {req}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
         {/* Footer */}
