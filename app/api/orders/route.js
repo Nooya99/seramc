@@ -14,7 +14,15 @@ const parsePrice = (priceStr) => {
 
 export async function GET() {
   try {
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
     const orders = await prisma.order.findMany({
+      where: {
+        createdAt: {
+          gte: sevenDaysAgo,
+        },
+      },
       include: {
         user: true,
         items: {
