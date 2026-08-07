@@ -1,8 +1,5 @@
 import { NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 import crypto from 'crypto';
 
 export const dynamic = 'force-dynamic';
@@ -17,15 +14,19 @@ const parsePrice = (priceStr) => {
 
 export async function GET() {
   try {
-    const { data: orders, error } = await supabaseAdmin
-      .from('Order')
-      .select('*, user:User(*), items:OrderItem(*, product:Product(*)), chats:OrderChat(*)')
-      .order('createdAt', { ascending: false });
-
-    if (error) {
-      console.error('Supabase error fetching orders:', error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
+    const orders = await prisma.order.findMany({
+      include: {
+        user: true,
+        items: {
+          include: {
+            product: true
+          }
+        },
+        chats: true
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 1000
+    });
 
     return NextResponse.json(orders || []);
   } catch (error) {
@@ -43,65 +44,47 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    const nowIso = new Date().toISOString();
-
     // 1. Find or Create User
-    let { data: existingUser } = await supabaseAdmin
-      .from('User')
-      .select('*')
-      .eq('ign', ign)
-      .single();
+    let existingUser = await prisma.user.findUnique({
+      where: { ign }
+    });
 
     let userId;
     if (!existingUser) {
-      const newUserObj = {
-        id: crypto.randomUUID(),
-        ign,
-        whatsapp: whatsapp || null,
-        updatedAt: nowIso
-      };
-      const { data: newUser, error: userErr } = await supabaseAdmin
-        .from('User')
-        .insert([newUserObj])
-        .select()
-        .single();
-      
-      if (userErr) throw userErr;
+      const newUser = await prisma.user.create({
+        data: {
+          id: crypto.randomUUID(),
+          ign,
+          whatsapp: whatsapp || null,
+        }
+      });
       userId = newUser.id;
     } else {
       userId = existingUser.id;
       if (whatsapp && existingUser.whatsapp !== whatsapp) {
-        await supabaseAdmin
-          .from('User')
-          .update({ whatsapp, updatedAt: nowIso })
-          .eq('id', userId);
+        await prisma.user.update({
+          where: { id: userId },
+          data: { whatsapp }
+        });
       }
     }
 
     // 2. Create Order
-    const orderObj = {
-      id: crypto.randomUUID(),
-      userId,
-      totalAmount: totalAmount || 0,
-      paymentMethod: paymentMethod || 'QRIS',
-      status: 'PENDING',
-      updatedAt: nowIso
-    };
-
-    const { data: order, error: orderErr } = await supabaseAdmin
-      .from('Order')
-      .insert([orderObj])
-      .select()
-      .single();
-
-    if (orderErr) throw orderErr;
+    const order = await prisma.order.create({
+      data: {
+        id: crypto.randomUUID(),
+        userId,
+        totalAmount: totalAmount || 0,
+        paymentMethod: paymentMethod || 'QRIS',
+        status: 'PENDING',
+      }
+    });
 
     // 3. Batch Process Products & Order Items
     const itemNames = items.map(i => i.name);
-    const { data: existingProducts } = await supabaseAdmin
-      .from('Product')
-      .select('*')
-      .in('name', itemNames);
+    const existingProducts = await prisma.product.findMany({
+      where: { name: { in: itemNames } }
+    });
 
     const productMap = new Map((existingProducts || []).map(p => [p.name, p]));
     const newProductsToCreate = [];
@@ -114,7 +97,6 @@ export async function POST(request) {
           category: 'Shop Item',
           price: parsePrice(item.price),
           duration: item.duration || 'Permanen',
-          updatedAt: nowIso
         };
         newProductsToCreate.push(prod);
         productMap.set(item.name, prod);
@@ -122,7 +104,9 @@ export async function POST(request) {
     }
 
     if (newProductsToCreate.length > 0) {
-      await supabaseAdmin.from('Product').insert(newProductsToCreate);
+      await prisma.product.createMany({
+        data: newProductsToCreate
+      });
     }
 
     // 4. Batch Insert Order Items
@@ -133,11 +117,12 @@ export async function POST(request) {
       quantity: item.quantity || 1,
       price: parsePrice(item.price),
       duration: item.duration || 'Permanen',
-      updatedAt: nowIso
     }));
 
     if (orderItemsData.length > 0) {
-      await supabaseAdmin.from('OrderItem').insert(orderItemsData);
+      await prisma.orderItem.createMany({
+        data: orderItemsData
+      });
     }
 
     // 5. Process Voucher if provided
@@ -167,19 +152,17 @@ export async function DELETE(request) {
       return NextResponse.json({ error: 'IDs array required' }, { status: 400 });
     }
 
-    // Delete OrderChats first to avoid foreign key errors and DB accumulation
-    await supabaseAdmin.from('OrderChat').delete().in('orderId', ids);
+    await prisma.orderChat.deleteMany({
+      where: { orderId: { in: ids } }
+    });
 
-    // Delete OrderItems
-    await supabaseAdmin.from('OrderItem').delete().in('orderId', ids);
+    await prisma.orderItem.deleteMany({
+      where: { orderId: { in: ids } }
+    });
 
-    // Delete Orders
-    const { error } = await supabaseAdmin.from('Order').delete().in('id', ids);
-
-    if (error) {
-      console.error('Supabase error batch deleting orders:', error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
+    await prisma.order.deleteMany({
+      where: { id: { in: ids } }
+    });
 
     return NextResponse.json({ message: `${ids.length} orders deleted successfully` });
   } catch (error) {
