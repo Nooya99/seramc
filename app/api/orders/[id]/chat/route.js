@@ -53,3 +53,29 @@ export async function POST(request, { params }) {
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
+
+export async function DELETE(request, { params }) {
+  try {
+    const { id } = params;
+    
+    if (!id) {
+      return NextResponse.json({ error: 'Order ID is required' }, { status: 400 });
+    }
+
+    const body = await request.json();
+    const { chatId } = body;
+
+    if (!chatId) {
+      return NextResponse.json({ error: 'Chat ID is required' }, { status: 400 });
+    }
+
+    await prisma.orderChat.delete({
+      where: { id: chatId }
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Error deleting chat:', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  }
+}

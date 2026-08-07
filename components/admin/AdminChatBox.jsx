@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { Send, Loader2, Download } from 'lucide-react';
+import { Send, Loader2, Download, Trash2 } from 'lucide-react';
 
 export default function AdminChatBox({ order, orderId, orderStatus, isPhoneMode = false }) {
   const actualOrderId = order?.id || orderId;
@@ -57,6 +57,23 @@ export default function AdminChatBox({ order, orderId, orderStatus, isPhoneMode 
       console.error('Failed to send message:', error);
     } finally {
       setSending(false);
+    }
+  };
+
+  const deleteChat = async (chatId) => {
+    if (!confirm('Apakah Anda yakin ingin menghapus pesan ini?')) return;
+    
+    try {
+      const res = await fetch(`/api/orders/${actualOrderId}/chat`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chatId })
+      });
+      if (res.ok) {
+        fetchChats();
+      }
+    } catch (error) {
+      console.error('Failed to delete chat:', error);
     }
   };
 
@@ -170,8 +187,28 @@ export default function AdminChatBox({ order, orderId, orderStatus, isPhoneMode 
                       )
                     )
                   )}
-                  <div className={`text-[9px] mt-1 text-right ${isAdmin ? 'text-cyan-200' : 'text-slate-400'}`}>
-                    {new Date(chat.createdAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+                  <div className={`flex items-center justify-${isAdmin ? 'end' : 'between'} mt-1`}>
+                    {!isAdmin && (
+                      <button 
+                        onClick={() => deleteChat(chat.id)}
+                        className="text-rose-400 hover:text-rose-300 transition-colors p-1"
+                        title="Hapus pesan"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    )}
+                    <span className={`text-[9px] ${isAdmin ? 'text-cyan-200' : 'text-slate-400'} ${isAdmin ? 'ml-auto' : ''}`}>
+                      {new Date(chat.createdAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                    {isAdmin && (
+                      <button 
+                        onClick={() => deleteChat(chat.id)}
+                        className="text-rose-400 hover:text-rose-300 transition-colors p-1 ml-2"
+                        title="Hapus pesan"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
