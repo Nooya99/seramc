@@ -74,7 +74,7 @@ export function Toast({ toast, onClose }) {
   const isError = toast.type === 'error';
 
   return (
-    <div className="fixed bottom-6 right-6 z-[110] animate-in slide-in-from-bottom-5 duration-300">
+    <div className="fixed top-40 right-6 sm:top-28 sm:right-8 z-[110] animate-in slide-in-from-right-5 duration-300">
       <div className={`flex items-center gap-3 px-5 py-4 rounded-2xl border backdrop-blur-xl shadow-2xl min-w-[300px] ${
         isSuccess 
           ? 'bg-emerald-950/90 text-emerald-300 border-emerald-500/40 shadow-emerald-500/10' 
