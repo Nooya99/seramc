@@ -42,7 +42,7 @@ export default function StickySection({ children, zIndexClass, bgClass = 'bg-[#0
     <div 
       ref={ref} 
       style={{ top: topStyle }}
-      className={`sticky w-full ${bgClass} border-t border-white/5 shadow-[0_-30px_50px_rgba(0,0,0,0.8)] ${zIndexClass} ${className}`}
+      className={`sticky w-full ${bgClass} border-t border-white/5 shadow-none md:shadow-[0_-30px_50px_rgba(0,0,0,0.8)] will-change-transform ${zIndexClass} ${className}`}
     >
       {children}
     </div>

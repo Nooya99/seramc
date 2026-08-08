@@ -41,7 +41,7 @@ export default function ReviewsMarquee() {
       </div>
 
       <div 
-        className="w-full bubble-glass rounded-[2rem] md:rounded-[3rem] py-8 md:py-12 relative overflow-hidden flex flex-col gap-6 backdrop-blur-2xl"
+        className="w-full bubble-glass rounded-[2rem] md:rounded-[3rem] py-8 md:py-12 relative overflow-hidden flex flex-col gap-6 backdrop-blur-sm md:backdrop-blur-2xl"
         style={{
           background: 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.02) 100%)',
           boxShadow: 'inset 0 20px 50px rgba(255,255,255,0.05), 0 20px 40px rgba(0,0,0,0.2)'

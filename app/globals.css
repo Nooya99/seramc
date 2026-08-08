@@ -28,8 +28,11 @@ body {
   mask-image: radial-gradient(circle, black 0%, transparent 65%);
   z-index: 0;
   pointer-events: none;
-  /* Glow pulse kept but very subtle */
-  animation: glow-pulse 8s infinite ease-in-out;
+}
+@media (min-width: 768px) {
+  .crystal-orb {
+    animation: glow-pulse 8s infinite ease-in-out;
+  }
 }
 
 @keyframes crystal-blink {
@@ -48,12 +51,16 @@ body {
 /* Glassmorphism Cards */
 .bubble-glass {
   background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 1.5rem;
   box-shadow: 0 4px 15px 0 rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
+}
+@media (min-width: 768px) {
+  .bubble-glass {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
 }
 
 .feature-card-solid {
@@ -71,11 +78,15 @@ body {
 
 .glass-pill {
   background: rgba(11, 17, 33, 0.6);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 9999px;
   transition: all 0.3s ease;
+}
+@media (min-width: 768px) {
+  .glass-pill {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
 }
 .glass-pill:hover { background: rgba(255, 255, 255, 0.15); border-color: rgba(255, 255, 255, 0.4); }
 
@@ -107,8 +118,13 @@ body {
   max-width: 380px; 
   border: 1px solid rgba(255, 255, 255, 0.2);
   background: rgba(11, 17, 33, 0.85);
-  backdrop-filter: blur(20px);
   border-radius: 2rem;
+}
+@media (min-width: 768px) {
+  .shop-card {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
 }
 
 .race-card { 
