@@ -86,7 +86,6 @@ export default function AdminProductsPage() {
   const [showProductModal, setShowProductModal] = useState(false);
   const [showDiscountModal, setShowDiscountModal] = useState(false);
   const [showVoucherModal, setShowVoucherModal] = useState(false);
-  const [showTutorialModal, setShowTutorialModal] = useState(false);
   
   const [globalDiscount, setGlobalDiscount] = useState('');
   const [updatingDiscount, setUpdatingDiscount] = useState(false);
@@ -1000,64 +999,9 @@ export default function AdminProductsPage() {
           </div>
         </div>
       )}
-
-      {/* Tutorial Modal */}
-      {showTutorialModal && (
-        <div className="fixed inset-0 z-[60] bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-[#0b101d] border border-slate-800 rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-6 shadow-2xl animate-in fade-in zoom-in duration-200">
-            <div className="flex justify-between items-center border-b border-slate-800 pb-4">
-              <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                <HelpCircle className="w-6 h-6 text-cyan-400" />
-                Tutorial Kelola Produk & Rank
-              </h3>
-              <button
-                onClick={() => setShowTutorialModal(false)}
-                className="text-slate-400 hover:text-white bg-slate-800 p-2 rounded-xl"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="space-y-4 text-slate-300 text-sm leading-relaxed max-h-[60vh] overflow-y-auto custom-scrollbar pr-2">
-              <div className="bg-slate-900/50 p-4 rounded-2xl border border-slate-800">
-                <h4 className="font-bold text-amber-400 mb-2 flex items-center gap-2"><Sparkles className="w-4 h-4"/> 1. Generate All Shop Items</h4>
-                <p>Gunakan tombol ini jika produk kosong. Sistem akan otomatis mengisi semua katalog default SERA MC (Rank, Key, Others).</p>
-              </div>
-              
-              <div className="bg-slate-900/50 p-4 rounded-2xl border border-slate-800">
-                <h4 className="font-bold text-cyan-400 mb-2 flex items-center gap-2"><Percent className="w-4 h-4"/> 2. Atur Diskon & Promo</h4>
-                <p>Klik tombol persen <b>(%)</b> untuk mengatur diskon. Anda bisa memilih target diskon: <i>Semua Produk</i>, <i>Kategori Tertentu (Rank/Key)</i>, atau <i>Produk Terpilih</i>.</p>
-              </div>
-
-              <div className="bg-slate-900/50 p-4 rounded-2xl border border-slate-800">
-                <h4 className="font-bold text-indigo-400 mb-2 flex items-center gap-2"><Ticket className="w-4 h-4"/> 3. Pembuatan Voucher</h4>
-                <p>Gunakan tombol tiket untuk membuat kode voucher diskon khusus. Voucher dapat dibatasi penggunaannya untuk item tertentu saja dengan mencentang produk menggunakan fitur <b>Select</b>.</p>
-              </div>
-
-              <div className="bg-slate-900/50 p-4 rounded-2xl border border-slate-800">
-                <h4 className="font-bold text-rose-400 mb-2 flex items-center gap-2"><CheckSquare className="w-4 h-4"/> 4. Fitur Multi-Select (Bulk Actions)</h4>
-                <p>Klik tombol <b>Select (Kotak Centang)</b> di menu tab untuk masuk ke mode multi-pilih. Anda bisa mencentang beberapa produk sekaligus untuk menghapus, membuat voucher, atau mengatur diskon massal.</p>
-              </div>
-            </div>
-            <div className="pt-4 border-t border-slate-800">
-              <button
-                onClick={() => setShowTutorialModal(false)}
-                className="w-full py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-xl transition-colors"
-              >
-                Mengerti
-              </button>
-            </div>
           </div>
         </div>
       )}
-
-      {/* Floating Tutorial Button */}
-      <button
-        onClick={() => setShowTutorialModal(true)}
-        className="fixed top-6 right-6 sm:top-8 sm:right-8 z-50 w-14 h-14 bg-cyan-500 hover:bg-cyan-400 text-slate-950 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(6,182,212,0.3)] hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] transition-all hover:scale-110 active:scale-95 border-2 border-[#0b101d]"
-        title="Tutorial Cara Pakai"
-      >
-        <HelpCircle className="w-7 h-7" />
-      </button>
     </div>
   );
 }

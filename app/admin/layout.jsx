@@ -255,10 +255,19 @@ export default function AdminLayout({ children }) {
       )}
 
       {/* Main Content Area */}
-      <main className="flex-1 min-h-screen p-4 sm:p-6 lg:p-10">
-        <div className="max-w-7xl mx-auto space-y-8">
+      <main className="flex-1 min-h-screen p-4 sm:p-6 lg:p-10 relative">
+        <div className="max-w-7xl mx-auto space-y-8 pb-20">
           {children}
         </div>
+        
+        {/* Global Floating Tutorial Button */}
+        <button
+          onClick={() => setTutorialOpen(true)}
+          className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 z-50 w-14 h-14 bg-cyan-500 hover:bg-cyan-400 text-slate-950 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(6,182,212,0.3)] hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] transition-all hover:scale-110 active:scale-95 border-2 border-[#0b101d]"
+          title="Panduan & Walkthrough"
+        >
+          <HelpCircle className="w-7 h-7" />
+        </button>
       </main>
 
       <AdminTutorialModal 
