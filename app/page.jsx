@@ -182,7 +182,7 @@ export default function Home() {
         </StickySection>
 
         {/* FEATURES SECTION */}
-        <StickySection zIndexClass="z-20" bgClass="bg-[#0b1121]">
+        <StickySection zIndexClass="z-20" bgClass="bg-[#080d19]">
           <Features onOpenModal={handleOpenModal} />
         </StickySection>
 
@@ -192,7 +192,7 @@ export default function Home() {
         </StickySection>
 
         {/* REVIEWS SECTION */}
-        <StickySection zIndexClass="z-40" bgClass="bg-[#0b1121]">
+        <StickySection zIndexClass="z-40" bgClass="bg-[#080d19]">
           <ReviewsMarquee />
         </StickySection>
 
