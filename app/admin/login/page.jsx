@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ShieldCheck, Lock, Key } from 'lucide-react';
+import Image from 'next/image';
 
 export default function AdminLogin() {
   const [password, setPassword] = useState('');
@@ -37,10 +38,13 @@ export default function AdminLogin() {
         {/* Top Logo & Title */}
         <div className="text-center space-y-3">
           <div className="flex justify-center mb-2">
-            <img 
+            <Image 
               src="/LOGO.png" 
               alt="SERA MC Official Logo" 
+              width={240}
+              height={96}
               className="h-20 sm:h-24 object-contain drop-shadow-[0_10px_25px_rgba(0,0,0,0.5)] transition-transform hover:scale-105"
+              priority
             />
           </div>
           <div>

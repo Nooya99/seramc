@@ -16,6 +16,7 @@ import {
   MessageSquare,
   Users
 } from 'lucide-react';
+import Image from 'next/image';
 
 export default function AdminLayout({ children }) {
   const pathname = usePathname();
@@ -82,10 +83,13 @@ export default function AdminLayout({ children }) {
         {/* Brand Header */}
         <div className="p-6 border-b border-slate-800/80">
           <div className="flex items-center gap-3">
-            <img 
+            <Image 
               src="/LOGO.png" 
               alt="SERA MC Logo" 
+              width={180}
+              height={44}
               className="h-11 w-auto object-contain drop-shadow-md"
+              priority
             />
             <div>
               <h1 className="font-bold text-lg text-white tracking-wide flex items-center gap-1.5">
@@ -164,10 +168,13 @@ export default function AdminLayout({ children }) {
       {/* Header Mobile */}
       <header className="md:hidden flex items-center justify-between p-4 bg-[#0b101d] border-b border-slate-800 sticky top-0 z-40">
         <div className="flex items-center gap-3">
-          <img 
+          <Image 
             src="/LOGO.png" 
             alt="SERA MC Logo" 
+            width={120}
+            height={32}
             className="h-8 w-auto object-contain drop-shadow-md"
+            priority
           />
           <span className="font-bold text-white tracking-wide text-sm">SERA MC Admin</span>
         </div>
