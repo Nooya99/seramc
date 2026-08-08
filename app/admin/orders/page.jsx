@@ -361,17 +361,54 @@ export default function AdminOrdersPage() {
       {/* Main Table & Filters */}
       <div className="flex-1 min-h-0 bg-[#0b101d]/90 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl backdrop-blur-xl flex flex-col">
         {/* Table Toolbar */}
-        <div className="shrink-0 p-6 border-b border-slate-800/80 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+        <div className="shrink-0 p-6 border-b border-slate-800/80 flex flex-col xl:flex-row items-stretch xl:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <h2 className="text-lg font-bold text-white tracking-wide">Daftar Transaksi</h2>
-            <span className="px-2.5 py-0.5 text-xs font-bold rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+            <span className="px-2.5 py-0.5 text-xs font-bold rounded-full bg-slate-800 text-slate-300 border border-slate-700 whitespace-nowrap">
               {filteredOrders.length} Result
             </span>
           </div>
 
-          {/* Search & Filter Inputs */}
-          <div className="flex flex-col sm:flex-row items-center gap-3">
-            <div className="relative w-full sm:w-64">
+          <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3">
+            {/* BULK ACTIONS (Select, Select All, Delete) */}
+            {!selectMode ? (
+              <button
+                onClick={() => setSelectMode(true)}
+                className="px-4 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-cyan-300 text-sm font-semibold border border-slate-700 transition-colors whitespace-nowrap"
+              >
+                Select
+              </button>
+            ) : (
+              <div className="flex flex-wrap items-center gap-2 p-1 bg-slate-900/90 border border-slate-700/80 rounded-xl">
+                <button
+                  onClick={toggleSelectAll}
+                  className="px-3 py-1.5 rounded-lg text-xs font-semibold tracking-wider transition-all bg-slate-800 text-cyan-300 hover:text-white"
+                >
+                  {allSelected ? 'Unselect All' : 'Select All'}
+                </button>
+                <button
+                  onClick={() => {
+                    setSelectedIds([]);
+                    setSelectMode(false);
+                  }}
+                  className="px-3 py-1.5 rounded-lg text-xs font-semibold tracking-wider transition-all text-slate-400 hover:text-white"
+                >
+                  Batal
+                </button>
+                {selectedIds.length > 0 && (
+                  <button
+                    onClick={handleBulkDelete}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold tracking-wider transition-all bg-rose-600/20 text-rose-400 hover:bg-rose-600 hover:text-white border border-rose-500/30"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    Delete ({selectedIds.length})
+                  </button>
+                )}
+              </div>
+            )}
+
+            {/* Search Input */}
+            <div className="relative w-full md:w-64">
               <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
                 type="text"
@@ -382,7 +419,8 @@ export default function AdminOrdersPage() {
               />
             </div>
 
-            <div className="flex items-center p-1 bg-slate-900/90 border border-slate-700/80 rounded-xl w-full sm:w-auto overflow-x-auto">
+            {/* Filter Tabs */}
+            <div className="flex items-center p-1 bg-slate-900/90 border border-slate-700/80 rounded-xl overflow-x-auto whitespace-nowrap">
               {['ALL', 'PENDING', 'PAID', 'CANCELLED'].map((tab) => (
                 <button
                   key={tab}
@@ -415,20 +453,7 @@ export default function AdminOrdersPage() {
             </div>
           ) : (
             <div className="flex flex-col gap-3 w-full max-w-4xl mx-auto">
-              {selectMode && (
-                <div className="flex items-center justify-between p-3 bg-slate-900/60 border border-slate-800 rounded-2xl mb-2">
-                  <div className="flex items-center gap-3">
-                    <button onClick={toggleSelectAll} className="p-1">
-                      {allSelected ? (
-                        <CheckSquare className="w-5 h-5 text-cyan-400" />
-                      ) : (
-                        <Square className="w-5 h-5 text-slate-600" />
-                      )}
-                    </button>
-                    <span className="text-sm font-bold text-slate-300">Pilih Semua</span>
-                  </div>
-                </div>
-              )}
+              {/* Render filtered orders */}
               {filteredOrders.map((order) => {
                 const isSelected = selectedIds.includes(order.id);
                 // Get latest chat if available
@@ -508,7 +533,6 @@ export default function AdminOrdersPage() {
                     {/* Right Side (Status & Notif) */}
                     <div className="flex items-center gap-4 shrink-0">
 
-
                       {/* Notification Badge */}
                       {(() => {
                         const totalChats = order.chats ? order.chats.length : 0;
@@ -522,8 +546,22 @@ export default function AdminOrdersPage() {
                             </div>
                           );
                         }
-                        return <div className="w-12 h-12 opacity-0" />;
+                        return <div className="w-12 h-12 opacity-0 hidden sm:block" />;
                       })()}
+
+                      {/* Trash Button to enter select mode */}
+                      {!selectMode && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleTrashClick(order.id);
+                          }}
+                          className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-800/50 hover:bg-rose-500/20 text-slate-500 hover:text-rose-400 transition-colors border border-transparent hover:border-rose-500/30"
+                          title="Hapus Pesanan"
+                        >
+                          <Trash2 className="w-5 h-5" />
+                        </button>
+                      )}
                     </div>
                   </div>
                 );
@@ -533,44 +571,7 @@ export default function AdminOrdersPage() {
         </div>
       </div>
 
-      {/* Floating Bulk Action Bar */}
-      {selectMode && selectedIds.length > 0 && (
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-40 bg-[#0b101d]/95 border border-cyan-500/40 p-4 rounded-2xl backdrop-blur-2xl shadow-2xl shadow-cyan-500/10 flex items-center gap-4 sm:gap-6 animate-in slide-in-from-bottom-5 duration-200">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-cyan-500/20 text-cyan-400 font-bold flex items-center justify-center text-sm border border-cyan-500/30">
-              {selectedIds.length}
-            </div>
-            <span className="text-xs font-bold text-white whitespace-nowrap">Pesanan Terpilih</span>
-          </div>
-
-          <div className="flex items-center gap-2 sm:gap-3">
-            <button
-              onClick={toggleSelectAll}
-              className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 text-xs font-bold border border-slate-700 whitespace-nowrap"
-            >
-              {allSelected ? 'Unselect All' : 'Select All (' + filteredOrders.length + ')'}
-            </button>
-
-            <button
-              onClick={() => {
-                setSelectedIds([]);
-                setSelectMode(false);
-              }}
-              className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold"
-            >
-              Batal
-            </button>
-
-            <button
-              onClick={handleBulkDelete}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 text-white text-xs font-bold shadow-lg shadow-rose-600/20 transition-all active:scale-95 whitespace-nowrap"
-            >
-              <Trash2 className="w-4 h-4" />
-              Hapus ({selectedIds.length}) Terpilih
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Floating Bulk Action Bar Removed in favor of Toolbar */}
 
       {/* Phone Chat Modal */}
       {selectedOrder && (
