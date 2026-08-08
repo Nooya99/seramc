@@ -131,7 +131,7 @@ export default function AdminTutorialModal({ isOpen, onClose }) {
   return (
     <div className="fixed inset-0 bg-[#070b14]/90 backdrop-blur-md z-[200] flex justify-center items-center p-4">
       <div 
-        className="bg-[#121827] border border-cyan-500/30 w-full max-w-4xl max-h-[85vh] rounded-2xl shadow-2xl shadow-cyan-900/20 overflow-hidden flex flex-col md:flex-row relative"
+        className="bg-[#121827] border border-cyan-500/30 w-full max-w-4xl max-h-[85vh] rounded-2xl shadow-2xl shadow-cyan-900/20 overflow-y-auto custom-scrollbar flex flex-col md:flex-row relative"
         style={{ animation: 'slideUp 0.3s ease-out forwards' }}
       >
         {/* Sidebar Navigation */}

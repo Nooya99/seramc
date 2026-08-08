@@ -106,7 +106,7 @@ export default function AdminDiscountModal({ isOpen, onClose, selectedIds = [], 
   return (
     <div className="fixed inset-0 bg-[#0b101d]/90 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
       <div 
-        className="bg-[#121827] border border-cyan-500/30 rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl shadow-cyan-900/20 overflow-hidden"
+        className="bg-[#121827] border border-cyan-500/30 rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl shadow-cyan-900/20 overflow-y-auto custom-scrollbar"
         style={{ animation: 'slideUp 0.3s ease-out forwards' }}
       >
         {/* Header */}
