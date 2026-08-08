@@ -27,7 +27,18 @@ export default function SmoothScroll({ children }) {
     // Expose lenis globally to pause/resume scroll
     window.lenis = lenis;
 
+    const handleAnchorClick = (e) => {
+      const target = e.target.closest('a');
+      if (target && target.hash && target.hash.startsWith('#') && target.hash.length > 1) {
+        e.preventDefault();
+        lenis.scrollTo(target.hash, { offset: 0 });
+      }
+    };
+
+    document.addEventListener('click', handleAnchorClick);
+
     return () => {
+      document.removeEventListener('click', handleAnchorClick);
       delete window.lenis;
       lenis.destroy();
     };

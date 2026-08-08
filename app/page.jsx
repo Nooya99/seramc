@@ -198,29 +198,39 @@ export default function Home() {
       <div className="w-full relative z-20">
         
         {/* ABOUT SECTION */}
-        <StickySection zIndexClass="z-10" bgClass="bg-[#0b1121]" className="pt-8">
-          <About />
-        </StickySection>
+        <div id="about">
+          <StickySection zIndexClass="z-10" bgClass="bg-[#0b1121]" className="pt-8">
+            <About />
+          </StickySection>
+        </div>
 
         {/* FEATURES SECTION */}
-        <StickySection zIndexClass="z-20" bgClass="bg-[#080d19]">
-          <Features onOpenModal={handleOpenModal} />
-        </StickySection>
+        <div id="features">
+          <StickySection zIndexClass="z-20" bgClass="bg-[#080d19]">
+            <Features onOpenModal={handleOpenModal} />
+          </StickySection>
+        </div>
 
         {/* SHOP SECTION */}
-        <StickySection zIndexClass="z-30" bgClass="bg-[#0b1121]">
-          <ShopCoverflow onOpenModal={handleOpenModal} />
-        </StickySection>
+        <div id="shop">
+          <StickySection zIndexClass="z-30" bgClass="bg-[#0b1121]">
+            <ShopCoverflow onOpenModal={handleOpenModal} />
+          </StickySection>
+        </div>
 
         {/* REVIEWS SECTION */}
-        <StickySection zIndexClass="z-40" bgClass="bg-[#080d19]">
-          <ReviewsMarquee />
-        </StickySection>
+        <div id="reviews">
+          <StickySection zIndexClass="z-40" bgClass="bg-[#080d19]">
+            <ReviewsMarquee />
+          </StickySection>
+        </div>
 
         {/* FAQ SECTION */}
-        <StickySection zIndexClass="z-50" bgClass="bg-[#0b1121]">
-          <FaqAccordion />
-        </StickySection>
+        <div id="faq">
+          <StickySection zIndexClass="z-50" bgClass="bg-[#0b1121]">
+            <FaqAccordion />
+          </StickySection>
+        </div>
 
         {/* FOOTER SECTION */}
         <StickySection zIndexClass="z-[60]" bgClass="bg-[#070b15]" className="pb-10">

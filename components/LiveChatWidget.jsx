@@ -46,6 +46,9 @@ export default function LiveChatWidget({ orderId, onClose }) {
         setOrder(orderData);
       } else {
         console.error('Failed to fetch order details');
+        if (res.status === 404 && onClose) {
+          onClose(); // Automatically close chat if order is deleted
+        }
       }
       setLoading(false);
     } catch (err) {
