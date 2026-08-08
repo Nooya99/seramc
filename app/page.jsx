@@ -27,6 +27,7 @@ import OrderStatusModal from '@/components/modals/OrderStatusModal';
 import LiveChatWidget from '@/components/LiveChatWidget';
 import HelperRequirementsModal from '@/components/modals/HelperRequirementsModal';
 import HelperRegistrationModal from '@/components/modals/HelperRegistrationModal';
+import StickySection from '@/components/StickySection';
 
 export default function Home() {
   const [activeModal, setActiveModal] = useState(null);
@@ -176,34 +177,34 @@ export default function Home() {
       <div className="w-full relative z-20">
         
         {/* ABOUT SECTION */}
-        <div className="sticky top-0 w-full bg-[#0b1121] shadow-[0_-20px_50px_rgba(0,0,0,0.7)] pt-8 z-10">
+        <StickySection zIndexClass="z-10" bgClass="bg-[#0b1121]" className="pt-8">
           <About />
-        </div>
+        </StickySection>
 
         {/* FEATURES SECTION */}
-        <div className="sticky top-0 w-full bg-[#0b1121] shadow-[0_-20px_50px_rgba(0,0,0,0.7)] z-20">
+        <StickySection zIndexClass="z-20" bgClass="bg-[#0b1121]">
           <Features onOpenModal={handleOpenModal} />
-        </div>
+        </StickySection>
 
         {/* SHOP SECTION */}
-        <div className="sticky top-0 w-full bg-[#0b1121] shadow-[0_-20px_50px_rgba(0,0,0,0.7)] z-30">
+        <StickySection zIndexClass="z-30" bgClass="bg-[#0b1121]">
           <ShopCoverflow onOpenModal={handleOpenModal} />
-        </div>
+        </StickySection>
 
         {/* REVIEWS SECTION */}
-        <div className="sticky top-0 w-full bg-[#0b1121] shadow-[0_-20px_50px_rgba(0,0,0,0.7)] z-40">
+        <StickySection zIndexClass="z-40" bgClass="bg-[#0b1121]">
           <ReviewsMarquee />
-        </div>
+        </StickySection>
 
         {/* FAQ SECTION */}
-        <div className="sticky top-0 w-full bg-[#0b1121] shadow-[0_-20px_50px_rgba(0,0,0,0.7)] z-50">
+        <StickySection zIndexClass="z-50" bgClass="bg-[#0b1121]">
           <FaqAccordion />
-        </div>
+        </StickySection>
 
         {/* FOOTER SECTION */}
-        <div className="sticky top-0 w-full bg-[#070b15] shadow-[0_-20px_50px_rgba(0,0,0,0.7)] z-[60] pb-10">
+        <StickySection zIndexClass="z-[60]" bgClass="bg-[#070b15]" className="pb-10">
           <Footer />
-        </div>
+        </StickySection>
 
       </div>
 
