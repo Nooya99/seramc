@@ -169,9 +169,11 @@ export default function Home() {
       <Navbar onOpenModal={handleOpenModal} />
       <NoticeToast />
       
-      <Hero onOpenModal={handleOpenModal} />
+      <div className="sticky top-0 h-screen w-full z-0 flex items-center justify-center">
+        <Hero onOpenModal={handleOpenModal} />
+      </div>
 
-      <div className="w-full relative z-20 bg-gradient-to-b from-[#0b1121] via-[#0b1121] to-[#070b15] shadow-[0_-20px_50px_rgba(11,17,33,1)] pb-10 pt-8">
+      <div className="w-full relative z-20 bg-[#0b1121] shadow-[0_-20px_50px_rgba(0,0,0,0.7)] pb-10 pt-8">
         <About />
         <Features onOpenModal={handleOpenModal} />
         <ShopCoverflow onOpenModal={handleOpenModal} />
