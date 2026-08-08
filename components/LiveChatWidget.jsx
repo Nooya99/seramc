@@ -159,7 +159,7 @@ export default function LiveChatWidget({ orderId, onClose }) {
       </div>
 
       {/* Content Area */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col relative bg-[#0b1121] pb-4">
+      <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col relative bg-[#0b1121] pb-4" data-lenis-prevent>
         {loading ? (
           <div className="flex-1 flex items-center justify-center">
             <Icon icon="lucide:loader-2" className="w-8 h-8 text-[#f2e28a] animate-spin" />
