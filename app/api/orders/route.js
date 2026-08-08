@@ -26,13 +26,11 @@ const sendDiscordNotification = async (order, items, ign, whatsapp) => {
     const embed = {
       title: 'NOTIFIKASI PESANAN SERAMC SHOP',
       color: 0x00FF00,
-      description: `**Isi Pesanan:**\n${itemsList}\n\n[🔗 Buka Admin Dashboard](https://www.seramc.top/admin)`,
+      description: `**Item yang Dibeli:**\n${itemsList}\n\n**Total Harga:**\n**Rp ${order.totalAmount.toLocaleString('id-ID')}**\n\n[🔗 Buka Admin Dashboard](https://www.seramc.top/admin)`,
       fields: [
-        { name: 'Order ID', value: `\`${order.id}\``, inline: false },
         { name: 'IGN', value: `**${ign}**`, inline: true },
+        { name: 'Order ID', value: `\`${order.id}\``, inline: true },
         { name: 'WhatsApp', value: whatsapp || '-', inline: true },
-        { name: 'Total', value: `**Rp ${order.totalAmount.toLocaleString('id-ID')}**`, inline: true },
-        { name: 'Metode Pembayaran', value: order.paymentMethod, inline: true },
       ],
       timestamp: new Date().toISOString(),
       footer: {
