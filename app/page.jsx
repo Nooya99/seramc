@@ -173,13 +173,38 @@ export default function Home() {
         <Hero onOpenModal={handleOpenModal} />
       </div>
 
-      <div className="w-full relative z-20 bg-[#0b1121] shadow-[0_-20px_50px_rgba(0,0,0,0.7)] pb-10 pt-8">
-        <About />
-        <Features onOpenModal={handleOpenModal} />
-        <ShopCoverflow onOpenModal={handleOpenModal} />
-        <ReviewsMarquee />
-        <FaqAccordion />
-        <Footer />
+      <div className="w-full relative z-20">
+        
+        {/* ABOUT SECTION */}
+        <div className="sticky top-0 w-full min-h-screen bg-[#0b1121] shadow-[0_-20px_50px_rgba(0,0,0,0.7)] pb-10 pt-8 z-10 flex flex-col justify-center">
+          <About />
+        </div>
+
+        {/* FEATURES SECTION */}
+        <div className="sticky top-0 w-full min-h-screen bg-[#080d19] shadow-[0_-20px_50px_rgba(0,0,0,0.7)] pb-10 pt-8 z-20 flex flex-col justify-center">
+          <Features onOpenModal={handleOpenModal} />
+        </div>
+
+        {/* SHOP SECTION */}
+        <div className="sticky top-0 w-full min-h-screen bg-[#0b1121] shadow-[0_-20px_50px_rgba(0,0,0,0.7)] pb-10 pt-8 z-30 flex flex-col justify-center">
+          <ShopCoverflow onOpenModal={handleOpenModal} />
+        </div>
+
+        {/* REVIEWS SECTION */}
+        <div className="sticky top-0 w-full min-h-screen bg-[#080d19] shadow-[0_-20px_50px_rgba(0,0,0,0.7)] pb-10 pt-8 z-40 flex flex-col justify-center">
+          <ReviewsMarquee />
+        </div>
+
+        {/* FAQ SECTION */}
+        <div className="sticky top-0 w-full min-h-screen bg-[#0b1121] shadow-[0_-20px_50px_rgba(0,0,0,0.7)] pb-10 pt-8 z-50 flex flex-col justify-center">
+          <FaqAccordion />
+        </div>
+
+        {/* FOOTER SECTION */}
+        <div className="sticky top-0 w-full bg-[#070b15] shadow-[0_-20px_50px_rgba(0,0,0,0.7)] z-[60] relative">
+          <Footer />
+        </div>
+
       </div>
 
       {/* ALL MODALS */}
