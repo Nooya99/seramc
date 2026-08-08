@@ -27,6 +27,15 @@ export default function RootLayout({ children }) {
     <html lang="id" className={`scroll-smooth ${inter.variable} ${poppins.variable}`}>
       <head />
       <body className={`${inter.className} bg-[#0b1121] text-gray-100 antialiased overflow-x-hidden`}>
+        {/* FIXED BACKGROUND */}
+        <div className="fixed top-0 left-0 w-full h-screen -z-10 overflow-hidden bg-[#0b1121]">
+          <div 
+            className="absolute w-full h-full bg-cover bg-center opacity-70" 
+            style={{
+              backgroundImage: `linear-gradient(to bottom, rgba(11, 17, 33, 0.4), rgba(11, 17, 33, 0.95)), url('/background.png')`
+            }}
+          />
+        </div>
         <ServerStatusWidget />
 
         {children}
