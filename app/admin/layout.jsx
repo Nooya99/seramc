@@ -14,14 +14,17 @@ import {
   ExternalLink,
   ChevronRight,
   MessageSquare,
-  Users
+  Users,
+  HelpCircle
 } from 'lucide-react';
 import Image from 'next/image';
+import AdminTutorialModal from '@/components/admin/AdminTutorialModal';
 
 export default function AdminLayout({ children }) {
   const pathname = usePathname();
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [tutorialOpen, setTutorialOpen] = useState(false);
   const [dbStatus, setDbStatus] = useState('connecting');
 
   useEffect(() => {
@@ -156,6 +159,16 @@ export default function AdminLayout({ children }) {
           </a>
 
           <button
+            onClick={() => setTutorialOpen(true)}
+            className="flex items-center justify-between w-full px-4 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:text-cyan-400 hover:bg-cyan-500/10 transition-colors mb-2 border border-slate-800"
+          >
+            <span className="flex items-center gap-2">
+              <HelpCircle className="w-4 h-4" />
+              Tutorial & Panduan
+            </span>
+          </button>
+
+          <button
             onClick={handleLogout}
             className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors border border-rose-500/20"
           >
@@ -223,6 +236,14 @@ export default function AdminLayout({ children }) {
             </a>
 
             <button
+              onClick={() => { setMobileOpen(false); setTutorialOpen(true); }}
+              className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-medium text-cyan-400 bg-cyan-500/10 border border-cyan-500/20"
+            >
+              <HelpCircle className="w-4 h-4" />
+              Tutorial & Panduan
+            </button>
+
+            <button
               onClick={handleLogout}
               className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-medium text-rose-400 bg-rose-500/10 border border-rose-500/20"
             >
@@ -239,6 +260,11 @@ export default function AdminLayout({ children }) {
           {children}
         </div>
       </main>
+
+      <AdminTutorialModal 
+        isOpen={tutorialOpen} 
+        onClose={() => setTutorialOpen(false)} 
+      />
     </div>
   );
 }
