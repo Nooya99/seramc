@@ -176,32 +176,32 @@ export default function Home() {
       <div className="w-full relative z-20">
         
         {/* ABOUT SECTION */}
-        <div className="sticky top-0 w-full min-h-screen bg-[#0b1121] shadow-[0_-20px_50px_rgba(0,0,0,0.7)] pb-10 pt-8 z-10 flex flex-col justify-center">
+        <div className="sticky top-0 w-full bg-[#0b1121] shadow-[0_-20px_50px_rgba(0,0,0,0.7)] pt-8 z-10">
           <About />
         </div>
 
         {/* FEATURES SECTION */}
-        <div className="sticky top-0 w-full min-h-screen bg-[#080d19] shadow-[0_-20px_50px_rgba(0,0,0,0.7)] pb-10 pt-8 z-20 flex flex-col justify-center">
+        <div className="sticky top-0 w-full bg-[#0b1121] shadow-[0_-20px_50px_rgba(0,0,0,0.7)] z-20">
           <Features onOpenModal={handleOpenModal} />
         </div>
 
         {/* SHOP SECTION */}
-        <div className="sticky top-0 w-full min-h-screen bg-[#0b1121] shadow-[0_-20px_50px_rgba(0,0,0,0.7)] pb-10 pt-8 z-30 flex flex-col justify-center">
+        <div className="sticky top-0 w-full bg-[#0b1121] shadow-[0_-20px_50px_rgba(0,0,0,0.7)] z-30">
           <ShopCoverflow onOpenModal={handleOpenModal} />
         </div>
 
         {/* REVIEWS SECTION */}
-        <div className="sticky top-0 w-full min-h-screen bg-[#080d19] shadow-[0_-20px_50px_rgba(0,0,0,0.7)] pb-10 pt-8 z-40 flex flex-col justify-center">
+        <div className="sticky top-0 w-full bg-[#0b1121] shadow-[0_-20px_50px_rgba(0,0,0,0.7)] z-40">
           <ReviewsMarquee />
         </div>
 
         {/* FAQ SECTION */}
-        <div className="sticky top-0 w-full min-h-screen bg-[#0b1121] shadow-[0_-20px_50px_rgba(0,0,0,0.7)] pb-10 pt-8 z-50 flex flex-col justify-center">
+        <div className="sticky top-0 w-full bg-[#0b1121] shadow-[0_-20px_50px_rgba(0,0,0,0.7)] z-50">
           <FaqAccordion />
         </div>
 
         {/* FOOTER SECTION */}
-        <div className="sticky top-0 w-full bg-[#070b15] shadow-[0_-20px_50px_rgba(0,0,0,0.7)] z-[60] relative">
+        <div className="sticky top-0 w-full bg-[#070b15] shadow-[0_-20px_50px_rgba(0,0,0,0.7)] z-[60] pb-10">
           <Footer />
         </div>
 
