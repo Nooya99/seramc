@@ -146,7 +146,7 @@ export default function AdminDiscountModal({ isOpen, onClose, selectedIds = [], 
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar" data-lenis-prevent>
           
           {viewState === 'timer' ? (
              <div className="flex flex-col items-center space-y-8 py-4">

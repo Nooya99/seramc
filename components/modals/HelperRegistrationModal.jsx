@@ -135,7 +135,7 @@ export default function HelperRegistrationModal({ isOpen, onClose }) {
         </div>
 
         {/* Content */}
-        <div className="p-4 md:p-6 overflow-y-auto custom-scrollbar flex-1">
+        <div className="p-4 md:p-6 overflow-y-auto custom-scrollbar flex-1" data-lenis-prevent>
           {errorMsg && (
             <div className="mb-4 p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl text-rose-400 text-sm">
               {errorMsg}

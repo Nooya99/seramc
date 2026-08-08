@@ -178,7 +178,7 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, onCheckoutSu
             <h3 className="text-xl md:text-2xl font-bold text-white mb-2 font-poppins tracking-wide">TUTORIAL DISCORD</h3>
             <p className="text-emerald-400 mb-4 text-xs md:text-sm font-bold bg-emerald-500/10 px-3 py-1.5 rounded-full border border-emerald-500/20">✅ Rincian Pesanan telah di-copy otomatis!</p>
             
-            <div className="w-full text-left text-[11px] md:text-xs text-gray-300 max-h-[40vh] overflow-y-auto custom-scrollbar pr-2 space-y-2 mb-6 font-medium bg-black/40 p-4 rounded-xl border border-white/5">
+            <div className="w-full text-left text-[11px] md:text-xs text-gray-300 max-h-[40vh] overflow-y-auto custom-scrollbar pr-2 space-y-2 mb-6 font-medium bg-black/40 p-4 rounded-xl border border-white/5" data-lenis-prevent>
               <p className="flex gap-2"><span className="text-[#5865F2] font-bold">1.</span> Klik channel store atau langsung channel open tiket</p>
               <p className="flex gap-2"><span className="text-[#5865F2] font-bold">2.</span> Klik create ticket</p>
               <p className="flex gap-2"><span className="text-[#5865F2] font-bold">3.</span> Maka ticket anda telah terbikin</p>
@@ -292,7 +292,7 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess, onCheckoutSu
                 <span>Item</span>
                 <span>Total</span>
               </div>
-              <div className="max-h-[140px] overflow-y-auto pr-2 custom-scrollbar">
+              <div className="max-h-[140px] overflow-y-auto pr-2 custom-scrollbar" data-lenis-prevent>
                 {cart.map((item, idx) => {
                   const itemTotal = parsePrice(item.price) * (item.quantity || 1);
                   return (

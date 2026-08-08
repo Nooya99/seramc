@@ -100,7 +100,7 @@ export default function OrderStatusModal({ isOpen, onClose, playerContext }) {
           </button>
         </form>
 
-        <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 relative z-10">
+        <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 relative z-10" data-lenis-prevent>
           {!hasSearched ? (
             <div className="h-40 flex flex-col items-center justify-center text-gray-500">
               <PixelIcon name="search" className="w-12 h-12 mb-3 opacity-20" />

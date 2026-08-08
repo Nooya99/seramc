@@ -185,7 +185,7 @@ export default function RacesModal({ isOpen, onClose }) {
                     {race.name}
                   </h3>
 
-                  <ul className="text-gray-300 text-[13px] md:text-[14px] space-y-2.5 overflow-y-auto pr-2 custom-scrollbar text-left max-h-[35vh]">
+                  <ul className="text-gray-300 text-[13px] md:text-[14px] space-y-2.5 overflow-y-auto pr-2 custom-scrollbar text-left max-h-[35vh]" data-lenis-prevent>
                     {race.perks.map((perk, idx) => (
                       <li key={idx} className="flex items-start">
                         <PixelIcon name="check" className="w-4 h-4 text-[#f2e28a] mt-1 mr-2.5 flex-shrink-0" />

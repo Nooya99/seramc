@@ -121,7 +121,7 @@ export default function CartModal({ isOpen, onClose, cart, onRemoveItem, onUpdat
         </div>
 
         {/* Cart Items */}
-        <div className="w-full flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar">
+        <div className="w-full flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar" data-lenis-prevent>
           {cart.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-10 text-center">
               <PixelIcon name="shopping-cart" className="w-16 h-16 text-gray-600 mb-4" />

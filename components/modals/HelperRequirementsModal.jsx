@@ -76,7 +76,7 @@ export default function HelperRequirementsModal({ isOpen, onClose, onUnderstood 
         </div>
 
         {/* Content */}
-        <div className="p-4 md:p-6 overflow-y-auto custom-scrollbar flex-1">
+        <div className="p-4 md:p-6 overflow-y-auto custom-scrollbar flex-1" data-lenis-prevent>
           {isLoading ? (
             <div className="flex items-center justify-center py-10">
               <div className="w-8 h-8 border-4 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin"></div>

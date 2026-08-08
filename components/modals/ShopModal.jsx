@@ -695,7 +695,7 @@ export default function ShopModal({ isOpen, onClose, cart = [], playerContext, o
           </div>
         </div>
 
-        <div className="w-full flex-1 overflow-y-auto custom-scrollbar p-6 md:p-8 rounded-b-3xl">
+        <div className="w-full flex-1 overflow-y-auto custom-scrollbar p-6 md:p-8 rounded-b-3xl" data-lenis-prevent>
 
         {globalDiscount > 0 && (
           <div className="mb-8 p-4 md:p-6 rounded-3xl bg-gradient-to-r from-red-600/20 via-rose-500/20 to-red-600/20 border border-red-500/40 flex items-center justify-center gap-4 shadow-[0_0_30px_rgba(225,29,72,0.15)] relative overflow-hidden">
