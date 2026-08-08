@@ -135,6 +135,7 @@ export default function AdminVoucherModal({ isOpen, onClose, selectedIds = [] })
   const [code, setCode] = useState('');
   const [discount, setDiscount] = useState('');
   const [maxUses, setMaxUses] = useState(''); // empty string means no limit
+  const [isOneTimePerUser, setIsOneTimePerUser] = useState(false);
   
   // Timer State
   const [durationDays, setDurationDays] = useState(''); 
@@ -183,7 +184,8 @@ export default function AdminVoucherModal({ isOpen, onClose, selectedIds = [] })
         durationDays: durationDays ? parseInt(durationDays) : null,
         durationHours: durationHours ? parseInt(durationHours) : null,
         durationMinutes: durationMinutes ? parseInt(durationMinutes) : null,
-        applicableProductIds: selectedIds
+        applicableProductIds: selectedIds,
+        isOneTimePerUser
       };
       
       if (editId) {
@@ -206,6 +208,7 @@ export default function AdminVoucherModal({ isOpen, onClose, selectedIds = [] })
         setDurationDays('');
         setDurationHours('');
         setDurationMinutes('');
+        setIsOneTimePerUser(false);
         setEditId(null);
         fetchVouchers();
         
@@ -260,6 +263,7 @@ export default function AdminVoucherModal({ isOpen, onClose, selectedIds = [] })
     setCode(voucher.code);
     setDiscount(voucher.discount.toString());
     setMaxUses(voucher.maxUses ? voucher.maxUses.toString() : '');
+    setIsOneTimePerUser(voucher.isOneTimePerUser || false);
     
     setDurationDays('');
     setDurationHours('');
@@ -284,6 +288,7 @@ export default function AdminVoucherModal({ isOpen, onClose, selectedIds = [] })
     setCode('');
     setDiscount('');
     setMaxUses('');
+    setIsOneTimePerUser(false);
     setDurationDays('');
     setDurationHours('');
     setDurationMinutes('');
@@ -489,6 +494,22 @@ export default function AdminVoucherModal({ isOpen, onClose, selectedIds = [] })
                     />
                   </div>
                 </div>
+                
+                <div className="flex items-center gap-3 pt-2">
+                  <div className="relative flex items-center justify-center">
+                    <input
+                      type="checkbox"
+                      id="isOneTime"
+                      checked={isOneTimePerUser}
+                      onChange={(e) => setIsOneTimePerUser(e.target.checked)}
+                      className="peer appearance-none w-5 h-5 border-2 border-slate-600 rounded cursor-pointer checked:bg-cyan-500 checked:border-cyan-500 transition-colors"
+                    />
+                    <Check className="absolute w-3 h-3 text-slate-900 pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity" />
+                  </div>
+                  <label htmlFor="isOneTime" className="text-sm font-semibold text-slate-300 cursor-pointer select-none">
+                    Batasi 1 Kali Pakai Per User
+                  </label>
+                </div>
 
                 <button
                   type="submit"
@@ -542,6 +563,9 @@ export default function AdminVoucherModal({ isOpen, onClose, selectedIds = [] })
                               )}
                               {voucher.expiresAt && (
                                 <CountdownTimer expiresAt={voucher.expiresAt} />
+                              )}
+                              {voucher.isOneTimePerUser && (
+                                <span className="ml-2 text-blue-400 font-semibold">• 1x Pakai/User</span>
                               )}
                               {voucher.applicableProductIds?.length > 0 && (
                                 <span className="ml-2 text-emerald-500 font-semibold">• {voucher.applicableProductIds.length} Item Khusus</span>

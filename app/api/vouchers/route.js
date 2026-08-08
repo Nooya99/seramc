@@ -19,7 +19,7 @@ export async function GET() {
 // POST create a new voucher
 export async function POST(request) {
   try {
-    const { code, discount, maxUses, applicableProductIds, durationDays, durationHours, durationMinutes } = await request.json();
+    const { code, discount, maxUses, applicableProductIds, durationDays, durationHours, durationMinutes, isOneTimePerUser } = await request.json();
 
     if (!code || !discount) {
       return NextResponse.json({ error: 'Code and discount are required' }, { status: 400 });
@@ -56,6 +56,7 @@ export async function POST(request) {
         discount: parseInt(discount),
         maxUses: maxUses ? parseInt(maxUses) : null,
         applicableProductIds: applicableProductIds || [],
+        isOneTimePerUser: isOneTimePerUser || false,
         expiresAt
       }
     });
@@ -70,7 +71,7 @@ export async function POST(request) {
 // PUT update an existing voucher
 export async function PUT(request) {
   try {
-    const { id, discount, maxUses, durationDays, durationHours, durationMinutes } = await request.json();
+    const { id, discount, maxUses, durationDays, durationHours, durationMinutes, isOneTimePerUser } = await request.json();
 
     if (!id || !discount) {
       return NextResponse.json({ error: 'ID and discount are required' }, { status: 400 });
@@ -106,6 +107,10 @@ export async function PUT(request) {
       discount: parseInt(discount),
       maxUses: maxUses ? parseInt(maxUses) : null,
     };
+    
+    if (isOneTimePerUser !== undefined) {
+      updateData.isOneTimePerUser = isOneTimePerUser;
+    }
 
     if (expiresAt !== undefined) {
       updateData.expiresAt = expiresAt;

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import PixelIcon from '@/components/PixelIcon';
 
-export default function CartModal({ isOpen, onClose, cart, onRemoveItem, onUpdateQuantity, onCheckout, appliedVoucher, setAppliedVoucher }) {
+export default function CartModal({ isOpen, onClose, cart, onRemoveItem, onUpdateQuantity, onCheckout, appliedVoucher, setAppliedVoucher, playerContext }) {
   const [voucherCode, setVoucherCode] = useState('');
   const [voucherError, setVoucherError] = useState('');
   const [validatingVoucher, setValidatingVoucher] = useState(false);
@@ -64,7 +64,7 @@ export default function CartModal({ isOpen, onClose, cart, onRemoveItem, onUpdat
       const res = await fetch('/api/vouchers/validate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: voucherCode.trim().toUpperCase() })
+        body: JSON.stringify({ code: voucherCode.trim().toUpperCase(), ign: playerContext?.nickname })
       });
       const data = await res.json();
       if (res.ok && data.valid) {

@@ -283,6 +283,7 @@ export default function Home() {
         onCheckout={() => handleOpenModal('checkout')}
         appliedVoucher={appliedVoucher}
         setAppliedVoucher={setAppliedVoucher}
+        playerContext={playerContext}
       />
       <CheckoutModal
         isOpen={activeModal === 'checkout'}

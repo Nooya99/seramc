@@ -46,6 +46,7 @@ model Order {
   paymentMethod String      @default("QRIS")
   status        String      @default("PENDING") // PENDING, PAID, CANCELLED
   items         OrderItem[]
+  voucherCode   String?     // To track which voucher was used in this order
   chats         OrderChat[]
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
@@ -73,6 +74,7 @@ model Voucher {
   applicableProductIds String[] @default([]) // Array of product IDs this voucher applies to. Empty array means it applies to all.
   expiresAt            DateTime?
   isActive             Boolean  @default(true)
+  isOneTimePerUser     Boolean  @default(false)
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
 }

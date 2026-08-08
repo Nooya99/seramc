@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 // POST validate a voucher
 export async function POST(request) {
   try {
-    const { code } = await request.json();
+    const { code, ign } = await request.json();
 
     if (!code) {
       return NextResponse.json({ error: 'Kode voucher harus diisi' }, { status: 400 });
@@ -32,6 +32,28 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Batas penggunaan voucher telah habis' }, { status: 400 });
     }
 
+    // Check per-user limit if enabled
+    if (voucher.isOneTimePerUser && ign) {
+      const pastOrder = await prisma.order.findFirst({
+        where: {
+          voucherCode: code,
+          status: {
+            not: 'CANCELLED' // Ignore cancelled orders
+          },
+          user: {
+            ign: {
+              equals: ign,
+              mode: 'insensitive'
+            }
+          }
+        }
+      });
+
+      if (pastOrder) {
+        return NextResponse.json({ error: 'Anda sudah pernah menggunakan voucher ini' }, { status: 400 });
+      }
+    }
+
     return NextResponse.json({
       valid: true,
       discount: voucher.discount,
@@ -43,3 +65,4 @@ export async function POST(request) {
     return NextResponse.json({ error: 'Terjadi kesalahan saat memvalidasi voucher' }, { status: 500 });
   }
 }
+

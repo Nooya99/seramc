@@ -138,6 +138,7 @@ export async function POST(request) {
         totalAmount: totalAmount || 0,
         paymentMethod: paymentMethod || 'QRIS',
         status: 'PENDING',
+        voucherCode: voucherCode || null,
       }
     });
 
