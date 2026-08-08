@@ -72,6 +72,12 @@ export default function AdminLayout({ children }) {
       href: '/admin/helper',
       icon: Users,
       active: pathname === '/admin/helper'
+    },
+    {
+      name: 'Panduan & Tutorial',
+      href: '/admin/tutorial',
+      icon: HelpCircle,
+      active: pathname === '/admin/tutorial'
     }
   ];
 
