@@ -24,15 +24,15 @@ const sendDiscordNotification = async (order, items, ign, whatsapp) => {
     const itemsList = items.map(item => `**${item.quantity || 1}x ${item.name}** (${item.duration || 'Permanen'}) - Rp ${parsePrice(item.price).toLocaleString('id-ID')}`).join('\n');
     
     const embed = {
-      title: '🛒 Pesanan Baru Masuk!',
-      color: 0x00FF00, // Green color
+      title: 'NOTIFIKASI PESANAN SERAMC SHOP',
+      color: 0x00FF00,
+      description: `**Isi Pesanan:**\n${itemsList}\n\n[🔗 Buka Admin Dashboard](https://www.seramc.top/admin)`,
       fields: [
         { name: 'Order ID', value: `\`${order.id}\``, inline: false },
         { name: 'IGN', value: `**${ign}**`, inline: true },
         { name: 'WhatsApp', value: whatsapp || '-', inline: true },
         { name: 'Total', value: `**Rp ${order.totalAmount.toLocaleString('id-ID')}**`, inline: true },
         { name: 'Metode Pembayaran', value: order.paymentMethod, inline: true },
-        { name: 'Item', value: itemsList, inline: false },
       ],
       timestamp: new Date().toISOString(),
       footer: {
