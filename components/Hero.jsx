@@ -16,8 +16,6 @@ export default function Hero({ onOpenModal }) {
   return (
     <section id="home" className="relative min-h-screen w-full flex flex-col justify-center items-center text-center pt-20 overflow-hidden">
       <div className="relative z-10 w-full flex flex-col items-center px-4 md:px-6 max-w-6xl mx-auto mt-10">
-        <div className="sparkle w-4 h-4 top-[10%] right-[25%]" style={{ animationDelay: '0.2s' }} />
-        <div className="sparkle w-2 h-2 top-[40%] left-[25%]" style={{ animationDelay: '1.5s' }} />
 
         <div className="w-full flex justify-center mb-4 md:mb-5 relative">
           <Image 
