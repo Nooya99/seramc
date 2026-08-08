@@ -67,6 +67,27 @@ export default function Home() {
     }
   }, [activeChatOrderId]);
 
+  // Disable background scrolling when any modal is open
+  useEffect(() => {
+    if (activeModal || isLoginOpen) {
+      document.body.style.overflow = 'hidden';
+      if (typeof window !== 'undefined' && window.lenis) {
+        window.lenis.stop();
+      }
+    } else {
+      document.body.style.overflow = 'unset';
+      if (typeof window !== 'undefined' && window.lenis) {
+        window.lenis.start();
+      }
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+      if (typeof window !== 'undefined' && window.lenis) {
+        window.lenis.start();
+      }
+    };
+  }, [activeModal, isLoginOpen]);
+
   const addToast = (title, description, type = 'success') => {
     const id = Date.now() + Math.random();
     setToasts(prev => [...prev, { id, title, description, type }]);

@@ -23,8 +23,12 @@ export default function SmoothScroll({ children }) {
     }
 
     requestAnimationFrame(raf);
+    
+    // Expose lenis globally to pause/resume scroll
+    window.lenis = lenis;
 
     return () => {
+      delete window.lenis;
       lenis.destroy();
     };
   }, []);
