@@ -12,6 +12,61 @@ const parsePrice = (priceStr) => {
   return priceStr.toUpperCase().includes('K') ? num * 1000 : num;
 };
 
+const sendDiscordNotification = async (order, items, ign, whatsapp) => {
+  try {
+    const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
+
+    if (!webhookUrl) {
+      console.log('Discord notification skipped: Missing Webhook URL');
+      return;
+    }
+
+    const itemsList = items.map(item => `**${item.quantity || 1}x ${item.name}** (${item.duration || 'Permanen'}) - Rp ${parsePrice(item.price).toLocaleString('id-ID')}`).join('\n');
+    
+    const embed = {
+      title: '🛒 Pesanan Baru Masuk!',
+      color: 0x00FF00, // Green color
+      fields: [
+        { name: 'Order ID', value: `\`${order.id}\``, inline: false },
+        { name: 'IGN', value: `**${ign}**`, inline: true },
+        { name: 'WhatsApp', value: whatsapp || '-', inline: true },
+        { name: 'Total', value: `**Rp ${order.totalAmount.toLocaleString('id-ID')}**`, inline: true },
+        { name: 'Metode Pembayaran', value: order.paymentMethod, inline: true },
+        { name: 'Item', value: itemsList, inline: false },
+      ],
+      timestamp: new Date().toISOString(),
+      footer: {
+        text: 'SERAMC Store Notification'
+      }
+    };
+
+    const payload = {
+      embeds: [embed]
+    };
+
+    const mentionString = process.env.DISCORD_MENTION_STRING;
+    if (mentionString) {
+      payload.content = mentionString; // Tag roles/users
+    }
+
+    const response = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      console.error('Failed to send Discord notification:', response.status, await response.text());
+    } else {
+      console.log('Discord notification sent successfully');
+    }
+  } catch (error) {
+    console.error('Error sending Discord notification:', error);
+  }
+};
+
 export async function GET() {
   try {
     const sevenDaysAgo = new Date();
@@ -145,6 +200,9 @@ export async function POST(request) {
         }
       }
     }
+
+    // 6. Send Discord Notification asynchronously
+    sendDiscordNotification(order, items, ign, whatsapp);
 
     return NextResponse.json(order, { status: 201 });
   } catch (error) {
