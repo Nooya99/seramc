@@ -7,29 +7,9 @@ export default function StickySection({ children, zIndexClass, bgClass = 'bg-[#0
   const ref = useRef(null);
 
   useEffect(() => {
-    let resizeObserver;
-    const handleResize = () => {
-      if (ref.current) {
-        if (ref.current.offsetHeight > window.innerHeight) {
-          setStickTo('bottom-0');
-        } else {
-          setStickTo('top-0');
-        }
-      }
-    };
-
-    handleResize();
-    window.addEventListener('resize', handleResize);
-
-    if (ref.current) {
-      resizeObserver = new ResizeObserver(handleResize);
-      resizeObserver.observe(ref.current);
-    }
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      if (resizeObserver) resizeObserver.disconnect();
-    };
+    // Force bottom-0 so that the section always scrolls completely into view 
+    // before the next section starts overlapping it from the bottom.
+    setStickTo('bottom-0');
   }, []);
 
   return (
