@@ -269,7 +269,7 @@ export default function AdminLayout({ children }) {
         {/* Global Floating Tutorial Button */}
         <button
           onClick={() => setTutorialOpen(true)}
-          className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 z-50 w-14 h-14 bg-cyan-500 hover:bg-cyan-400 text-slate-950 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(6,182,212,0.3)] hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] transition-all hover:scale-110 active:scale-95 border-2 border-[#0b101d]"
+          className="fixed top-20 right-6 sm:top-8 sm:right-8 z-50 w-14 h-14 bg-cyan-500 hover:bg-cyan-400 text-slate-950 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(6,182,212,0.3)] hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] transition-all hover:scale-110 active:scale-95 border-2 border-[#0b101d]"
           title="Panduan & Walkthrough"
         >
           <HelpCircle className="w-7 h-7" />
